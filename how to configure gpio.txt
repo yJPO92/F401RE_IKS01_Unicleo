@@ -1,0 +1,36 @@
+
+
+
+DANS main.h
+#define B1_Pin GPIO_PIN_13
+#define B1_GPIO_Port GPIOC
+#define B1_EXTI_IRQn EXTI15_10_IRQn
+#define STTS571_INT_Pin GPIO_PIN_1
+#define STTS571_INT_GPIO_Port GPIOC
+#define LIS2DW12_INT1_Pin GPIO_PIN_0
+#define LIS2DW12_INT1_GPIO_Port GPIOB
+#define LIS2DW12_INT2_Pin GPIO_PIN_7
+#define LIS2DW12_INT2_GPIO_Port GPIOC
+#define User_INT_Pin GPIO_PIN_10
+#define User_INT_GPIO_Port GPIOA
+#define User_INT_EXTI_IRQn EXTI15_10_IRQn
+#define LSM6DSO_INT2_Pin GPIO_PIN_4
+#define LSM6DSO_INT2_GPIO_Port GPIOB
+#define LSM6DSO_INT1_Pin GPIO_PIN_5
+#define LSM6DSO_INT1_GPIO_Port GPIOB
+
+
+DANS MX_GPIO_Init() DANS main.c
+  /*Configure GPIO pins : STTS571_INT_Pin LIS2DW12_INT2_Pin */
+  GPIO_InitStruct.Pin = STTS571_INT_Pin|LIS2DW12_INT2_Pin;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+
+  /*Configure GPIO pins : LIS2DW12_INT1_Pin LSM6DSO_INT2_Pin LSM6DSO_INT1_Pin */
+  GPIO_InitStruct.Pin = LIS2DW12_INT1_Pin|LSM6DSO_INT2_Pin|LSM6DSO_INT1_Pin;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+
+  /*Configure GPIO pin : User_INT_Pin */
+  GPIO_InitStruct.Pin = User_INT_Pin;
+  HAL_GPIO_Init(User_INT_GPIO_Port, &GPIO_InitStruct);

@@ -1,0 +1,97 @@
+*** F401RE_IKS01_Unicleo ***
+
+++++ a retester
+++++ verif interrupt
+@TODO: affiner gui
+@TODO: reorganiser functions in files
+++++
+
+le 12/03/2021   v4.8d: ==> Git local. Ne pas exclure les fichiers STMicro (drivers, Middleware...)
+                    puis sur Github.com
+
+le 11/03/2021   v4.8c: apres essai infrutueux de passage sous git & upgrate CubeMX et F4 FW retour version SVN v4.8
+                    rebuild ok
+                    ==> !!Attention : en Git NE PAS IGNORER les repertoires générés par CubeMX meme s'ils sont gros!!
+                    reporter les modifs qui fonctionnennt:
+                        maj & save in pjt dir of 'flows.json' in CubeMonitor
+                        update readme & license
+                    versionné en SVN
+
+le 26/03/2020   v4.8: Node-RED ok, bascule VT/Unicleo-GUI via BP1 bleu
+le 11/03/2020   v4.2: temp pour Node-RED, common titre à revoir
+le 10/03/2020   v4.1: affichage sur écran tjrs au meme endoit, ajout vT100.h, test connection STM32CubeMon
+le 23/10/2019   erreur SVN resolue?
+le 22/10/2019   config STTS751 pour seuil et interrupt, qqs pb!
+le 18/10/2019   GUI OK avec popup si pas de tempo ds le main.c!!
+le 14/10/2019   comme UART configuée "à la main" et non par CubeMX il faut changer handle en 'UartHandle'
+le 13/10/2019   disable cubeMX dma & uart, insert uart/dma init from ..DataLog
+					gestion RTC by CubeMX, change handler ds gui.c		==>unicleo gui connection OK
+le 11/10/2019   ajout debug via printf on SWV console
+le 09/10/2019   ajout BP2 ToR en PA_8 ==> bascule GUI/Unicleo
+le 08/10/2019   v3.7: ajout ds main si comVTcomGUI=1, pas suffisant
+le 07/10/2019   custom \MEMS\App|Target \ appx_-cube-mems1.c|.h
+	               remplacer printf par hal_uart_trans...
+	               gui open OK (qq pb)
+le 06/10/2019   comVTcomGUI mémorisé car déclaré 'volatile int'
+le 04/10/2019   vt ou gui via btn bleu
+le 23/09/2019   rtc.c (made by CubeMX) comment line 44 in MX_RTC_Init
+le 22/09/2019   folder Unicleo ==> error
+le 11/09/2019   doxygen
+le 10/09/2019   CubeMX ok (except app_x-cube user !!)
+                    retour order sensor d'origine (car pb)
+                    usart --> 921600 baud (stm32f4xx_nucleo.c)
+                    iks01a3 datalogterminal	ok
+                    yLCD	ok
+                    B1 interrupt	ok (app_mems gestion supprimée)
+                    ld2 blink	ok
+interrupt iks01a3 declarees via cubeMX (LIS2DW12_INT1 / LIS2DW12_INT2 / LSM6DSO_INT1 / LSM6DSO_INT2 / STTS571_INT / GPIO_EXTI10	User_INT)
+lecture MEM ENV Id	ok
+lecture MEM MOTION Id	ok
+read 2 temperatures et lcd display OK
+
+custom_mems_conf.h		all use_custom = 0U ; ==> suppress custom_i2c_init
+and move e#endif et 'user code 1' à la fin  ==> effacé si CUBEMX update
+
+sur impulsion B1 deactive/active COM1 vers VT ou GUI (var 'comVTcomGUI')	==> bloque affichage VT mais LCD actif & GUI error
+
+//chgt ordres des ENV sensor (lps/hst/stts) ds iks01a3_env_sensors.h ok
+
+------------------------------
+MEMs sensor details (voir xx_reg.h)
+
+			WhoAmI	@I2C	
+LSM6DSO		6c
+LIS2DW12	44		
+LIS2MDL		40		
+
+LPS22HH		b3
+HTS221		bc
+STTS751		53
+
+------------------------------
+pour app_x-cube-mems1.c:
+/* USER CODE BEGIN 0 */
+#include "yI2CprogsLCD.h"
+/*
+  * @brief
+  * @param
+  * @retval status
+*/
+static void yMEMS_LCD(uint32_t Instance, char row) {
+	float temperature;
+	displayFloatToInt_t out_value;
+
+    IKS01A3_ENV_SENSOR_GetValue(Instance, ENV_TEMPERATURE, &temperature);
+    floatToInt(temperature, &out_value, 2);
+
+    snprintf(dataOut, MAX_BUF_SIZE, "Temp[%d]: %c%d.%02d degC",
+    								(int)Instance, ((out_value.sign) ? '-' : '+'), (int)out_value.out_int, (int)out_value.out_dec);
+
+	//snprintf(aTxBuffer, 9, "%02d:%02d:%02d", hh, mm, sc);
+	//snprintf(aTxBuffer, 12, "MEMs values");
+	yI2C_LCD_locate(0,row);
+	yI2C_LCD_Affich_Txt(dataOut);
+}
+/* USER CODE END 0 */
+
+
