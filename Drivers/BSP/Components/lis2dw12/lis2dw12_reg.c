@@ -6,32 +6,15 @@
  ******************************************************************************
  * @attention
  *
- * <h2><center>&copy; COPYRIGHT(c) 2018 STMicroelectronics</center></h2>
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+ * All rights reserved.</center></h2>
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *   1. Redistributions of source code must retain the above copyright notice,
- *      this list of conditions and the following disclaimer.
- *   2. Redistributions in binary form must reproduce the above copyright
- *      notice, this list of conditions and the following disclaimer in the
- *      documentation and/or other materials provided with the distribution.
- *   3. Neither the name of STMicroelectronics nor the names of its
- *      contributors may be used to endorse or promote products derived from
- *      this software without specific prior written permission.
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ ******************************************************************************
  */
 
 #include "lis2dw12_reg.h"
@@ -63,7 +46,7 @@
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_read_reg(lis2dw12_ctx_t* ctx, uint8_t reg, uint8_t* data,
+int32_t lis2dw12_read_reg(stmdev_ctx_t* ctx, uint8_t reg, uint8_t* data,
                           uint16_t len)
 {
   int32_t ret;
@@ -81,7 +64,7 @@ int32_t lis2dw12_read_reg(lis2dw12_ctx_t* ctx, uint8_t reg, uint8_t* data,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_write_reg(lis2dw12_ctx_t* ctx, uint8_t reg, uint8_t* data,
+int32_t lis2dw12_write_reg(stmdev_ctx_t* ctx, uint8_t reg, uint8_t* data,
                            uint16_t len)
 {
   int32_t ret;
@@ -143,7 +126,7 @@ float_t lis2dw12_from_fs16_lp1_to_mg(int16_t lsb)
 
 float_t lis2dw12_from_lsb_to_celsius(int16_t lsb)
 {
-  return (((float_t)lsb / 16.0f) + 25.0f);
+  return (((float_t)lsb / 256.0f) + 25.0f);
 }
 
 /**
@@ -168,7 +151,7 @@ float_t lis2dw12_from_lsb_to_celsius(int16_t lsb)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_power_mode_set(lis2dw12_ctx_t *ctx, lis2dw12_mode_t val)
+int32_t lis2dw12_power_mode_set(stmdev_ctx_t *ctx, lis2dw12_mode_t val)
 {
   lis2dw12_ctrl1_t ctrl1;
   lis2dw12_ctrl6_t ctrl6;
@@ -199,7 +182,7 @@ int32_t lis2dw12_power_mode_set(lis2dw12_ctx_t *ctx, lis2dw12_mode_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_power_mode_get(lis2dw12_ctx_t *ctx, lis2dw12_mode_t *val)
+int32_t lis2dw12_power_mode_get(stmdev_ctx_t *ctx, lis2dw12_mode_t *val)
 {
   lis2dw12_ctrl1_t ctrl1;
   lis2dw12_ctrl6_t ctrl6;
@@ -281,7 +264,7 @@ int32_t lis2dw12_power_mode_get(lis2dw12_ctx_t *ctx, lis2dw12_mode_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_data_rate_set(lis2dw12_ctx_t *ctx, lis2dw12_odr_t val)
+int32_t lis2dw12_data_rate_set(stmdev_ctx_t *ctx, lis2dw12_odr_t val)
 {
   lis2dw12_ctrl1_t ctrl1;
   lis2dw12_ctrl3_t ctrl3;
@@ -310,7 +293,7 @@ int32_t lis2dw12_data_rate_set(lis2dw12_ctx_t *ctx, lis2dw12_odr_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_data_rate_get(lis2dw12_ctx_t *ctx, lis2dw12_odr_t *val)
+int32_t lis2dw12_data_rate_get(stmdev_ctx_t *ctx, lis2dw12_odr_t *val)
 {
   lis2dw12_ctrl1_t ctrl1;
   lis2dw12_ctrl3_t ctrl3;
@@ -373,7 +356,7 @@ int32_t lis2dw12_data_rate_get(lis2dw12_ctx_t *ctx, lis2dw12_odr_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_block_data_update_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_block_data_update_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_ctrl2_t reg;
   int32_t ret;
@@ -394,7 +377,7 @@ int32_t lis2dw12_block_data_update_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_block_data_update_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_block_data_update_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_ctrl2_t reg;
   int32_t ret;
@@ -413,7 +396,7 @@ int32_t lis2dw12_block_data_update_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_full_scale_set(lis2dw12_ctx_t *ctx, lis2dw12_fs_t val)
+int32_t lis2dw12_full_scale_set(stmdev_ctx_t *ctx, lis2dw12_fs_t val)
 {
   lis2dw12_ctrl6_t reg;
   int32_t ret;
@@ -434,7 +417,7 @@ int32_t lis2dw12_full_scale_set(lis2dw12_ctx_t *ctx, lis2dw12_fs_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_full_scale_get(lis2dw12_ctx_t *ctx, lis2dw12_fs_t *val)
+int32_t lis2dw12_full_scale_get(stmdev_ctx_t *ctx, lis2dw12_fs_t *val)
 {
   lis2dw12_ctrl6_t reg;
   int32_t ret;
@@ -469,7 +452,7 @@ int32_t lis2dw12_full_scale_get(lis2dw12_ctx_t *ctx, lis2dw12_fs_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_status_reg_get(lis2dw12_ctx_t *ctx, lis2dw12_status_t *val)
+int32_t lis2dw12_status_reg_get(stmdev_ctx_t *ctx, lis2dw12_status_t *val)
 {
   int32_t ret;
   ret = lis2dw12_read_reg(ctx, LIS2DW12_STATUS, (uint8_t*) val, 1);
@@ -484,7 +467,7 @@ int32_t lis2dw12_status_reg_get(lis2dw12_ctx_t *ctx, lis2dw12_status_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_flag_data_ready_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_flag_data_ready_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_status_t reg;
   int32_t ret;
@@ -503,7 +486,7 @@ int32_t lis2dw12_flag_data_ready_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_all_sources_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_all_sources_get(stmdev_ctx_t *ctx,
                                  lis2dw12_all_sources_t *val)
 {
   int32_t ret;
@@ -521,7 +504,7 @@ int32_t lis2dw12_all_sources_get(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_usr_offset_x_set(lis2dw12_ctx_t *ctx, uint8_t *buff)
+int32_t lis2dw12_usr_offset_x_set(stmdev_ctx_t *ctx, uint8_t *buff)
 {
   int32_t ret;
   ret = lis2dw12_write_reg(ctx, LIS2DW12_X_OFS_USR, buff, 1);
@@ -538,7 +521,7 @@ int32_t lis2dw12_usr_offset_x_set(lis2dw12_ctx_t *ctx, uint8_t *buff)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_usr_offset_x_get(lis2dw12_ctx_t *ctx, uint8_t *buff)
+int32_t lis2dw12_usr_offset_x_get(stmdev_ctx_t *ctx, uint8_t *buff)
 {
   int32_t ret;
   ret = lis2dw12_read_reg(ctx, LIS2DW12_X_OFS_USR, buff, 1);
@@ -555,7 +538,7 @@ int32_t lis2dw12_usr_offset_x_get(lis2dw12_ctx_t *ctx, uint8_t *buff)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_usr_offset_y_set(lis2dw12_ctx_t *ctx, uint8_t *buff)
+int32_t lis2dw12_usr_offset_y_set(stmdev_ctx_t *ctx, uint8_t *buff)
 {
   int32_t ret;
   ret = lis2dw12_write_reg(ctx, LIS2DW12_Y_OFS_USR, buff, 1);
@@ -572,7 +555,7 @@ int32_t lis2dw12_usr_offset_y_set(lis2dw12_ctx_t *ctx, uint8_t *buff)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_usr_offset_y_get(lis2dw12_ctx_t *ctx, uint8_t *buff)
+int32_t lis2dw12_usr_offset_y_get(stmdev_ctx_t *ctx, uint8_t *buff)
 {
   int32_t ret;
   ret = lis2dw12_read_reg(ctx, LIS2DW12_Y_OFS_USR, buff, 1);
@@ -589,7 +572,7 @@ int32_t lis2dw12_usr_offset_y_get(lis2dw12_ctx_t *ctx, uint8_t *buff)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_usr_offset_z_set(lis2dw12_ctx_t *ctx, uint8_t *buff)
+int32_t lis2dw12_usr_offset_z_set(stmdev_ctx_t *ctx, uint8_t *buff)
 {
   int32_t ret;
   ret = lis2dw12_write_reg(ctx, LIS2DW12_Z_OFS_USR, buff, 1);
@@ -606,7 +589,7 @@ int32_t lis2dw12_usr_offset_z_set(lis2dw12_ctx_t *ctx, uint8_t *buff)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_usr_offset_z_get(lis2dw12_ctx_t *ctx, uint8_t *buff)
+int32_t lis2dw12_usr_offset_z_get(stmdev_ctx_t *ctx, uint8_t *buff)
 {
   int32_t ret;
   ret = lis2dw12_read_reg(ctx, LIS2DW12_Z_OFS_USR, buff, 1);
@@ -623,7 +606,7 @@ int32_t lis2dw12_usr_offset_z_get(lis2dw12_ctx_t *ctx, uint8_t *buff)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_offset_weight_set(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_offset_weight_set(stmdev_ctx_t *ctx,
                                    lis2dw12_usr_off_w_t val)
 {
   lis2dw12_ctrl_reg7_t reg;
@@ -646,7 +629,7 @@ int32_t lis2dw12_offset_weight_set(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_offset_weight_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_offset_weight_get(stmdev_ctx_t *ctx,
                                    lis2dw12_usr_off_w_t *val)
 {
   lis2dw12_ctrl_reg7_t reg;
@@ -684,14 +667,19 @@ int32_t lis2dw12_offset_weight_get(lis2dw12_ctx_t *ctx,
   *         together express a 16-bit word in two’s complement.[get]
   *
   * @param  ctx      read / write interface definitions
-  * @param  buff     buffer that stores data read
+  * @param  val      buffer that stores data read
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_temperature_raw_get(lis2dw12_ctx_t *ctx, uint8_t *buff)
+int32_t lis2dw12_temperature_raw_get(stmdev_ctx_t *ctx, int16_t *val)
 {
+  uint8_t buff[2];
   int32_t ret;
+
   ret = lis2dw12_read_reg(ctx, LIS2DW12_OUT_T_L, buff, 2);
+  *val = (int16_t)buff[1];
+  *val = (*val * 256) +  (int16_t)buff[0];
+
   return ret;
 }
 
@@ -700,14 +688,23 @@ int32_t lis2dw12_temperature_raw_get(lis2dw12_ctx_t *ctx, uint8_t *buff)
   *         a 16-bit word in two’s complement.[get]
   *
   * @param  ctx      read / write interface definitions
-  * @param  buff     buffer that stores data read
+  * @param  val      buffer that stores data read
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_acceleration_raw_get(lis2dw12_ctx_t *ctx, uint8_t *buff)
+int32_t lis2dw12_acceleration_raw_get(stmdev_ctx_t *ctx, int16_t *val)
 {
+  uint8_t buff[6];
   int32_t ret;
+
   ret = lis2dw12_read_reg(ctx, LIS2DW12_OUT_X_L, buff, 6);
+  val[0] = (int16_t)buff[1];
+  val[0] = (val[0] * 256) +  (int16_t)buff[0];
+  val[1] = (int16_t)buff[3];
+  val[1] = (val[1] * 256) +  (int16_t)buff[2];
+  val[2] = (int16_t)buff[5];
+  val[2] = (val[2] * 256) +  (int16_t)buff[4];
+
   return ret;
 }
 
@@ -731,7 +728,7 @@ int32_t lis2dw12_acceleration_raw_get(lis2dw12_ctx_t *ctx, uint8_t *buff)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_device_id_get(lis2dw12_ctx_t *ctx, uint8_t *buff)
+int32_t lis2dw12_device_id_get(stmdev_ctx_t *ctx, uint8_t *buff)
 {
   int32_t ret;
   ret = lis2dw12_read_reg(ctx, LIS2DW12_WHO_AM_I, buff, 1);
@@ -747,7 +744,7 @@ int32_t lis2dw12_device_id_get(lis2dw12_ctx_t *ctx, uint8_t *buff)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_auto_increment_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_auto_increment_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_ctrl2_t reg;
   int32_t ret;
@@ -769,7 +766,7 @@ int32_t lis2dw12_auto_increment_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_auto_increment_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_auto_increment_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_ctrl2_t reg;
   int32_t ret;
@@ -788,7 +785,7 @@ int32_t lis2dw12_auto_increment_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_reset_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_reset_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_ctrl2_t reg;
   int32_t ret;
@@ -810,7 +807,7 @@ int32_t lis2dw12_reset_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_reset_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_reset_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_ctrl2_t reg;
   int32_t ret;
@@ -829,7 +826,7 @@ int32_t lis2dw12_reset_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_boot_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_boot_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_ctrl2_t reg;
   int32_t ret;
@@ -850,7 +847,7 @@ int32_t lis2dw12_boot_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_boot_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_boot_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_ctrl2_t reg;
   int32_t ret;
@@ -869,7 +866,7 @@ int32_t lis2dw12_boot_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_self_test_set(lis2dw12_ctx_t *ctx, lis2dw12_st_t val)
+int32_t lis2dw12_self_test_set(stmdev_ctx_t *ctx, lis2dw12_st_t val)
 {
   lis2dw12_ctrl3_t reg;
   int32_t ret;
@@ -891,7 +888,7 @@ int32_t lis2dw12_self_test_set(lis2dw12_ctx_t *ctx, lis2dw12_st_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_self_test_get(lis2dw12_ctx_t *ctx, lis2dw12_st_t *val)
+int32_t lis2dw12_self_test_get(stmdev_ctx_t *ctx, lis2dw12_st_t *val)
 {
   lis2dw12_ctrl3_t reg;
   int32_t ret;
@@ -923,7 +920,7 @@ int32_t lis2dw12_self_test_get(lis2dw12_ctx_t *ctx, lis2dw12_st_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_data_ready_mode_set(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_data_ready_mode_set(stmdev_ctx_t *ctx,
                                      lis2dw12_drdy_pulsed_t val)
 {
   lis2dw12_ctrl_reg7_t reg;
@@ -946,7 +943,7 @@ int32_t lis2dw12_data_ready_mode_set(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_data_ready_mode_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_data_ready_mode_get(stmdev_ctx_t *ctx,
                                      lis2dw12_drdy_pulsed_t *val)
 {
   lis2dw12_ctrl_reg7_t reg;
@@ -989,7 +986,7 @@ int32_t lis2dw12_data_ready_mode_get(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_filter_path_set(lis2dw12_ctx_t *ctx, lis2dw12_fds_t val)
+int32_t lis2dw12_filter_path_set(stmdev_ctx_t *ctx, lis2dw12_fds_t val)
 {
   lis2dw12_ctrl6_t ctrl6;
   lis2dw12_ctrl_reg7_t ctrl_reg7;
@@ -1019,7 +1016,7 @@ int32_t lis2dw12_filter_path_set(lis2dw12_ctx_t *ctx, lis2dw12_fds_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_filter_path_get(lis2dw12_ctx_t *ctx, lis2dw12_fds_t *val)
+int32_t lis2dw12_filter_path_get(stmdev_ctx_t *ctx, lis2dw12_fds_t *val)
 {
   lis2dw12_ctrl6_t ctrl6;
   lis2dw12_ctrl_reg7_t ctrl_reg7;
@@ -1056,7 +1053,7 @@ int32_t lis2dw12_filter_path_get(lis2dw12_ctx_t *ctx, lis2dw12_fds_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_filter_bandwidth_set(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_filter_bandwidth_set(stmdev_ctx_t *ctx,
                                          lis2dw12_bw_filt_t val)
 {
   lis2dw12_ctrl6_t reg;
@@ -1080,7 +1077,7 @@ int32_t lis2dw12_filter_bandwidth_set(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_filter_bandwidth_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_filter_bandwidth_get(stmdev_ctx_t *ctx,
                                          lis2dw12_bw_filt_t *val)
 {
   lis2dw12_ctrl6_t reg;
@@ -1116,7 +1113,7 @@ int32_t lis2dw12_filter_bandwidth_get(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_reference_mode_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_reference_mode_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_ctrl_reg7_t reg;
   int32_t ret;
@@ -1137,7 +1134,7 @@ int32_t lis2dw12_reference_mode_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_reference_mode_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_reference_mode_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_ctrl_reg7_t reg;
   int32_t ret;
@@ -1169,7 +1166,7 @@ int32_t lis2dw12_reference_mode_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_spi_mode_set(lis2dw12_ctx_t *ctx, lis2dw12_sim_t val)
+int32_t lis2dw12_spi_mode_set(stmdev_ctx_t *ctx, lis2dw12_sim_t val)
 {
   lis2dw12_ctrl2_t reg;
   int32_t ret;
@@ -1190,7 +1187,7 @@ int32_t lis2dw12_spi_mode_set(lis2dw12_ctx_t *ctx, lis2dw12_sim_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_spi_mode_get(lis2dw12_ctx_t *ctx, lis2dw12_sim_t *val)
+int32_t lis2dw12_spi_mode_get(stmdev_ctx_t *ctx, lis2dw12_sim_t *val)
 {
   lis2dw12_ctrl2_t reg;
   int32_t ret;
@@ -1220,7 +1217,7 @@ int32_t lis2dw12_spi_mode_get(lis2dw12_ctx_t *ctx, lis2dw12_sim_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_i2c_interface_set(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_i2c_interface_set(stmdev_ctx_t *ctx,
                                    lis2dw12_i2c_disable_t val)
 {
   lis2dw12_ctrl2_t reg;
@@ -1242,7 +1239,7 @@ int32_t lis2dw12_i2c_interface_set(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_i2c_interface_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_i2c_interface_get(stmdev_ctx_t *ctx,
                                    lis2dw12_i2c_disable_t *val)
 {
   lis2dw12_ctrl2_t reg;
@@ -1272,7 +1269,7 @@ int32_t lis2dw12_i2c_interface_get(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_cs_mode_set(lis2dw12_ctx_t *ctx, lis2dw12_cs_pu_disc_t val)
+int32_t lis2dw12_cs_mode_set(stmdev_ctx_t *ctx, lis2dw12_cs_pu_disc_t val)
 {
   lis2dw12_ctrl2_t reg;
   int32_t ret;
@@ -1293,7 +1290,7 @@ int32_t lis2dw12_cs_mode_set(lis2dw12_ctx_t *ctx, lis2dw12_cs_pu_disc_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_cs_mode_get(lis2dw12_ctx_t *ctx, lis2dw12_cs_pu_disc_t *val)
+int32_t lis2dw12_cs_mode_get(stmdev_ctx_t *ctx, lis2dw12_cs_pu_disc_t *val)
 {
   lis2dw12_ctrl2_t reg;
   int32_t ret;
@@ -1334,7 +1331,7 @@ int32_t lis2dw12_cs_mode_get(lis2dw12_ctx_t *ctx, lis2dw12_cs_pu_disc_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_pin_polarity_set(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_pin_polarity_set(stmdev_ctx_t *ctx,
                                   lis2dw12_h_lactive_t val)
 {
   lis2dw12_ctrl3_t reg;
@@ -1356,7 +1353,7 @@ int32_t lis2dw12_pin_polarity_set(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_pin_polarity_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_pin_polarity_get(stmdev_ctx_t *ctx,
                                   lis2dw12_h_lactive_t *val)
 {
   lis2dw12_ctrl3_t reg;
@@ -1386,7 +1383,7 @@ int32_t lis2dw12_pin_polarity_get(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_int_notification_set(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_int_notification_set(stmdev_ctx_t *ctx,
                                       lis2dw12_lir_t val)
 {
   lis2dw12_ctrl3_t reg;
@@ -1408,7 +1405,7 @@ int32_t lis2dw12_int_notification_set(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_int_notification_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_int_notification_get(stmdev_ctx_t *ctx,
                                       lis2dw12_lir_t *val)
 {
   lis2dw12_ctrl3_t reg;
@@ -1438,7 +1435,7 @@ int32_t lis2dw12_int_notification_get(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_pin_mode_set(lis2dw12_ctx_t *ctx, lis2dw12_pp_od_t val)
+int32_t lis2dw12_pin_mode_set(stmdev_ctx_t *ctx, lis2dw12_pp_od_t val)
 {
   lis2dw12_ctrl3_t reg;
   int32_t ret;
@@ -1459,7 +1456,7 @@ int32_t lis2dw12_pin_mode_set(lis2dw12_ctx_t *ctx, lis2dw12_pp_od_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_pin_mode_get(lis2dw12_ctx_t *ctx, lis2dw12_pp_od_t *val)
+int32_t lis2dw12_pin_mode_get(stmdev_ctx_t *ctx, lis2dw12_pp_od_t *val)
 {
   lis2dw12_ctrl3_t reg;
   int32_t ret;
@@ -1488,7 +1485,7 @@ int32_t lis2dw12_pin_mode_get(lis2dw12_ctx_t *ctx, lis2dw12_pp_od_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_pin_int1_route_set(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_pin_int1_route_set(stmdev_ctx_t *ctx,
                                     lis2dw12_ctrl4_int1_pad_ctrl_t *val)
 {
   lis2dw12_ctrl5_int2_pad_ctrl_t ctrl5_int2_pad_ctrl;
@@ -1531,7 +1528,7 @@ int32_t lis2dw12_pin_int1_route_set(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_pin_int1_route_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_pin_int1_route_get(stmdev_ctx_t *ctx,
                                     lis2dw12_ctrl4_int1_pad_ctrl_t *val)
 {
   int32_t ret;
@@ -1548,7 +1545,7 @@ int32_t lis2dw12_pin_int1_route_get(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_pin_int2_route_set(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_pin_int2_route_set(stmdev_ctx_t *ctx,
                                     lis2dw12_ctrl5_int2_pad_ctrl_t *val)
 {
   lis2dw12_ctrl4_int1_pad_ctrl_t ctrl4_int1_pad_ctrl;
@@ -1592,7 +1589,7 @@ int32_t lis2dw12_pin_int2_route_set(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_pin_int2_route_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_pin_int2_route_get(stmdev_ctx_t *ctx,
                                     lis2dw12_ctrl5_int2_pad_ctrl_t *val)
 {
   int32_t ret;
@@ -1608,7 +1605,7 @@ int32_t lis2dw12_pin_int2_route_get(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_all_on_int1_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_all_on_int1_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_ctrl_reg7_t reg;
   int32_t ret;
@@ -1629,7 +1626,7 @@ int32_t lis2dw12_all_on_int1_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_all_on_int1_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_all_on_int1_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_ctrl_reg7_t reg;
   int32_t ret;
@@ -1661,7 +1658,7 @@ int32_t lis2dw12_all_on_int1_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_wkup_threshold_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_wkup_threshold_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_wake_up_ths_t reg;
   int32_t ret;
@@ -1682,7 +1679,7 @@ int32_t lis2dw12_wkup_threshold_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_wkup_threshold_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_wkup_threshold_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_wake_up_ths_t reg;
   int32_t ret;
@@ -1701,7 +1698,7 @@ int32_t lis2dw12_wkup_threshold_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_wkup_dur_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_wkup_dur_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_wake_up_dur_t reg;
   int32_t ret;
@@ -1722,7 +1719,7 @@ int32_t lis2dw12_wkup_dur_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_wkup_dur_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_wkup_dur_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_wake_up_dur_t reg;
   int32_t ret;
@@ -1741,7 +1738,7 @@ int32_t lis2dw12_wkup_dur_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_wkup_feed_data_set(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_wkup_feed_data_set(stmdev_ctx_t *ctx,
                                     lis2dw12_usr_off_on_wu_t val)
 {
   lis2dw12_ctrl_reg7_t reg;
@@ -1763,7 +1760,7 @@ int32_t lis2dw12_wkup_feed_data_set(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_wkup_feed_data_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_wkup_feed_data_get(stmdev_ctx_t *ctx,
                                     lis2dw12_usr_off_on_wu_t *val)
 {
   lis2dw12_ctrl_reg7_t reg;
@@ -1808,7 +1805,7 @@ int32_t lis2dw12_wkup_feed_data_get(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_act_mode_set(lis2dw12_ctx_t *ctx, lis2dw12_sleep_on_t val)
+int32_t lis2dw12_act_mode_set(stmdev_ctx_t *ctx, lis2dw12_sleep_on_t val)
 {
   lis2dw12_wake_up_ths_t wake_up_ths;
   lis2dw12_wake_up_dur_t wake_up_dur;
@@ -1839,7 +1836,7 @@ int32_t lis2dw12_act_mode_set(lis2dw12_ctx_t *ctx, lis2dw12_sleep_on_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_act_mode_get(lis2dw12_ctx_t *ctx, lis2dw12_sleep_on_t *val)
+int32_t lis2dw12_act_mode_get(stmdev_ctx_t *ctx, lis2dw12_sleep_on_t *val)
 {
   lis2dw12_wake_up_ths_t wake_up_ths;
   lis2dw12_wake_up_dur_t wake_up_dur;;
@@ -1875,7 +1872,7 @@ int32_t lis2dw12_act_mode_get(lis2dw12_ctx_t *ctx, lis2dw12_sleep_on_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_act_sleep_dur_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_act_sleep_dur_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_wake_up_dur_t reg;
   int32_t ret;
@@ -1896,7 +1893,7 @@ int32_t lis2dw12_act_sleep_dur_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_act_sleep_dur_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_act_sleep_dur_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_wake_up_dur_t reg;
   int32_t ret;
@@ -1928,7 +1925,7 @@ int32_t lis2dw12_act_sleep_dur_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_threshold_x_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_tap_threshold_x_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_tap_ths_x_t reg;
   int32_t ret;
@@ -1949,7 +1946,7 @@ int32_t lis2dw12_tap_threshold_x_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_threshold_x_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_tap_threshold_x_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_tap_ths_x_t reg;
   int32_t ret;
@@ -1968,7 +1965,7 @@ int32_t lis2dw12_tap_threshold_x_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_threshold_y_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_tap_threshold_y_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_tap_ths_y_t reg;
   int32_t ret;
@@ -1989,7 +1986,7 @@ int32_t lis2dw12_tap_threshold_y_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_threshold_y_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_tap_threshold_y_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_tap_ths_y_t reg;
   int32_t ret;
@@ -2008,7 +2005,7 @@ int32_t lis2dw12_tap_threshold_y_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_axis_priority_set(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_tap_axis_priority_set(stmdev_ctx_t *ctx,
                                        lis2dw12_tap_prior_t val)
 {
   lis2dw12_tap_ths_y_t reg;
@@ -2030,7 +2027,7 @@ int32_t lis2dw12_tap_axis_priority_set(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_axis_priority_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_tap_axis_priority_get(stmdev_ctx_t *ctx,
                                        lis2dw12_tap_prior_t *val)
 {
   lis2dw12_tap_ths_y_t reg;
@@ -2072,7 +2069,7 @@ int32_t lis2dw12_tap_axis_priority_get(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_threshold_z_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_tap_threshold_z_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_tap_ths_z_t reg;
   int32_t ret;
@@ -2094,7 +2091,7 @@ int32_t lis2dw12_tap_threshold_z_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_threshold_z_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_tap_threshold_z_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_tap_ths_z_t reg;
   int32_t ret;
@@ -2113,7 +2110,7 @@ int32_t lis2dw12_tap_threshold_z_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_detection_on_z_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_tap_detection_on_z_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_tap_ths_z_t reg;
   int32_t ret;
@@ -2134,7 +2131,7 @@ int32_t lis2dw12_tap_detection_on_z_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_detection_on_z_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_tap_detection_on_z_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_tap_ths_z_t reg;
   int32_t ret;
@@ -2153,7 +2150,7 @@ int32_t lis2dw12_tap_detection_on_z_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_detection_on_y_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_tap_detection_on_y_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_tap_ths_z_t reg;
   int32_t ret;
@@ -2174,7 +2171,7 @@ int32_t lis2dw12_tap_detection_on_y_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_detection_on_y_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_tap_detection_on_y_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_tap_ths_z_t reg;
   int32_t ret;
@@ -2193,7 +2190,7 @@ int32_t lis2dw12_tap_detection_on_y_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_detection_on_x_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_tap_detection_on_x_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_tap_ths_z_t reg;
   int32_t ret;
@@ -2214,7 +2211,7 @@ int32_t lis2dw12_tap_detection_on_x_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_detection_on_x_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_tap_detection_on_x_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_tap_ths_z_t reg;
   int32_t ret;
@@ -2237,7 +2234,7 @@ int32_t lis2dw12_tap_detection_on_x_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_shock_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_tap_shock_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_int_dur_t reg;
   int32_t ret;
@@ -2263,7 +2260,7 @@ int32_t lis2dw12_tap_shock_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_shock_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_tap_shock_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_int_dur_t reg;
   int32_t ret;
@@ -2286,7 +2283,7 @@ int32_t lis2dw12_tap_shock_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_quiet_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_tap_quiet_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_int_dur_t reg;
   int32_t ret;
@@ -2311,7 +2308,7 @@ int32_t lis2dw12_tap_quiet_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_quiet_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_tap_quiet_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_int_dur_t reg;
   int32_t ret;
@@ -2335,7 +2332,7 @@ int32_t lis2dw12_tap_quiet_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_dur_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_tap_dur_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_int_dur_t reg;
   int32_t ret;
@@ -2361,7 +2358,7 @@ int32_t lis2dw12_tap_dur_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_dur_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_tap_dur_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_int_dur_t reg;
   int32_t ret;
@@ -2380,7 +2377,7 @@ int32_t lis2dw12_tap_dur_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_mode_set(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_tap_mode_set(stmdev_ctx_t *ctx,
                               lis2dw12_single_double_tap_t val)
 {
   lis2dw12_wake_up_ths_t reg;
@@ -2402,7 +2399,7 @@ int32_t lis2dw12_tap_mode_set(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_mode_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_tap_mode_get(stmdev_ctx_t *ctx,
                               lis2dw12_single_double_tap_t *val)
 {
   lis2dw12_wake_up_ths_t reg;
@@ -2433,7 +2430,7 @@ int32_t lis2dw12_tap_mode_get(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_tap_src_get(lis2dw12_ctx_t *ctx, lis2dw12_tap_src_t *val)
+int32_t lis2dw12_tap_src_get(stmdev_ctx_t *ctx, lis2dw12_tap_src_t *val)
 {
   int32_t ret;
   ret = lis2dw12_read_reg(ctx, LIS2DW12_TAP_SRC, (uint8_t*) val, 1);
@@ -2461,7 +2458,7 @@ int32_t lis2dw12_tap_src_get(lis2dw12_ctx_t *ctx, lis2dw12_tap_src_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_6d_threshold_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_6d_threshold_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_tap_ths_x_t reg;
   int32_t ret;
@@ -2482,7 +2479,7 @@ int32_t lis2dw12_6d_threshold_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_6d_threshold_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_6d_threshold_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_tap_ths_x_t reg;
   int32_t ret;
@@ -2501,7 +2498,7 @@ int32_t lis2dw12_6d_threshold_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_4d_mode_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_4d_mode_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_tap_ths_x_t reg;
   int32_t ret;
@@ -2523,7 +2520,7 @@ int32_t lis2dw12_4d_mode_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_4d_mode_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_4d_mode_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_tap_ths_x_t reg;
   int32_t ret;
@@ -2542,7 +2539,7 @@ int32_t lis2dw12_4d_mode_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_6d_src_get(lis2dw12_ctx_t *ctx, lis2dw12_sixd_src_t *val)
+int32_t lis2dw12_6d_src_get(stmdev_ctx_t *ctx, lis2dw12_sixd_src_t *val)
 {
   int32_t ret;
   ret = lis2dw12_read_reg(ctx, LIS2DW12_SIXD_SRC, (uint8_t*) val, 1);
@@ -2556,7 +2553,7 @@ int32_t lis2dw12_6d_src_get(lis2dw12_ctx_t *ctx, lis2dw12_sixd_src_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_6d_feed_data_set(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_6d_feed_data_set(stmdev_ctx_t *ctx,
                                   lis2dw12_lpass_on6d_t val)
 {
   lis2dw12_ctrl_reg7_t reg;
@@ -2578,7 +2575,7 @@ int32_t lis2dw12_6d_feed_data_set(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_6d_feed_data_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_6d_feed_data_get(stmdev_ctx_t *ctx,
                                   lis2dw12_lpass_on6d_t *val)
 {
   lis2dw12_ctrl_reg7_t reg;
@@ -2622,7 +2619,7 @@ int32_t lis2dw12_6d_feed_data_get(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_ff_dur_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_ff_dur_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_wake_up_dur_t wake_up_dur;
   lis2dw12_free_fall_t free_fall;
@@ -2653,7 +2650,7 @@ int32_t lis2dw12_ff_dur_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_ff_dur_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_ff_dur_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_wake_up_dur_t wake_up_dur;
   lis2dw12_free_fall_t free_fall;
@@ -2675,7 +2672,7 @@ int32_t lis2dw12_ff_dur_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_ff_threshold_set(lis2dw12_ctx_t *ctx, lis2dw12_ff_ths_t val)
+int32_t lis2dw12_ff_threshold_set(stmdev_ctx_t *ctx, lis2dw12_ff_ths_t val)
 {
   lis2dw12_free_fall_t reg;
   int32_t ret;
@@ -2697,7 +2694,7 @@ int32_t lis2dw12_ff_threshold_set(lis2dw12_ctx_t *ctx, lis2dw12_ff_ths_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_ff_threshold_get(lis2dw12_ctx_t *ctx,
+int32_t lis2dw12_ff_threshold_get(stmdev_ctx_t *ctx,
                                   lis2dw12_ff_ths_t *val)
 {
   lis2dw12_free_fall_t reg;
@@ -2757,7 +2754,7 @@ int32_t lis2dw12_ff_threshold_get(lis2dw12_ctx_t *ctx,
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_fifo_watermark_set(lis2dw12_ctx_t *ctx, uint8_t val)
+int32_t lis2dw12_fifo_watermark_set(stmdev_ctx_t *ctx, uint8_t val)
 {
   lis2dw12_fifo_ctrl_t reg;
   int32_t ret;
@@ -2779,7 +2776,7 @@ int32_t lis2dw12_fifo_watermark_set(lis2dw12_ctx_t *ctx, uint8_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_fifo_watermark_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_fifo_watermark_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_fifo_ctrl_t reg;
   int32_t ret;
@@ -2798,7 +2795,7 @@ int32_t lis2dw12_fifo_watermark_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_fifo_mode_set(lis2dw12_ctx_t *ctx, lis2dw12_fmode_t val)
+int32_t lis2dw12_fifo_mode_set(stmdev_ctx_t *ctx, lis2dw12_fmode_t val)
 {
   lis2dw12_fifo_ctrl_t reg;
   int32_t ret;
@@ -2819,7 +2816,7 @@ int32_t lis2dw12_fifo_mode_set(lis2dw12_ctx_t *ctx, lis2dw12_fmode_t val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_fifo_mode_get(lis2dw12_ctx_t *ctx, lis2dw12_fmode_t *val)
+int32_t lis2dw12_fifo_mode_get(stmdev_ctx_t *ctx, lis2dw12_fmode_t *val)
 {
   lis2dw12_fifo_ctrl_t reg;
   int32_t ret;
@@ -2857,7 +2854,7 @@ int32_t lis2dw12_fifo_mode_get(lis2dw12_ctx_t *ctx, lis2dw12_fmode_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_fifo_data_level_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_fifo_data_level_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_fifo_samples_t reg;
   int32_t ret;
@@ -2875,7 +2872,7 @@ int32_t lis2dw12_fifo_data_level_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_fifo_ovr_flag_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_fifo_ovr_flag_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_fifo_samples_t reg;
   int32_t ret;
@@ -2893,7 +2890,7 @@ int32_t lis2dw12_fifo_ovr_flag_get(lis2dw12_ctx_t *ctx, uint8_t *val)
   * @retval          interface status (MANDATORY: return 0 -> no Error)
   *
   */
-int32_t lis2dw12_fifo_wtm_flag_get(lis2dw12_ctx_t *ctx, uint8_t *val)
+int32_t lis2dw12_fifo_wtm_flag_get(stmdev_ctx_t *ctx, uint8_t *val)
 {
   lis2dw12_fifo_samples_t reg;
   int32_t ret;
@@ -2903,6 +2900,12 @@ int32_t lis2dw12_fifo_wtm_flag_get(lis2dw12_ctx_t *ctx, uint8_t *val)
 
   return ret;
 }
+
+/**
+  * @}
+  *
+  */
+
 /**
   * @}
   *

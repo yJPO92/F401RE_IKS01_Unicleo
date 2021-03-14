@@ -6,29 +6,13 @@
  ******************************************************************************
  * @attention
  *
- * <h2><center>&copy; COPYRIGHT(c) 2018 STMicroelectronics</center></h2>
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+ * All rights reserved.</center></h2>
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *   1. Redistributions of source code must retain the above copyright notice,
- *      this list of conditions and the following disclaimer.
- *   2. Redistributions in binary form must reproduce the above copyright notice,
- *      this list of conditions and the following disclaimer in the documentation
- *      and/or other materials provided with the distribution.
- *   3. Neither the name of STMicroelectronics nor the names of its contributors
- *      may be used to endorse or promote products derived from this software
- *      without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSIBILITY OF SUCH DAMAGE.
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
  *
  ******************************************************************************
  */
@@ -94,10 +78,11 @@ LSM6DSO_GYRO_Drv_t LSM6DSO_GYRO_Driver =
  * @{
  */
 
-static int32_t LSM6DSO_ACC_SetOutputDataRate_When_Enabled(LSM6DSO_Object_t *pObj, float Odr);
-static int32_t LSM6DSO_ACC_SetOutputDataRate_When_Disabled(LSM6DSO_Object_t *pObj, float Odr);
-static int32_t LSM6DSO_GYRO_SetOutputDataRate_When_Enabled(LSM6DSO_Object_t *pObj, float Odr);
-static int32_t LSM6DSO_GYRO_SetOutputDataRate_When_Disabled(LSM6DSO_Object_t *pObj, float Odr);
+static int32_t LSM6DSO_ACC_SetOutputDataRate_When_Enabled(LSM6DSO_Object_t *pObj, float_t Odr);
+static int32_t LSM6DSO_ACC_SetOutputDataRate_When_Disabled(LSM6DSO_Object_t *pObj, float_t Odr);
+static int32_t LSM6DSO_GYRO_SetOutputDataRate_When_Enabled(LSM6DSO_Object_t *pObj, float_t Odr);
+static int32_t LSM6DSO_GYRO_SetOutputDataRate_When_Disabled(LSM6DSO_Object_t *pObj, float_t Odr);
+static void LSM6DSO_Delay(LSM6DSO_Object_t *pObj, uint32_t msDelay);
 static int32_t ReadRegWrap(void *Handle, uint8_t Reg, uint8_t *pData, uint16_t Length);
 static int32_t WriteRegWrap(void *Handle, uint8_t Reg, uint8_t *pData, uint16_t Length);
 
@@ -360,7 +345,7 @@ int32_t LSM6DSO_ACC_Disable(LSM6DSO_Object_t *pObj)
  * @param  Sensitivity pointer
  * @retval 0 in case of success, an error code otherwise
  */
-int32_t LSM6DSO_ACC_GetSensitivity(LSM6DSO_Object_t *pObj, float *Sensitivity)
+int32_t LSM6DSO_ACC_GetSensitivity(LSM6DSO_Object_t *pObj, float_t *Sensitivity)
 {
   int32_t ret = LSM6DSO_OK;
   lsm6dso_fs_xl_t full_scale;
@@ -404,7 +389,7 @@ int32_t LSM6DSO_ACC_GetSensitivity(LSM6DSO_Object_t *pObj, float *Sensitivity)
  * @param  Odr pointer where the output data rate is written
  * @retval 0 in case of success, an error code otherwise
  */
-int32_t LSM6DSO_ACC_GetOutputDataRate(LSM6DSO_Object_t *pObj, float *Odr)
+int32_t LSM6DSO_ACC_GetOutputDataRate(LSM6DSO_Object_t *pObj, float_t *Odr)
 {
   int32_t ret = LSM6DSO_OK;
   lsm6dso_odr_xl_t odr_low_level;
@@ -421,8 +406,8 @@ int32_t LSM6DSO_ACC_GetOutputDataRate(LSM6DSO_Object_t *pObj, float *Odr)
       *Odr = 0.0f;
       break;
 
-    case LSM6DSO_XL_ODR_6Hz5:
-      *Odr = 6.5f;
+    case LSM6DSO_XL_ODR_1Hz6:
+      *Odr = 1.6f;
       break;
 
     case LSM6DSO_XL_ODR_12Hz5:
@@ -479,17 +464,208 @@ int32_t LSM6DSO_ACC_GetOutputDataRate(LSM6DSO_Object_t *pObj, float *Odr)
  * @param  Odr the output data rate value to be set
  * @retval 0 in case of success, an error code otherwise
  */
-int32_t LSM6DSO_ACC_SetOutputDataRate(LSM6DSO_Object_t *pObj, float Odr)
+int32_t LSM6DSO_ACC_SetOutputDataRate(LSM6DSO_Object_t *pObj, float_t Odr)
 {
-  /* Check if the component is enabled */
+  return LSM6DSO_ACC_SetOutputDataRate_With_Mode(pObj, Odr, LSM6DSO_ACC_HIGH_PERFORMANCE_MODE);
+}
+
+/**
+ * @brief  Set the LSM6DSO accelerometer sensor output data rate with operating mode
+ * @param  pObj the device pObj
+ * @param  Odr the output data rate value to be set
+ * @param  Mode the accelerometer operating mode
+ * @note   This function switches off the gyroscope if Ultra Low Power Mode is set
+ * @retval 0 in case of success, an error code otherwise
+ */
+int32_t LSM6DSO_ACC_SetOutputDataRate_With_Mode(LSM6DSO_Object_t *pObj, float_t Odr, LSM6DSO_ACC_Operating_Mode_t Mode)
+{
+  int32_t ret = LSM6DSO_OK;
+  float_t newOdr = Odr;
+  
+  switch (Mode)
+  {
+    case LSM6DSO_ACC_HIGH_PERFORMANCE_MODE:
+    {
+      /* We must uncheck Low Power and Ultra Low Power bits if they are enabled */
+      lsm6dso_ctrl5_c_t val1;
+      lsm6dso_ctrl6_c_t val2;
+
+      if (lsm6dso_read_reg(&(pObj->Ctx), LSM6DSO_CTRL5_C, (uint8_t *)&val1, 1) != LSM6DSO_OK)
+      {
+        return LSM6DSO_ERROR;
+      }
+
+      if (val1.xl_ulp_en != 0U)
+      {
+        /* Power off the accelerometer */
+        if (pObj->acc_is_enabled == 1U)
+        {
+          if (lsm6dso_xl_data_rate_set(&(pObj->Ctx), LSM6DSO_XL_ODR_OFF) != LSM6DSO_OK)
+          {
+            return LSM6DSO_ERROR;
+          }
+        }
+
+        val1.xl_ulp_en = 0;
+        if (lsm6dso_write_reg(&(pObj->Ctx), LSM6DSO_CTRL5_C, (uint8_t *)&val1, 1) != LSM6DSO_OK)
+        {
+          return LSM6DSO_ERROR;
+        }
+      }
+
+      if (lsm6dso_read_reg(&(pObj->Ctx), LSM6DSO_CTRL6_C, (uint8_t *)&val2, 1) != LSM6DSO_OK)
+      {
+        return LSM6DSO_ERROR;
+      }
+
+      if (val2.xl_hm_mode != 0U)
+      {
+        val2.xl_hm_mode = 0U;
+        if (lsm6dso_write_reg(&(pObj->Ctx), LSM6DSO_CTRL6_C, (uint8_t *)&val2, 1) != LSM6DSO_OK)
+        {
+          return LSM6DSO_ERROR;
+        }
+      }
+
+      /* ODR should be at least 12.5Hz */
+      if (newOdr < 12.5f)
+      {
+        newOdr = 12.5f;
+      }
+      break;
+    }
+    case LSM6DSO_ACC_LOW_POWER_NORMAL_MODE:
+    {
+      /* We must uncheck Ultra Low Power bit if it is enabled */
+      /* and check the Low Power bit if it is unchecked       */
+      lsm6dso_ctrl5_c_t val1;
+      lsm6dso_ctrl6_c_t val2;
+
+      if (lsm6dso_read_reg(&(pObj->Ctx), LSM6DSO_CTRL5_C, (uint8_t *)&val1, 1) != LSM6DSO_OK)
+      {
+        return LSM6DSO_ERROR;
+      }
+
+      if (val1.xl_ulp_en != 0U)
+      {
+        /* Power off the accelerometer */
+        if (pObj->acc_is_enabled == 1U)
+        {
+          if (lsm6dso_xl_data_rate_set(&(pObj->Ctx), LSM6DSO_XL_ODR_OFF) != LSM6DSO_OK)
+          {
+            return LSM6DSO_ERROR;
+          }
+        }
+
+        val1.xl_ulp_en = 0;
+        if (lsm6dso_write_reg(&(pObj->Ctx), LSM6DSO_CTRL5_C, (uint8_t *)&val1, 1) != LSM6DSO_OK)
+        {
+          return LSM6DSO_ERROR;
+        }
+      }
+
+      if (lsm6dso_read_reg(&(pObj->Ctx), LSM6DSO_CTRL6_C, (uint8_t *)&val2, 1) != LSM6DSO_OK)
+      {
+        return LSM6DSO_ERROR;
+      }
+
+      if (val2.xl_hm_mode == 0U)
+      {
+        val2.xl_hm_mode = 1U;
+        if (lsm6dso_write_reg(&(pObj->Ctx), LSM6DSO_CTRL6_C, (uint8_t *)&val2, 1) != LSM6DSO_OK)
+        {
+          return LSM6DSO_ERROR;
+        }
+      }
+
+      /* Now we need to limit the ODR to 208 Hz if it is higher */
+      if (newOdr > 208.0f)
+      {
+        newOdr = 208.0f;
+      }
+      break;
+    }
+    case LSM6DSO_ACC_ULTRA_LOW_POWER_MODE:
+    {
+      /* We must uncheck Low Power bit if it is enabled                   */
+      /* and check the Ultra Low Power bit if it is unchecked             */
+      /* We must switch off gyro otherwise Ultra Low Power does not work  */
+      lsm6dso_ctrl5_c_t val1;
+      lsm6dso_ctrl6_c_t val2;
+
+      if (lsm6dso_read_reg(&(pObj->Ctx), LSM6DSO_CTRL6_C, (uint8_t *)&val2, 1) != LSM6DSO_OK)
+      {
+        return LSM6DSO_ERROR;
+      }
+
+      if (val2.xl_hm_mode != 0U)
+      {
+        val2.xl_hm_mode = 0U;
+        if (lsm6dso_write_reg(&(pObj->Ctx), LSM6DSO_CTRL6_C, (uint8_t *)&val2, 1) != LSM6DSO_OK)
+        {
+          return LSM6DSO_ERROR;
+        }
+      }
+
+      /* Disable Gyro */
+      if (pObj->gyro_is_enabled == 1U)
+      {
+        if (LSM6DSO_GYRO_Disable(pObj) != LSM6DSO_OK)
+        {
+          return LSM6DSO_ERROR;
+        }
+      }
+
+      if (lsm6dso_read_reg(&(pObj->Ctx), LSM6DSO_CTRL5_C, (uint8_t *)&val1, 1) != LSM6DSO_OK)
+      {
+        return LSM6DSO_ERROR;
+      }
+
+      if (val1.xl_ulp_en == 0U)
+      {
+        /* Power off the accelerometer */
+        if (pObj->acc_is_enabled == 1U)
+        {
+          if (lsm6dso_xl_data_rate_set(&(pObj->Ctx), LSM6DSO_XL_ODR_OFF) != LSM6DSO_OK)
+          {
+            return LSM6DSO_ERROR;
+          }
+        }
+
+        val1.xl_ulp_en = 1U;
+        if (lsm6dso_write_reg(&(pObj->Ctx), LSM6DSO_CTRL5_C, (uint8_t *)&val1, 1) != LSM6DSO_OK)
+        {
+          return LSM6DSO_ERROR;
+        }
+      }
+
+      /* Now we need to limit the ODR to 208 Hz if it is higher */
+      if (newOdr > 208.0f)
+      {
+        newOdr = 208.0f;
+      }
+      break;
+    }
+    default:
+      ret = LSM6DSO_ERROR;
+      break;
+  }
+
+  if(ret == LSM6DSO_ERROR)
+  {
+    return LSM6DSO_ERROR;
+  }
+
   if (pObj->acc_is_enabled == 1U)
   {
-    return LSM6DSO_ACC_SetOutputDataRate_When_Enabled(pObj, Odr);
+    ret = LSM6DSO_ACC_SetOutputDataRate_When_Enabled(pObj, newOdr);
   }
   else
   {
-    return LSM6DSO_ACC_SetOutputDataRate_When_Disabled(pObj, Odr);
+    ret = LSM6DSO_ACC_SetOutputDataRate_When_Disabled(pObj, newOdr);
   }
+
+  return ret;
 }
 
 /**
@@ -568,7 +744,7 @@ int32_t LSM6DSO_ACC_SetFullScale(LSM6DSO_Object_t *pObj, int32_t FullScale)
  */
 int32_t LSM6DSO_ACC_GetAxesRaw(LSM6DSO_Object_t *pObj, LSM6DSO_AxesRaw_t *Value)
 {
-  axis3bit16_t data_raw;
+  lsm6dso_axis3bit16_t data_raw;
 
   /* Read raw data values. */
   if (lsm6dso_acceleration_raw_get(&(pObj->Ctx), data_raw.u8bit) != LSM6DSO_OK)
@@ -592,8 +768,8 @@ int32_t LSM6DSO_ACC_GetAxesRaw(LSM6DSO_Object_t *pObj, LSM6DSO_AxesRaw_t *Value)
  */
 int32_t LSM6DSO_ACC_GetAxes(LSM6DSO_Object_t *pObj, LSM6DSO_Axes_t *Acceleration)
 {
-  axis3bit16_t data_raw;
-  float sensitivity = 0.0f;
+  lsm6dso_axis3bit16_t data_raw;
+  float_t sensitivity = 0.0f;
 
   /* Read raw data values. */
   if (lsm6dso_acceleration_raw_get(&(pObj->Ctx), data_raw.u8bit) != LSM6DSO_OK)
@@ -608,9 +784,9 @@ int32_t LSM6DSO_ACC_GetAxes(LSM6DSO_Object_t *pObj, LSM6DSO_Axes_t *Acceleration
   }
 
   /* Calculate the data. */
-  Acceleration->x = (int32_t)((float)((float)data_raw.i16bit[0] * sensitivity));
-  Acceleration->y = (int32_t)((float)((float)data_raw.i16bit[1] * sensitivity));
-  Acceleration->z = (int32_t)((float)((float)data_raw.i16bit[2] * sensitivity));
+  Acceleration->x = (int32_t)((float_t)((float_t)data_raw.i16bit[0] * sensitivity));
+  Acceleration->y = (int32_t)((float_t)((float_t)data_raw.i16bit[1] * sensitivity));
+  Acceleration->z = (int32_t)((float_t)((float_t)data_raw.i16bit[2] * sensitivity));
 
   return LSM6DSO_OK;
 }
@@ -675,7 +851,7 @@ int32_t LSM6DSO_GYRO_Disable(LSM6DSO_Object_t *pObj)
  * @param  Sensitivity pointer
  * @retval 0 in case of success, an error code otherwise
  */
-int32_t LSM6DSO_GYRO_GetSensitivity(LSM6DSO_Object_t *pObj, float *Sensitivity)
+int32_t LSM6DSO_GYRO_GetSensitivity(LSM6DSO_Object_t *pObj, float_t *Sensitivity)
 {
   int32_t ret = LSM6DSO_OK;
   lsm6dso_fs_g_t full_scale;
@@ -723,7 +899,7 @@ int32_t LSM6DSO_GYRO_GetSensitivity(LSM6DSO_Object_t *pObj, float *Sensitivity)
  * @param  Odr pointer where the output data rate is written
  * @retval 0 in case of success, an error code otherwise
  */
-int32_t LSM6DSO_GYRO_GetOutputDataRate(LSM6DSO_Object_t *pObj, float *Odr)
+int32_t LSM6DSO_GYRO_GetOutputDataRate(LSM6DSO_Object_t *pObj, float_t *Odr)
 {
   int32_t ret = LSM6DSO_OK;
   lsm6dso_odr_g_t odr_low_level;
@@ -794,17 +970,91 @@ int32_t LSM6DSO_GYRO_GetOutputDataRate(LSM6DSO_Object_t *pObj, float *Odr)
  * @param  Odr the output data rate value to be set
  * @retval 0 in case of success, an error code otherwise
  */
-int32_t LSM6DSO_GYRO_SetOutputDataRate(LSM6DSO_Object_t *pObj, float Odr)
+int32_t LSM6DSO_GYRO_SetOutputDataRate(LSM6DSO_Object_t *pObj, float_t Odr)
 {
-  /* Check if the component is enabled */
+  return LSM6DSO_GYRO_SetOutputDataRate_With_Mode(pObj, Odr, LSM6DSO_GYRO_HIGH_PERFORMANCE_MODE);
+}
+
+/**
+ * @brief  Set the LSM6DSO gyroscope sensor output data rate with operating mode
+ * @param  pObj the device pObj
+ * @param  Odr the output data rate value to be set
+ * @param  Mode the gyroscope operating mode
+ * @retval 0 in case of success, an error code otherwise
+ */
+int32_t LSM6DSO_GYRO_SetOutputDataRate_With_Mode(LSM6DSO_Object_t *pObj, float_t Odr, LSM6DSO_GYRO_Operating_Mode_t Mode)
+{
+  int32_t ret = LSM6DSO_OK;
+  float_t newOdr = Odr;
+
+  switch (Mode)
+  {
+    case LSM6DSO_GYRO_HIGH_PERFORMANCE_MODE:
+    {
+      /* We must uncheck Low Power bit if it is enabled */
+      lsm6dso_ctrl7_g_t val1;
+
+      if (lsm6dso_read_reg(&(pObj->Ctx), LSM6DSO_CTRL7_G, (uint8_t *)&val1, 1) != LSM6DSO_OK)
+      {
+        return LSM6DSO_ERROR;
+      }
+
+      if (val1.g_hm_mode != 0U)
+      {
+        val1.g_hm_mode = 0U;
+        if (lsm6dso_write_reg(&(pObj->Ctx), LSM6DSO_CTRL7_G, (uint8_t *)&val1, 1) != LSM6DSO_OK)
+        {
+          return LSM6DSO_ERROR;
+        }
+      }
+      break;
+    }
+    case LSM6DSO_GYRO_LOW_POWER_NORMAL_MODE:
+    {
+      /* We must check the Low Power bit if it is unchecked */
+      lsm6dso_ctrl7_g_t val1;
+
+      if (lsm6dso_read_reg(&(pObj->Ctx), LSM6DSO_CTRL7_G, (uint8_t *)&val1, 1) != LSM6DSO_OK)
+      {
+        return LSM6DSO_ERROR;
+      }
+
+      if (val1.g_hm_mode == 0U)
+      {
+        val1.g_hm_mode = 1U;
+        if (lsm6dso_write_reg(&(pObj->Ctx), LSM6DSO_CTRL7_G, (uint8_t *)&val1, 1) != LSM6DSO_OK)
+        {
+          return LSM6DSO_ERROR;
+        }
+      }
+
+      /* Now we need to limit the ODR to 208 Hz if it is higher */
+      if (newOdr > 208.0f)
+      {
+        newOdr = 208.0f;
+      }
+      break;
+    }
+    default:
+      ret = LSM6DSO_ERROR;
+      break;
+  }
+
+  if (ret == LSM6DSO_ERROR)
+  {
+    return LSM6DSO_ERROR;
+  }
+
   if (pObj->gyro_is_enabled == 1U)
   {
-    return LSM6DSO_GYRO_SetOutputDataRate_When_Enabled(pObj, Odr);
+    ret = LSM6DSO_GYRO_SetOutputDataRate_When_Enabled(pObj, newOdr);
   }
   else
   {
-    return LSM6DSO_GYRO_SetOutputDataRate_When_Disabled(pObj, Odr);
+    ret = LSM6DSO_GYRO_SetOutputDataRate_When_Disabled(pObj, newOdr);
   }
+
+  return ret;
 }
 
 /**
@@ -886,7 +1136,7 @@ int32_t LSM6DSO_GYRO_SetFullScale(LSM6DSO_Object_t *pObj, int32_t FullScale)
  */
 int32_t LSM6DSO_GYRO_GetAxesRaw(LSM6DSO_Object_t *pObj, LSM6DSO_AxesRaw_t *Value)
 {
-  axis3bit16_t data_raw;
+  lsm6dso_axis3bit16_t data_raw;
 
   /* Read raw data values. */
   if (lsm6dso_angular_rate_raw_get(&(pObj->Ctx), data_raw.u8bit) != LSM6DSO_OK)
@@ -910,8 +1160,8 @@ int32_t LSM6DSO_GYRO_GetAxesRaw(LSM6DSO_Object_t *pObj, LSM6DSO_AxesRaw_t *Value
  */
 int32_t LSM6DSO_GYRO_GetAxes(LSM6DSO_Object_t *pObj, LSM6DSO_Axes_t *AngularRate)
 {
-  axis3bit16_t data_raw;
-  float sensitivity;
+  lsm6dso_axis3bit16_t data_raw;
+  float_t sensitivity;
 
   /* Read raw data values. */
   if (lsm6dso_angular_rate_raw_get(&(pObj->Ctx), data_raw.u8bit) != LSM6DSO_OK)
@@ -926,9 +1176,9 @@ int32_t LSM6DSO_GYRO_GetAxes(LSM6DSO_Object_t *pObj, LSM6DSO_Axes_t *AngularRate
   }
 
   /* Calculate the data. */
-  AngularRate->x = (int32_t)((float)((float)data_raw.i16bit[0] * sensitivity));
-  AngularRate->y = (int32_t)((float)((float)data_raw.i16bit[1] * sensitivity));
-  AngularRate->z = (int32_t)((float)((float)data_raw.i16bit[2] * sensitivity));
+  AngularRate->x = (int32_t)((float_t)((float_t)data_raw.i16bit[0] * sensitivity));
+  AngularRate->y = (int32_t)((float_t)((float_t)data_raw.i16bit[1] * sensitivity));
+  AngularRate->z = (int32_t)((float_t)((float_t)data_raw.i16bit[2] * sensitivity));
 
   return LSM6DSO_OK;
 }
@@ -975,12 +1225,39 @@ int32_t LSM6DSO_Write_Reg(LSM6DSO_Object_t *pObj, uint8_t Reg, uint8_t Data)
  */
 int32_t LSM6DSO_Set_Interrupt_Latch(LSM6DSO_Object_t *pObj, uint8_t Status)
 {
+  int32_t ret = LSM6DSO_OK;
+  lsm6dso_lir_t newStatus = LSM6DSO_ALL_INT_PULSED;
+
+  switch (Status)
+  {
+    case 0:
+      newStatus = LSM6DSO_ALL_INT_PULSED;
+      break;
+    case 1:
+      newStatus = LSM6DSO_BASE_LATCHED_EMB_PULSED;
+      break;
+    case 2:
+      newStatus = LSM6DSO_BASE_PULSED_EMB_LATCHED;
+      break;
+    case 3:
+      newStatus = LSM6DSO_ALL_INT_LATCHED;
+      break;
+    default:
+      ret = LSM6DSO_ERROR;
+      break;
+  }
+
+  if (ret == LSM6DSO_ERROR)
+  {
+    return LSM6DSO_ERROR;
+  }
+
   if (Status > 1U)
   {
     return LSM6DSO_ERROR;
   }
 
-  if (lsm6dso_int_notification_set(&(pObj->Ctx), (lsm6dso_lir_t)Status) != LSM6DSO_OK)
+  if (lsm6dso_int_notification_set(&(pObj->Ctx), newStatus) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1001,7 +1278,7 @@ int32_t LSM6DSO_ACC_Enable_Free_Fall_Detection(LSM6DSO_Object_t *pObj, LSM6DSO_S
   lsm6dso_pin_int2_route_t val2;
 
   /* Output Data Rate selection */
-  if (LSM6DSO_ACC_SetOutputDataRate(pObj, 416.0f) != LSM6DSO_OK)
+  if (LSM6DSO_ACC_SetOutputDataRate(pObj, 417.0f) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1045,23 +1322,23 @@ int32_t LSM6DSO_ACC_Enable_Free_Fall_Detection(LSM6DSO_Object_t *pObj, LSM6DSO_S
         return LSM6DSO_ERROR;
       }
 
-      val1.md1_cfg.int1_ff = PROPERTY_ENABLE;
+      val1.free_fall = PROPERTY_ENABLE;
 
-      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
       break;
 
     case LSM6DSO_INT2_PIN:
-      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
 
-      val2.md2_cfg.int2_ff = PROPERTY_ENABLE;
+      val2.free_fall = PROPERTY_ENABLE;
 
-      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
@@ -1091,21 +1368,21 @@ int32_t LSM6DSO_ACC_Disable_Free_Fall_Detection(LSM6DSO_Object_t *pObj)
     return LSM6DSO_ERROR;
   }
 
-  val1.md1_cfg.int1_ff = PROPERTY_DISABLE;
+  val1.free_fall = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  val2.md2_cfg.int2_ff = PROPERTY_DISABLE;
+  val2.free_fall = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1133,12 +1410,51 @@ int32_t LSM6DSO_ACC_Disable_Free_Fall_Detection(LSM6DSO_Object_t *pObj)
  */
 int32_t LSM6DSO_ACC_Set_Free_Fall_Threshold(LSM6DSO_Object_t *pObj, uint8_t Threshold)
 {
-  if (lsm6dso_ff_threshold_set(&(pObj->Ctx), (lsm6dso_ff_ths_t)Threshold) != LSM6DSO_OK)
+  int32_t ret = LSM6DSO_OK;
+  lsm6dso_ff_ths_t newThreshold = LSM6DSO_FF_TSH_156mg;
+
+  switch (Threshold)
+  {
+    case 0:
+      newThreshold = LSM6DSO_FF_TSH_156mg;
+      break;
+    case 1:
+      newThreshold = LSM6DSO_FF_TSH_219mg;
+      break;
+    case 2:
+      newThreshold = LSM6DSO_FF_TSH_250mg;
+      break;
+    case 3:
+      newThreshold = LSM6DSO_FF_TSH_312mg;
+      break;
+    case 4:
+      newThreshold = LSM6DSO_FF_TSH_344mg;
+      break;
+    case 5:
+      newThreshold = LSM6DSO_FF_TSH_406mg;
+      break;
+    case 6:
+      newThreshold = LSM6DSO_FF_TSH_469mg;
+      break;
+    case 7:
+      newThreshold = LSM6DSO_FF_TSH_500mg;
+      break;
+    default:
+      ret = LSM6DSO_ERROR;
+      break;
+  }
+
+  if (ret == LSM6DSO_ERROR)
   {
     return LSM6DSO_ERROR;
   }
 
-  return LSM6DSO_OK;
+  if (lsm6dso_ff_threshold_set(&(pObj->Ctx), newThreshold) != LSM6DSO_OK)
+  {
+    return LSM6DSO_ERROR;
+  }
+
+  return ret;
 }
 
 /**
@@ -1164,7 +1480,8 @@ int32_t LSM6DSO_ACC_Set_Free_Fall_Duration(LSM6DSO_Object_t *pObj, uint8_t Durat
  */
 int32_t LSM6DSO_ACC_Enable_Pedometer(LSM6DSO_Object_t *pObj)
 {
-	lsm6dso_pin_int1_route_t val;
+  lsm6dso_pin_int1_route_t val;
+  lsm6dso_emb_sens_t emb_sens;
 
   /* Output Data Rate selection */
   if (LSM6DSO_ACC_SetOutputDataRate(pObj, 26.0f) != LSM6DSO_OK)
@@ -1178,8 +1495,31 @@ int32_t LSM6DSO_ACC_Enable_Pedometer(LSM6DSO_Object_t *pObj)
     return LSM6DSO_ERROR;
   }
 
+  /* Save current embedded features */
+  if (lsm6dso_embedded_sens_get(&(pObj->Ctx), &emb_sens) != LSM6DSO_OK)
+  {
+    return LSM6DSO_ERROR;
+  }
+
+  /* Turn off embedded features */
+  if (lsm6dso_embedded_sens_off(&(pObj->Ctx)) != LSM6DSO_OK)
+  {
+    return LSM6DSO_ERROR;
+  }
+
+  /* Wait for 10 ms */
+  LSM6DSO_Delay(pObj, 10);
+
   /* Enable pedometer algorithm. */
+  emb_sens.step = PROPERTY_ENABLE;
+
   if (lsm6dso_pedo_sens_set(&(pObj->Ctx), LSM6DSO_PEDO_BASE_MODE) != LSM6DSO_OK)
+  {
+    return LSM6DSO_ERROR;
+  }
+
+  /* Turn on embedded features */
+  if (lsm6dso_embedded_sens_set(&(pObj->Ctx), &emb_sens) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1190,9 +1530,9 @@ int32_t LSM6DSO_ACC_Enable_Pedometer(LSM6DSO_Object_t *pObj)
     return LSM6DSO_ERROR;
   }
 
-  val.emb_func_int1.int1_step_detector = PROPERTY_ENABLE;
+  val.step_detector = PROPERTY_ENABLE;
 
-  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val) != LSM6DSO_OK)
+  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1208,6 +1548,7 @@ int32_t LSM6DSO_ACC_Enable_Pedometer(LSM6DSO_Object_t *pObj)
 int32_t LSM6DSO_ACC_Disable_Pedometer(LSM6DSO_Object_t *pObj)
 {
   lsm6dso_pin_int1_route_t val1;
+  lsm6dso_emb_sens_t emb_sens;
 
   /* Disable step detector on INT1 pin */
   if (lsm6dso_pin_int1_route_get(&(pObj->Ctx), &val1) != LSM6DSO_OK)
@@ -1215,15 +1556,23 @@ int32_t LSM6DSO_ACC_Disable_Pedometer(LSM6DSO_Object_t *pObj)
     return LSM6DSO_ERROR;
   }
 
-  val1.emb_func_int1.int1_step_detector = PROPERTY_DISABLE;
+  val1.step_detector = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
+  {
+    return LSM6DSO_ERROR;
+  }
+
+  /* Save current embedded features */
+  if (lsm6dso_embedded_sens_get(&(pObj->Ctx), &emb_sens) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
   /* Disable pedometer algorithm. */
-  if (lsm6dso_pedo_sens_set(&(pObj->Ctx), LSM6DSO_PEDO_DISABLE) != LSM6DSO_OK)
+  emb_sens.step = PROPERTY_DISABLE;
+
+  if (lsm6dso_embedded_sens_set(&(pObj->Ctx), &emb_sens) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1273,6 +1622,7 @@ int32_t LSM6DSO_ACC_Enable_Tilt_Detection(LSM6DSO_Object_t *pObj, LSM6DSO_Sensor
   int32_t ret = LSM6DSO_OK;
   lsm6dso_pin_int1_route_t val1;
   lsm6dso_pin_int2_route_t val2;
+  lsm6dso_emb_sens_t emb_sens;
 
   /* Output Data Rate selection */
   if (LSM6DSO_ACC_SetOutputDataRate(pObj, 26.0f) != LSM6DSO_OK)
@@ -1286,8 +1636,26 @@ int32_t LSM6DSO_ACC_Enable_Tilt_Detection(LSM6DSO_Object_t *pObj, LSM6DSO_Sensor
     return LSM6DSO_ERROR;
   }
 
-  /* Enable tilt calculation. */
-  if (lsm6dso_tilt_sens_set(&(pObj->Ctx), PROPERTY_ENABLE) != LSM6DSO_OK)
+  /* Save current embedded features */
+  if (lsm6dso_embedded_sens_get(&(pObj->Ctx), &emb_sens) != LSM6DSO_OK)
+  {
+    return LSM6DSO_ERROR;
+  }
+
+  /* Turn off embedded features */
+  if (lsm6dso_embedded_sens_off(&(pObj->Ctx)) != LSM6DSO_OK)
+  {
+    return LSM6DSO_ERROR;
+  }
+
+  /* Wait for 10 ms */
+  LSM6DSO_Delay(pObj, 10);
+
+  /* Enable tilt algorithm. */
+  emb_sens.tilt = PROPERTY_ENABLE;
+
+  /* Turn on embedded features */
+  if (lsm6dso_embedded_sens_set(&(pObj->Ctx), &emb_sens) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1301,23 +1669,23 @@ int32_t LSM6DSO_ACC_Enable_Tilt_Detection(LSM6DSO_Object_t *pObj, LSM6DSO_Sensor
         return LSM6DSO_ERROR;
       }
 
-      val1.emb_func_int1.int1_tilt = PROPERTY_ENABLE;
+      val1.tilt = PROPERTY_ENABLE;
 
-      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
       break;
 
     case LSM6DSO_INT2_PIN:
-      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
 
-      val2.emb_func_int2.int2_tilt = PROPERTY_ENABLE;
+      val2.tilt = PROPERTY_ENABLE;
 
-      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
@@ -1340,6 +1708,7 @@ int32_t LSM6DSO_ACC_Disable_Tilt_Detection(LSM6DSO_Object_t *pObj)
 {
   lsm6dso_pin_int1_route_t val1;
   lsm6dso_pin_int2_route_t val2;
+  lsm6dso_emb_sens_t emb_sens;
 
   /* Disable tilt event on both INT1 and INT2 pins */
   if (lsm6dso_pin_int1_route_get(&(pObj->Ctx), &val1) != LSM6DSO_OK)
@@ -1347,27 +1716,35 @@ int32_t LSM6DSO_ACC_Disable_Tilt_Detection(LSM6DSO_Object_t *pObj)
     return LSM6DSO_ERROR;
   }
 
-  val1.emb_func_int1.int1_tilt = PROPERTY_DISABLE;
+  val1.tilt = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  val2.emb_func_int2.int2_tilt = PROPERTY_DISABLE;
+  val2.tilt = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  /* Disable tilt calculation. */
-  if (lsm6dso_tilt_sens_set(&(pObj->Ctx), PROPERTY_DISABLE) != LSM6DSO_OK)
+  /* Save current embedded features */
+  if (lsm6dso_embedded_sens_get(&(pObj->Ctx), &emb_sens) != LSM6DSO_OK)
+  {
+    return LSM6DSO_ERROR;
+  }
+
+  /* Disable tilt algorithm. */
+  emb_sens.tilt = PROPERTY_DISABLE;
+
+  if (lsm6dso_embedded_sens_set(&(pObj->Ctx), &emb_sens) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1388,7 +1765,7 @@ int32_t LSM6DSO_ACC_Enable_Wake_Up_Detection(LSM6DSO_Object_t *pObj, LSM6DSO_Sen
   lsm6dso_pin_int2_route_t val2;
 
   /* Output Data Rate selection */
-  if (LSM6DSO_ACC_SetOutputDataRate(pObj, 416.0f) != LSM6DSO_OK)
+  if (LSM6DSO_ACC_SetOutputDataRate(pObj, 417.0f) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1420,23 +1797,23 @@ int32_t LSM6DSO_ACC_Enable_Wake_Up_Detection(LSM6DSO_Object_t *pObj, LSM6DSO_Sen
         return LSM6DSO_ERROR;
       }
 
-      val1.md1_cfg.int1_wu = PROPERTY_ENABLE;
+      val1.wake_up = PROPERTY_ENABLE;
 
-      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
       break;
 
     case LSM6DSO_INT2_PIN:
-      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
 
-      val2.md2_cfg.int2_wu = PROPERTY_ENABLE;
+      val2.wake_up = PROPERTY_ENABLE;
 
-      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
@@ -1457,8 +1834,8 @@ int32_t LSM6DSO_ACC_Enable_Wake_Up_Detection(LSM6DSO_Object_t *pObj, LSM6DSO_Sen
  */
 int32_t LSM6DSO_ACC_Disable_Wake_Up_Detection(LSM6DSO_Object_t *pObj)
 {
-	lsm6dso_pin_int1_route_t val1;
-	lsm6dso_pin_int2_route_t val2;
+  lsm6dso_pin_int1_route_t val1;
+  lsm6dso_pin_int2_route_t val2;
 
   /* Disable wake up event on both INT1 and INT2 pins */
   if (lsm6dso_pin_int1_route_get(&(pObj->Ctx), &val1) != LSM6DSO_OK)
@@ -1466,21 +1843,21 @@ int32_t LSM6DSO_ACC_Disable_Wake_Up_Detection(LSM6DSO_Object_t *pObj)
     return LSM6DSO_ERROR;
   }
 
-  val1.md1_cfg.int1_wu = PROPERTY_DISABLE;
+  val1.wake_up = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  val2.md2_cfg.int2_wu = PROPERTY_DISABLE;
+  val2.wake_up = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1547,7 +1924,7 @@ int32_t LSM6DSO_ACC_Enable_Single_Tap_Detection(LSM6DSO_Object_t *pObj, LSM6DSO_
   lsm6dso_pin_int2_route_t val2;
 
   /* Output Data Rate selection */
-  if (LSM6DSO_ACC_SetOutputDataRate(pObj, 416.0f) != LSM6DSO_OK)
+  if (LSM6DSO_ACC_SetOutputDataRate(pObj, 417.0f) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1607,23 +1984,23 @@ int32_t LSM6DSO_ACC_Enable_Single_Tap_Detection(LSM6DSO_Object_t *pObj, LSM6DSO_
         return LSM6DSO_ERROR;
       }
 
-      val1.md1_cfg.int1_single_tap = PROPERTY_ENABLE;
+      val1.single_tap = PROPERTY_ENABLE;
 
-      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
       break;
 
     case LSM6DSO_INT2_PIN:
-      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
 
-      val2.md2_cfg.int2_single_tap = PROPERTY_ENABLE;
+      val2.single_tap = PROPERTY_ENABLE;
 
-      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
@@ -1644,8 +2021,8 @@ int32_t LSM6DSO_ACC_Enable_Single_Tap_Detection(LSM6DSO_Object_t *pObj, LSM6DSO_
  */
 int32_t LSM6DSO_ACC_Disable_Single_Tap_Detection(LSM6DSO_Object_t *pObj)
 {
-	lsm6dso_pin_int1_route_t val1;
-	lsm6dso_pin_int2_route_t val2;
+  lsm6dso_pin_int1_route_t val1;
+  lsm6dso_pin_int2_route_t val2;
 
   /* Disable single tap event on both INT1 and INT2 pins */
   if (lsm6dso_pin_int1_route_get(&(pObj->Ctx), &val1) != LSM6DSO_OK)
@@ -1653,21 +2030,21 @@ int32_t LSM6DSO_ACC_Disable_Single_Tap_Detection(LSM6DSO_Object_t *pObj)
     return LSM6DSO_ERROR;
   }
 
-  val1.md1_cfg.int1_single_tap = PROPERTY_DISABLE;
+  val1.single_tap = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  val2.md2_cfg.int2_single_tap = PROPERTY_DISABLE;
+  val2.single_tap = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1724,7 +2101,7 @@ int32_t LSM6DSO_ACC_Enable_Double_Tap_Detection(LSM6DSO_Object_t *pObj, LSM6DSO_
   lsm6dso_pin_int2_route_t val2;
 
   /* Output Data Rate selection */
-  if (LSM6DSO_ACC_SetOutputDataRate(pObj, 416.0f) != LSM6DSO_OK)
+  if (LSM6DSO_ACC_SetOutputDataRate(pObj, 417.0f) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1792,23 +2169,23 @@ int32_t LSM6DSO_ACC_Enable_Double_Tap_Detection(LSM6DSO_Object_t *pObj, LSM6DSO_
         return LSM6DSO_ERROR;
       }
 
-      val1.md1_cfg.int1_double_tap = PROPERTY_ENABLE;
+      val1.double_tap = PROPERTY_ENABLE;
 
-      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
       break;
 
     case LSM6DSO_INT2_PIN:
-      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
 
-      val2.md2_cfg.int2_double_tap = PROPERTY_ENABLE;
+      val2.double_tap = PROPERTY_ENABLE;
 
-      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
@@ -1838,21 +2215,21 @@ int32_t LSM6DSO_ACC_Disable_Double_Tap_Detection(LSM6DSO_Object_t *pObj)
     return LSM6DSO_ERROR;
   }
 
-  val1.md1_cfg.int1_double_tap = PROPERTY_DISABLE;
+  val1.double_tap = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  val2.md2_cfg.int2_double_tap = PROPERTY_DISABLE;
+  val2.double_tap = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -1989,7 +2366,7 @@ int32_t LSM6DSO_ACC_Enable_6D_Orientation(LSM6DSO_Object_t *pObj, LSM6DSO_Sensor
   lsm6dso_pin_int2_route_t val2;
 
   /* Output Data Rate selection */
-  if (LSM6DSO_ACC_SetOutputDataRate(pObj, 416.0f) != LSM6DSO_OK)
+  if (LSM6DSO_ACC_SetOutputDataRate(pObj, 417.0f) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -2015,23 +2392,23 @@ int32_t LSM6DSO_ACC_Enable_6D_Orientation(LSM6DSO_Object_t *pObj, LSM6DSO_Sensor
         return LSM6DSO_ERROR;
       }
 
-      val1.md1_cfg.int1_6d = PROPERTY_ENABLE;
+      val1.six_d = PROPERTY_ENABLE;
 
-      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
       break;
 
     case LSM6DSO_INT2_PIN:
-      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
 
-      val2.md2_cfg.int2_6d = PROPERTY_ENABLE;
+      val2.six_d = PROPERTY_ENABLE;
 
-      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
@@ -2061,21 +2438,21 @@ int32_t LSM6DSO_ACC_Disable_6D_Orientation(LSM6DSO_Object_t *pObj)
     return LSM6DSO_ERROR;
   }
 
-  val1.md1_cfg.int1_6d = PROPERTY_DISABLE;
+  val1.six_d = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  val2.md2_cfg.int2_6d = PROPERTY_DISABLE;
+  val2.six_d = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -2097,7 +2474,34 @@ int32_t LSM6DSO_ACC_Disable_6D_Orientation(LSM6DSO_Object_t *pObj)
  */
 int32_t LSM6DSO_ACC_Set_6D_Orientation_Threshold(LSM6DSO_Object_t *pObj, uint8_t Threshold)
 {
-  if (lsm6dso_6d_threshold_set(&(pObj->Ctx), (lsm6dso_sixd_ths_t)Threshold) != LSM6DSO_OK)
+  int32_t ret = LSM6DSO_OK;
+  lsm6dso_sixd_ths_t newThreshold = LSM6DSO_DEG_80;
+
+  switch (Threshold)
+  {
+    case 0:
+      newThreshold = LSM6DSO_DEG_80;
+      break;
+    case 1:
+      newThreshold = LSM6DSO_DEG_70;
+      break;
+    case 2:
+      newThreshold = LSM6DSO_DEG_60;
+      break;
+    case 3:
+      newThreshold = LSM6DSO_DEG_50;
+      break;
+    default:
+      ret = LSM6DSO_ERROR;
+      break;
+  }
+
+  if(ret == LSM6DSO_ERROR)
+  {
+    return LSM6DSO_ERROR;
+  }
+  
+  if (lsm6dso_6d_threshold_set(&(pObj->Ctx), newThreshold) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -2540,17 +2944,28 @@ int32_t LSM6DSO_FIFO_Set_Stop_On_Fth(LSM6DSO_Object_t *pObj, uint8_t Status)
 int32_t LSM6DSO_FIFO_Set_Mode(LSM6DSO_Object_t *pObj, uint8_t Mode)
 {
   int32_t ret = LSM6DSO_OK;
+  lsm6dso_fifo_mode_t newMode = LSM6DSO_BYPASS_MODE;
 
-  /* Verify that the passed parameter contains one of the valid values. */
-  switch ((lsm6dso_fifo_mode_t)Mode)
+  switch (Mode)
   {
-    case LSM6DSO_BYPASS_MODE:
-    case LSM6DSO_FIFO_MODE:
-    case LSM6DSO_STREAM_TO_FIFO_MODE:
-    case LSM6DSO_BYPASS_TO_STREAM_MODE:
-    case LSM6DSO_STREAM_MODE:
+    case 0:
+      newMode = LSM6DSO_BYPASS_MODE;
       break;
-
+    case 1:
+      newMode = LSM6DSO_FIFO_MODE;
+      break;
+    case 3:
+      newMode = LSM6DSO_STREAM_TO_FIFO_MODE;
+      break;
+    case 4:
+      newMode = LSM6DSO_BYPASS_TO_STREAM_MODE;
+      break;
+    case 6:
+      newMode = LSM6DSO_STREAM_MODE;
+      break;
+    case 7:
+      newMode = LSM6DSO_BYPASS_TO_FIFO_MODE;
+      break;
     default:
       ret = LSM6DSO_ERROR;
       break;
@@ -2558,10 +2973,10 @@ int32_t LSM6DSO_FIFO_Set_Mode(LSM6DSO_Object_t *pObj, uint8_t Mode)
 
   if (ret == LSM6DSO_ERROR)
   {
-    return ret;
+    return LSM6DSO_ERROR;
   }
 
-  if (lsm6dso_fifo_mode_set(&(pObj->Ctx), (lsm6dso_fifo_mode_t)Mode) != LSM6DSO_OK)
+  if (lsm6dso_fifo_mode_set(&(pObj->Ctx), newMode) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -2613,32 +3028,27 @@ int32_t LSM6DSO_FIFO_Get_Data(LSM6DSO_Object_t *pObj, uint8_t *Data)
  */
 int32_t LSM6DSO_FIFO_ACC_Get_Axes(LSM6DSO_Object_t *pObj, LSM6DSO_Axes_t *Acceleration)
 {
-  uint8_t data[6];
-  int16_t data_raw[3];
-  float sensitivity = 0.0f;
-  float acceleration_float[3];
+  lsm6dso_axis3bit16_t data_raw;
+  float_t sensitivity = 0.0f;
+  float_t acceleration_float_t[3];
 
-  if (LSM6DSO_FIFO_Get_Data(pObj, data) != LSM6DSO_OK)
+  if (LSM6DSO_FIFO_Get_Data(pObj, data_raw.u8bit) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
-
-  data_raw[0] = ((int16_t)data[1] << 8) | data[0];
-  data_raw[1] = ((int16_t)data[3] << 8) | data[2];
-  data_raw[2] = ((int16_t)data[5] << 8) | data[4];
 
   if (LSM6DSO_ACC_GetSensitivity(pObj, &sensitivity) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  acceleration_float[0] = (float)data_raw[0] * sensitivity;
-  acceleration_float[1] = (float)data_raw[1] * sensitivity;
-  acceleration_float[2] = (float)data_raw[2] * sensitivity;
+  acceleration_float_t[0] = (float_t)data_raw.i16bit[0] * sensitivity;
+  acceleration_float_t[1] = (float_t)data_raw.i16bit[1] * sensitivity;
+  acceleration_float_t[2] = (float_t)data_raw.i16bit[2] * sensitivity;
 
-  Acceleration->x = (int32_t)acceleration_float[0];
-  Acceleration->y = (int32_t)acceleration_float[1];
-  Acceleration->z = (int32_t)acceleration_float[2];
+  Acceleration->x = (int32_t)acceleration_float_t[0];
+  Acceleration->y = (int32_t)acceleration_float_t[1];
+  Acceleration->z = (int32_t)acceleration_float_t[2];
 
   return LSM6DSO_OK;
 }
@@ -2649,7 +3059,7 @@ int32_t LSM6DSO_FIFO_ACC_Get_Axes(LSM6DSO_Object_t *pObj, LSM6DSO_Axes_t *Accele
  * @param  Bdr FIFO accelero BDR value
  * @retval 0 in case of success, an error code otherwise
  */
-int32_t LSM6DSO_FIFO_ACC_Set_BDR(LSM6DSO_Object_t *pObj, float Bdr)
+int32_t LSM6DSO_FIFO_ACC_Set_BDR(LSM6DSO_Object_t *pObj, float_t Bdr)
 {
   lsm6dso_bdr_xl_t new_bdr;
 
@@ -2681,32 +3091,27 @@ int32_t LSM6DSO_FIFO_ACC_Set_BDR(LSM6DSO_Object_t *pObj, float Bdr)
  */
 int32_t LSM6DSO_FIFO_GYRO_Get_Axes(LSM6DSO_Object_t *pObj, LSM6DSO_Axes_t *AngularVelocity)
 {
-  uint8_t data[6];
-  int16_t data_raw[3];
-  float sensitivity = 0.0f;
-  float angular_velocity_float[3];
+  lsm6dso_axis3bit16_t data_raw;
+  float_t sensitivity = 0.0f;
+  float_t angular_velocity_float_t[3];
 
-  if (LSM6DSO_FIFO_Get_Data(pObj, data) != LSM6DSO_OK)
+  if (LSM6DSO_FIFO_Get_Data(pObj, data_raw.u8bit) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
-
-  data_raw[0] = ((int16_t)data[1] << 8) | data[0];
-  data_raw[1] = ((int16_t)data[3] << 8) | data[2];
-  data_raw[2] = ((int16_t)data[5] << 8) | data[4];
 
   if (LSM6DSO_GYRO_GetSensitivity(pObj, &sensitivity) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  angular_velocity_float[0] = (float)data_raw[0] * sensitivity;
-  angular_velocity_float[1] = (float)data_raw[1] * sensitivity;
-  angular_velocity_float[2] = (float)data_raw[2] * sensitivity;
+  angular_velocity_float_t[0] = (float_t)data_raw.i16bit[0] * sensitivity;
+  angular_velocity_float_t[1] = (float_t)data_raw.i16bit[1] * sensitivity;
+  angular_velocity_float_t[2] = (float_t)data_raw.i16bit[2] * sensitivity;
 
-  AngularVelocity->x = (int32_t)angular_velocity_float[0];
-  AngularVelocity->y = (int32_t)angular_velocity_float[1];
-  AngularVelocity->z = (int32_t)angular_velocity_float[2];
+  AngularVelocity->x = (int32_t)angular_velocity_float_t[0];
+  AngularVelocity->y = (int32_t)angular_velocity_float_t[1];
+  AngularVelocity->z = (int32_t)angular_velocity_float_t[2];
 
   return LSM6DSO_OK;
 }
@@ -2717,7 +3122,7 @@ int32_t LSM6DSO_FIFO_GYRO_Get_Axes(LSM6DSO_Object_t *pObj, LSM6DSO_Axes_t *Angul
  * @param  Bdr FIFO gyro BDR value
  * @retval 0 in case of success, an error code otherwise
  */
-int32_t LSM6DSO_FIFO_GYRO_Set_BDR(LSM6DSO_Object_t *pObj, float Bdr)
+int32_t LSM6DSO_FIFO_GYRO_Set_BDR(LSM6DSO_Object_t *pObj, float_t Bdr)
 {
   lsm6dso_bdr_gy_t new_bdr;
 
@@ -2755,9 +3160,9 @@ int32_t LSM6DSO_ACC_Enable_DRDY_On_INT1(LSM6DSO_Object_t *pObj)
   {
     return LSM6DSO_ERROR;
   }
-  pin_int1_route.int1_ctrl.int1_drdy_xl = 1;
-  pin_int1_route.int1_ctrl.int1_drdy_g = 0;
-  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &pin_int1_route) != LSM6DSO_OK)
+  pin_int1_route.drdy_xl = 1;
+  pin_int1_route.drdy_g = 0;
+  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), pin_int1_route) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -2779,8 +3184,8 @@ int32_t LSM6DSO_ACC_Disable_DRDY_On_INT1(LSM6DSO_Object_t *pObj)
   {
     return LSM6DSO_ERROR;
   }
-  pin_int1_route.int1_ctrl.int1_drdy_xl = 0;
-  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &pin_int1_route) != LSM6DSO_OK)
+  pin_int1_route.drdy_xl = 0;
+  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), pin_int1_route) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -2796,7 +3201,31 @@ int32_t LSM6DSO_ACC_Disable_DRDY_On_INT1(LSM6DSO_Object_t *pObj)
  */
 int32_t LSM6DSO_ACC_Set_Power_Mode(LSM6DSO_Object_t *pObj, uint8_t PowerMode)
 {
-  if (lsm6dso_xl_power_mode_set(&(pObj->Ctx), (lsm6dso_xl_hm_mode_t)PowerMode) != LSM6DSO_OK)
+  int32_t ret = LSM6DSO_OK;
+  lsm6dso_xl_hm_mode_t newPowerMode = LSM6DSO_HIGH_PERFORMANCE_MD;
+
+  switch (PowerMode)
+  {
+    case 0:
+      newPowerMode = LSM6DSO_HIGH_PERFORMANCE_MD;
+      break;
+    case 1:
+      newPowerMode = LSM6DSO_LOW_NORMAL_POWER_MD;
+      break;
+    case 2:
+      newPowerMode = LSM6DSO_ULTRA_LOW_POWER_MD;
+      break;
+    default:
+      ret = LSM6DSO_ERROR;
+      break;
+  }
+
+  if (ret == LSM6DSO_ERROR)
+  {
+    return LSM6DSO_ERROR;
+  }
+
+  if (lsm6dso_xl_power_mode_set(&(pObj->Ctx), newPowerMode) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -2813,7 +3242,91 @@ int32_t LSM6DSO_ACC_Set_Power_Mode(LSM6DSO_Object_t *pObj, uint8_t PowerMode)
  */
 int32_t LSM6DSO_ACC_Set_Filter_Mode(LSM6DSO_Object_t *pObj, uint8_t LowHighPassFlag, uint8_t FilterMode)
 {
-  if (LowHighPassFlag == 0)
+  int32_t ret = LSM6DSO_OK;
+  lsm6dso_hp_slope_xl_en_t newFilterMode = LSM6DSO_HP_PATH_DISABLE_ON_OUT;
+
+  switch (FilterMode)
+  {
+    case 0x00:
+      newFilterMode = LSM6DSO_HP_PATH_DISABLE_ON_OUT;
+      break;
+    case 0x01:
+      newFilterMode = LSM6DSO_LP_ODR_DIV_10;
+      break;
+    case 0x02:
+      newFilterMode = LSM6DSO_LP_ODR_DIV_20;
+      break;
+    case 0x03:
+      newFilterMode = LSM6DSO_LP_ODR_DIV_45;
+      break;
+    case 0x04:
+      newFilterMode = LSM6DSO_LP_ODR_DIV_100;
+      break;
+    case 0x05:
+      newFilterMode = LSM6DSO_LP_ODR_DIV_200;
+      break;
+    case 0x06:
+      newFilterMode = LSM6DSO_LP_ODR_DIV_400;
+      break;
+    case 0x07:
+      newFilterMode = LSM6DSO_LP_ODR_DIV_800;
+      break;
+    case 0x10:
+      newFilterMode = LSM6DSO_SLOPE_ODR_DIV_4;
+      break;
+    case 0x11:
+      newFilterMode = LSM6DSO_HP_ODR_DIV_10;
+      break;
+    case 0x12:
+      newFilterMode = LSM6DSO_HP_ODR_DIV_20;
+      break;
+    case 0x13:
+      newFilterMode = LSM6DSO_HP_ODR_DIV_45;
+      break;
+    case 0x14:
+      newFilterMode = LSM6DSO_HP_ODR_DIV_100;
+      break;
+    case 0x15:
+      newFilterMode = LSM6DSO_HP_ODR_DIV_200;
+      break;
+    case 0x16:
+      newFilterMode = LSM6DSO_HP_ODR_DIV_400;
+      break;
+    case 0x17:
+      newFilterMode = LSM6DSO_HP_ODR_DIV_800;
+      break;
+    case 0x31:
+      newFilterMode = LSM6DSO_HP_REF_MD_ODR_DIV_10;
+      break;
+    case 0x32:
+      newFilterMode = LSM6DSO_HP_REF_MD_ODR_DIV_20;
+      break;
+    case 0x33:
+      newFilterMode = LSM6DSO_HP_REF_MD_ODR_DIV_45;
+      break;
+    case 0x34:
+      newFilterMode = LSM6DSO_HP_REF_MD_ODR_DIV_100;
+      break;
+    case 0x35:
+      newFilterMode = LSM6DSO_HP_REF_MD_ODR_DIV_200;
+      break;
+    case 0x36:
+      newFilterMode = LSM6DSO_HP_REF_MD_ODR_DIV_400;
+      break;
+    case 0x37:
+      newFilterMode = LSM6DSO_HP_REF_MD_ODR_DIV_800;
+      break;
+    default:
+      ret = LSM6DSO_ERROR;
+      break;
+  }
+
+  if (ret == LSM6DSO_ERROR)
+  {
+    return LSM6DSO_ERROR;
+  }
+
+  if (LowHighPassFlag == 0U)
   {
     /*Set accelerometer low_pass filter-mode*/
 
@@ -2822,7 +3335,7 @@ int32_t LSM6DSO_ACC_Set_Filter_Mode(LSM6DSO_Object_t *pObj, uint8_t LowHighPassF
     {
       return LSM6DSO_ERROR;
     }
-    if (lsm6dso_xl_hp_path_on_out_set(&(pObj->Ctx), (lsm6dso_hp_slope_xl_en_t)FilterMode) != LSM6DSO_OK)
+    if (lsm6dso_xl_hp_path_on_out_set(&(pObj->Ctx), newFilterMode) != LSM6DSO_OK)
     {
       return LSM6DSO_ERROR;
     }
@@ -2830,7 +3343,7 @@ int32_t LSM6DSO_ACC_Set_Filter_Mode(LSM6DSO_Object_t *pObj, uint8_t LowHighPassF
   else
   {
     /*Set accelerometer high_pass filter-mode*/
-    if (lsm6dso_xl_hp_path_on_out_set(&(pObj->Ctx), (lsm6dso_hp_slope_xl_en_t)FilterMode) != LSM6DSO_OK)
+    if (lsm6dso_xl_hp_path_on_out_set(&(pObj->Ctx), newFilterMode) != LSM6DSO_OK)
     {
       return LSM6DSO_ERROR;
     }
@@ -2849,6 +3362,7 @@ int32_t LSM6DSO_ACC_Enable_Inactivity_Detection(LSM6DSO_Object_t *pObj, lsm6dso_
 {
   lsm6dso_pin_int1_route_t val1;
   lsm6dso_pin_int2_route_t val2;
+  int32_t ret = LSM6DSO_OK;
 
   /* Full scale selection */
   if (LSM6DSO_ACC_SetFullScale(pObj, 2) != LSM6DSO_OK)
@@ -2869,65 +3383,85 @@ int32_t LSM6DSO_ACC_Enable_Inactivity_Detection(LSM6DSO_Object_t *pObj, lsm6dso_
   /* Enable inactivity detection. */
   switch(InactMode)
   {
-  case LSM6DSO_XL_AND_GY_NOT_AFFECTED:
-    if (lsm6dso_act_mode_set(&(pObj->Ctx), LSM6DSO_XL_AND_GY_NOT_AFFECTED) != LSM6DSO_OK)
+    case LSM6DSO_XL_AND_GY_NOT_AFFECTED:
     {
-      return LSM6DSO_ERROR;
+      if (lsm6dso_act_mode_set(&(pObj->Ctx), LSM6DSO_XL_AND_GY_NOT_AFFECTED) != LSM6DSO_OK)
+      {
+        return LSM6DSO_ERROR;
+      }
+      break;
     }
-    break;
-  case LSM6DSO_XL_12Hz5_GY_NOT_AFFECTED:
-    if (lsm6dso_act_mode_set(&(pObj->Ctx), LSM6DSO_XL_12Hz5_GY_NOT_AFFECTED) != LSM6DSO_OK)
+    case LSM6DSO_XL_12Hz5_GY_NOT_AFFECTED:
     {
-      return LSM6DSO_ERROR;
+      if (lsm6dso_act_mode_set(&(pObj->Ctx), LSM6DSO_XL_12Hz5_GY_NOT_AFFECTED) != LSM6DSO_OK)
+      {
+        return LSM6DSO_ERROR;
+      }
+      break;
     }
-    break;
-  case LSM6DSO_XL_12Hz5_GY_SLEEP:
-    if (lsm6dso_act_mode_set(&(pObj->Ctx), LSM6DSO_XL_12Hz5_GY_SLEEP) != LSM6DSO_OK)
+    case LSM6DSO_XL_12Hz5_GY_SLEEP:
     {
-      return LSM6DSO_ERROR;
+      if (lsm6dso_act_mode_set(&(pObj->Ctx), LSM6DSO_XL_12Hz5_GY_SLEEP) != LSM6DSO_OK)
+      {
+        return LSM6DSO_ERROR;
+      }
+      break;
     }
-    break;
-  case LSM6DSO_XL_12Hz5_GY_PD:
-    if (lsm6dso_act_mode_set(&(pObj->Ctx), LSM6DSO_XL_12Hz5_GY_PD) != LSM6DSO_OK)
+    case LSM6DSO_XL_12Hz5_GY_PD:
     {
-      return LSM6DSO_ERROR;
+      if (lsm6dso_act_mode_set(&(pObj->Ctx), LSM6DSO_XL_12Hz5_GY_PD) != LSM6DSO_OK)
+      {
+        return LSM6DSO_ERROR;
+      }
+      break;
     }
-    break;
+    default:
+      ret = LSM6DSO_ERROR;
+      break;
+  }
+  
+  if (ret == LSM6DSO_ERROR)
+  {
+    return LSM6DSO_ERROR;
   }
 
   /* Enable Inactivity event on either INT1 or INT2 pin */
   switch (IntPin)
   {
     case LSM6DSO_INT1_PIN:
+    {
       if (lsm6dso_pin_int1_route_get(&(pObj->Ctx), &val1) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
 
-      val1.md1_cfg.int1_sleep_change = PROPERTY_ENABLE;
-      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+      val1.sleep_change = PROPERTY_ENABLE;
+      if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
       break;
-
+    }
     case LSM6DSO_INT2_PIN:
-      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+    {
+      if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
 
-      val2.md2_cfg.int2_sleep_change = PROPERTY_ENABLE;
-      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+      val2.sleep_change = PROPERTY_ENABLE;
+      if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
       {
         return LSM6DSO_ERROR;
       }
       break;
-
+    }
     default:
-      return LSM6DSO_ERROR;
+      ret = LSM6DSO_ERROR;
+      break;
   }
-  return LSM6DSO_OK;;
+
+  return ret;
 }
 
 /**
@@ -2946,21 +3480,21 @@ int32_t LSM6DSO_ACC_Disable_Inactivity_Detection(LSM6DSO_Object_t *pObj)
     return LSM6DSO_ERROR;
   }
 
-  val1.md1_cfg.int1_sleep_change = PROPERTY_DISABLE;
+  val1.sleep_change = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), &val1) != LSM6DSO_OK)
+  if (lsm6dso_pin_int1_route_set(&(pObj->Ctx), val1) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
 
-  val2.md2_cfg.int2_sleep_change = PROPERTY_DISABLE;
+  val2.sleep_change = PROPERTY_DISABLE;
 
-  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &val2) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, val2) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -3006,13 +3540,13 @@ int32_t LSM6DSO_GYRO_Enable_DRDY_On_INT2(LSM6DSO_Object_t *pObj)
   lsm6dso_pin_int2_route_t pin_int2_route;
 
   /* Enable gyroscope DRDY Interrupts on INT2 */
-  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), &pin_int2_route) != LSM6DSO_OK)
+  if (lsm6dso_pin_int2_route_get(&(pObj->Ctx), NULL, &pin_int2_route) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
-  pin_int2_route.int2_ctrl.int2_drdy_xl = 0;
-  pin_int2_route.int2_ctrl.int2_drdy_g = 1;
-  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), &pin_int2_route) != LSM6DSO_OK)
+  pin_int2_route.drdy_xl = 0;
+  pin_int2_route.drdy_g = 1;
+  if (lsm6dso_pin_int2_route_set(&(pObj->Ctx), NULL, pin_int2_route) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -3028,7 +3562,28 @@ int32_t LSM6DSO_GYRO_Enable_DRDY_On_INT2(LSM6DSO_Object_t *pObj)
  */
 int32_t LSM6DSO_GYRO_Set_Power_Mode(LSM6DSO_Object_t *pObj, uint8_t PowerMode)
 {
-  if (lsm6dso_gy_power_mode_set(&(pObj->Ctx), (lsm6dso_g_hm_mode_t)PowerMode) != LSM6DSO_OK)
+  int32_t ret = LSM6DSO_OK;
+  lsm6dso_g_hm_mode_t newPowerMode = LSM6DSO_GY_HIGH_PERFORMANCE;
+
+  switch (PowerMode)
+  {
+    case 0:
+      newPowerMode = LSM6DSO_GY_HIGH_PERFORMANCE;
+      break;
+    case 1:
+      newPowerMode = LSM6DSO_GY_NORMAL;
+      break;
+    default:
+      ret = LSM6DSO_ERROR;
+      break;
+  }
+
+  if (ret == LSM6DSO_ERROR)
+  {
+    return LSM6DSO_ERROR;
+  }
+
+  if (lsm6dso_gy_power_mode_set(&(pObj->Ctx), newPowerMode) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -3045,24 +3600,92 @@ int32_t LSM6DSO_GYRO_Set_Power_Mode(LSM6DSO_Object_t *pObj, uint8_t PowerMode)
  */
 int32_t LSM6DSO_GYRO_Set_Filter_Mode(LSM6DSO_Object_t *pObj, uint8_t LowHighPassFlag, uint8_t FilterMode)
 {
-  if (LowHighPassFlag == 0)
+  int32_t ret = LSM6DSO_OK;
+
+  if (LowHighPassFlag == 0U)
   {
+    lsm6dso_ftype_t newFilterMode = LSM6DSO_ULTRA_LIGHT;
+
+    switch (FilterMode)
+    {
+      case 0:
+        newFilterMode = LSM6DSO_ULTRA_LIGHT;
+        break;
+      case 1:
+        newFilterMode = LSM6DSO_VERY_LIGHT;
+        break;
+      case 2:
+        newFilterMode = LSM6DSO_LIGHT;
+        break;
+      case 3:
+        newFilterMode = LSM6DSO_MEDIUM;
+        break;
+      case 4:
+        newFilterMode = LSM6DSO_STRONG;
+        break;
+      case 5:
+        newFilterMode = LSM6DSO_VERY_STRONG;
+        break;
+      case 6:
+        newFilterMode = LSM6DSO_AGGRESSIVE;
+        break;
+      case 7:
+        newFilterMode = LSM6DSO_XTREME;
+        break;
+      default:
+        ret = LSM6DSO_ERROR;
+        break;
+    }
+
+    if (ret == LSM6DSO_ERROR)
+    {
+      return LSM6DSO_ERROR;
+    }
     /*Set gyroscope low_pass 1 filter-mode*/
     /* Enable low-pass filter */
     if (lsm6dso_gy_filter_lp1_set(&(pObj->Ctx), 1) != LSM6DSO_OK)
     {
       return LSM6DSO_ERROR;
     }
-    if (lsm6dso_gy_lp1_bandwidth_set(&(pObj->Ctx), (lsm6dso_ftype_t)FilterMode) != LSM6DSO_OK)
+    if (lsm6dso_gy_lp1_bandwidth_set(&(pObj->Ctx), newFilterMode) != LSM6DSO_OK)
     {
       return LSM6DSO_ERROR;
     }
   }
   else
   {
+    lsm6dso_hpm_g_t newFilterMode = LSM6DSO_HP_FILTER_NONE;
+
+    switch (FilterMode)
+    {
+      case 0x00:
+        newFilterMode = LSM6DSO_HP_FILTER_NONE;
+        break;
+      case 0x80:
+        newFilterMode = LSM6DSO_HP_FILTER_16mHz;
+        break;
+      case 0x81:
+        newFilterMode = LSM6DSO_HP_FILTER_65mHz;
+        break;
+      case 0x82:
+        newFilterMode = LSM6DSO_HP_FILTER_260mHz;
+        break;
+      case 0x83:
+        newFilterMode = LSM6DSO_HP_FILTER_1Hz04;
+        break;
+      default:
+        ret = LSM6DSO_ERROR;
+        break;
+    }
+
+    if (ret == LSM6DSO_ERROR)
+    {
+      return LSM6DSO_ERROR;
+    }
+
     /*Set gyroscope high_pass filter-mode*/
     /* Enable high-pass filter */
-    if (lsm6dso_gy_hp_path_internal_set(&(pObj->Ctx), (lsm6dso_hpm_g_t)FilterMode) != LSM6DSO_OK)
+    if (lsm6dso_gy_hp_path_internal_set(&(pObj->Ctx), newFilterMode) != LSM6DSO_OK)
     {
       return LSM6DSO_ERROR;
     }
@@ -3078,8 +3701,29 @@ int32_t LSM6DSO_GYRO_Set_Filter_Mode(LSM6DSO_Object_t *pObj, uint8_t LowHighPass
  */
 int32_t LSM6DSO_DRDY_Set_Mode(LSM6DSO_Object_t *pObj, uint8_t Mode)
 {
+  int32_t ret = LSM6DSO_OK;
+  lsm6dso_dataready_pulsed_t newMode = LSM6DSO_DRDY_LATCHED;
+
+  switch (Mode)
+  {
+    case 0:
+      newMode = LSM6DSO_DRDY_LATCHED;
+      break;
+    case 1:
+      newMode = LSM6DSO_DRDY_PULSED;
+      break;
+    default:
+      ret = LSM6DSO_ERROR;
+      break;
+  }
+
+  if (ret == LSM6DSO_ERROR)
+  {
+    return LSM6DSO_ERROR;
+  }
+
   /* Set DRDY mode */
-  if (lsm6dso_data_ready_mode_set(&(pObj->Ctx), (lsm6dso_dataready_pulsed_t)Mode) != LSM6DSO_OK)
+  if (lsm6dso_data_ready_mode_set(&(pObj->Ctx), newMode) != LSM6DSO_OK)
   {
     return LSM6DSO_ERROR;
   }
@@ -3101,11 +3745,12 @@ int32_t LSM6DSO_DRDY_Set_Mode(LSM6DSO_Object_t *pObj, uint8_t Mode)
  * @param  Odr the functional output data rate to be set
  * @retval 0 in case of success, an error code otherwise
  */
-static int32_t LSM6DSO_ACC_SetOutputDataRate_When_Enabled(LSM6DSO_Object_t *pObj, float Odr)
+static int32_t LSM6DSO_ACC_SetOutputDataRate_When_Enabled(LSM6DSO_Object_t *pObj, float_t Odr)
 {
   lsm6dso_odr_xl_t new_odr;
 
-  new_odr = (Odr <=   12.5f) ? LSM6DSO_XL_ODR_12Hz5
+  new_odr = (Odr <=    1.6f) ? LSM6DSO_XL_ODR_1Hz6
+          : (Odr <=   12.5f) ? LSM6DSO_XL_ODR_12Hz5
           : (Odr <=   26.0f) ? LSM6DSO_XL_ODR_26Hz
           : (Odr <=   52.0f) ? LSM6DSO_XL_ODR_52Hz
           : (Odr <=  104.0f) ? LSM6DSO_XL_ODR_104Hz
@@ -3131,9 +3776,10 @@ static int32_t LSM6DSO_ACC_SetOutputDataRate_When_Enabled(LSM6DSO_Object_t *pObj
  * @param  Odr the functional output data rate to be set
  * @retval 0 in case of success, an error code otherwise
  */
-static int32_t LSM6DSO_ACC_SetOutputDataRate_When_Disabled(LSM6DSO_Object_t *pObj, float Odr)
+static int32_t LSM6DSO_ACC_SetOutputDataRate_When_Disabled(LSM6DSO_Object_t *pObj, float_t Odr)
 {
-  pObj->acc_odr = (Odr <=   12.5f) ? LSM6DSO_XL_ODR_12Hz5
+  pObj->acc_odr = (Odr <=    1.6f) ? LSM6DSO_XL_ODR_1Hz6
+                : (Odr <=   12.5f) ? LSM6DSO_XL_ODR_12Hz5
                 : (Odr <=   26.0f) ? LSM6DSO_XL_ODR_26Hz
                 : (Odr <=   52.0f) ? LSM6DSO_XL_ODR_52Hz
                 : (Odr <=  104.0f) ? LSM6DSO_XL_ODR_104Hz
@@ -3153,7 +3799,7 @@ static int32_t LSM6DSO_ACC_SetOutputDataRate_When_Disabled(LSM6DSO_Object_t *pOb
  * @param  Odr the functional output data rate to be set
  * @retval 0 in case of success, an error code otherwise
  */
-static int32_t LSM6DSO_GYRO_SetOutputDataRate_When_Enabled(LSM6DSO_Object_t *pObj, float Odr)
+static int32_t LSM6DSO_GYRO_SetOutputDataRate_When_Enabled(LSM6DSO_Object_t *pObj, float_t Odr)
 {
   lsm6dso_odr_g_t new_odr;
 
@@ -3183,7 +3829,7 @@ static int32_t LSM6DSO_GYRO_SetOutputDataRate_When_Enabled(LSM6DSO_Object_t *pOb
  * @param  Odr the functional output data rate to be set
  * @retval 0 in case of success, an error code otherwise
  */
-static int32_t LSM6DSO_GYRO_SetOutputDataRate_When_Disabled(LSM6DSO_Object_t *pObj, float Odr)
+static int32_t LSM6DSO_GYRO_SetOutputDataRate_When_Disabled(LSM6DSO_Object_t *pObj, float_t Odr)
 {
   pObj->gyro_odr = (Odr <=   12.5f) ? LSM6DSO_GY_ODR_12Hz5
                  : (Odr <=   26.0f) ? LSM6DSO_GY_ODR_26Hz
@@ -3197,6 +3843,21 @@ static int32_t LSM6DSO_GYRO_SetOutputDataRate_When_Disabled(LSM6DSO_Object_t *pO
                  :                    LSM6DSO_GY_ODR_6667Hz;
 
   return LSM6DSO_OK;
+}
+
+/**
+ * @brief  This function provides a minimum delay based on Tick counter
+ * @param  pObj the device pObj
+ * @param  msDelay delay expressed in ms
+ * @retval None
+ */
+static void LSM6DSO_Delay(LSM6DSO_Object_t *pObj, uint32_t msDelay)
+{
+  uint32_t tickstart = pObj->IO.GetTick();
+
+  while((pObj->IO.GetTick() - tickstart) < msDelay)
+  {
+  }
 }
 
 /**

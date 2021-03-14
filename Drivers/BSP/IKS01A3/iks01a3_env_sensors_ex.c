@@ -6,39 +6,13 @@
  ******************************************************************************
  * @attention
  *
- * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics International N.V.
+ * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
  * All rights reserved.</center></h2>
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted, provided that the following conditions are met:
- *
- * 1. Redistribution of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 3. Neither the name of STMicroelectronics nor the names of other
- *    contributors to this software may be used to endorse or promote products
- *    derived from this software without specific written permission.
- * 4. This software, including modifications and/or derivative works of this
- *    software, must execute solely and exclusively on microcontroller or
- *    microprocessor devices manufactured by or for STMicroelectronics.
- * 5. Redistribution and use of this software other than as permitted under
- *    this license is void and will automatically terminate your rights under
- *    this license.
- *
- * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
- * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
- * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT
- * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
  *
  ******************************************************************************
  */
@@ -73,7 +47,8 @@ extern void *EnvCompObj[IKS01A3_ENV_INSTANCES_NBR];
  */
 
 /**
- * @brief  Get the status of data ready bit (available only for HTS221, LPS22HH, STTS751, LPS33HW sensors)
+ * @brief  Get the status of data ready bit (available only for HTS221, LPS22HH, STTS751, LPS33HW, LPS33K,
+ *         LPS22CH, LPS27HHTW sensors)
  * @param  Instance the device instance
  * @param  Function Environmental sensor function. Could be:
  *         - ENV_HUMIDITY or ENV_TEMPERATURE for instance IKS01A3_HTS221_0
@@ -201,6 +176,119 @@ int32_t IKS01A3_ENV_SENSOR_Get_DRDY_Status(uint32_t Instance, uint32_t Function,
       break;
 #endif
 
+#if (USE_IKS01A3_ENV_SENSOR_STTS22H_0 == 1)
+    case IKS01A3_STTS22H_0:
+      if ((Function & ENV_TEMPERATURE) == ENV_TEMPERATURE)
+      {
+        if (STTS22H_TEMP_Get_DRDY_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+        {
+          ret = BSP_ERROR_COMPONENT_FAILURE;
+        }
+        else
+        {
+          ret = BSP_ERROR_NONE;
+        }
+      }
+      else
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS33K_0 == 1)
+    case IKS01A3_LPS33K_0:
+      if ((Function & ENV_PRESSURE) == ENV_PRESSURE)
+      {
+        if (LPS33K_PRESS_Get_DRDY_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+        {
+          ret = BSP_ERROR_COMPONENT_FAILURE;
+        }
+        else
+        {
+          ret = BSP_ERROR_NONE;
+        }
+      }
+      else if ((Function & ENV_TEMPERATURE) == ENV_TEMPERATURE)
+      {
+        if (LPS33K_TEMP_Get_DRDY_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+        {
+          ret = BSP_ERROR_COMPONENT_FAILURE;
+        }
+        else
+        {
+          ret = BSP_ERROR_NONE;
+        }
+      }
+      else
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if ((Function & ENV_PRESSURE) == ENV_PRESSURE)
+      {
+        if (LPS22CH_PRESS_Get_DRDY_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+        {
+          ret = BSP_ERROR_COMPONENT_FAILURE;
+        }
+        else
+        {
+          ret = BSP_ERROR_NONE;
+        }
+      }
+      else if ((Function & ENV_TEMPERATURE) == ENV_TEMPERATURE)
+      {
+        if (LPS22CH_TEMP_Get_DRDY_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+        {
+          ret = BSP_ERROR_COMPONENT_FAILURE;
+        }
+        else
+        {
+          ret = BSP_ERROR_NONE;
+        }
+      }
+      else
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if ((Function & ENV_PRESSURE) == ENV_PRESSURE)
+      {
+        if (LPS27HHTW_PRESS_Get_DRDY_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+        {
+          ret = BSP_ERROR_COMPONENT_FAILURE;
+        }
+        else
+        {
+          ret = BSP_ERROR_NONE;
+        }
+      }
+      else if ((Function & ENV_TEMPERATURE) == ENV_TEMPERATURE)
+      {
+        if (LPS27HHTW_TEMP_Get_DRDY_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+        {
+          ret = BSP_ERROR_COMPONENT_FAILURE;
+        }
+        else
+        {
+          ret = BSP_ERROR_NONE;
+        }
+      }
+      else
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -210,7 +298,8 @@ int32_t IKS01A3_ENV_SENSOR_Get_DRDY_Status(uint32_t Instance, uint32_t Function,
 }
 
 /**
- * @brief  Get the register value (available only for HTS221, LPS22HH, STTS751, LPS33HW sensors)
+ * @brief  Get the register value (available only for HTS221, LPS22HH, STTS751, LPS33HW, LPS33K,
+ *         LPS22CH, LPS27HHTW sensors)
  * @param  Instance the device instance
  * @param  Reg address to be read
  * @param  Data pointer where the value is written to
@@ -274,6 +363,58 @@ int32_t IKS01A3_ENV_SENSOR_Read_Register(uint32_t Instance, uint8_t Reg, uint8_t
       break;
 #endif
 
+#if (USE_IKS01A3_ENV_SENSOR_STTS22H_0 == 1)
+    case IKS01A3_STTS22H_0:
+      if (STTS22H_Read_Reg(EnvCompObj[Instance], Reg, Data) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS33K_0 == 1)
+    case IKS01A3_LPS33K_0:
+      if (LPS33K_Read_Reg(EnvCompObj[Instance], Reg, Data) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_Read_Reg(EnvCompObj[Instance], Reg, Data) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_Read_Reg(EnvCompObj[Instance], Reg, Data) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -283,7 +424,8 @@ int32_t IKS01A3_ENV_SENSOR_Read_Register(uint32_t Instance, uint8_t Reg, uint8_t
 }
 
 /**
- * @brief  Set the register value (available only for HTS221, LPS22HH, STTS751 sensors)
+ * @brief  Set the register value (available only for HTS221, LPS22HH, STTS751, LPS33HW, LPS33K,
+ *         LPS22CH, LPS27HHTW sensors)
  * @param  Instance the device instance
  * @param  Reg address to be read
  * @param  Data value to be written
@@ -347,6 +489,58 @@ int32_t IKS01A3_ENV_SENSOR_Write_Register(uint32_t Instance, uint8_t Reg, uint8_
       break;
 #endif
 
+#if (USE_IKS01A3_ENV_SENSOR_STTS22H_0 == 1)
+    case IKS01A3_STTS22H_0:
+      if (STTS22H_Write_Reg(EnvCompObj[Instance], Reg, Data) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS33K_0 == 1)
+    case IKS01A3_LPS33K_0:
+      if (LPS33K_Write_Reg(EnvCompObj[Instance], Reg, Data) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_Write_Reg(EnvCompObj[Instance], Reg, Data) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_Write_Reg(EnvCompObj[Instance], Reg, Data) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -367,18 +561,6 @@ int32_t IKS01A3_ENV_SENSOR_Set_High_Temperature_Threshold(uint32_t Instance, flo
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
-#if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
-    case IKS01A3_LPS22HH_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
     case IKS01A3_STTS751_0:
       if (STTS751_TEMP_SetHighTemperatureThreshold(EnvCompObj[Instance], Value) != BSP_ERROR_NONE)
@@ -412,18 +594,6 @@ int32_t IKS01A3_ENV_SENSOR_Set_Low_Temperature_Threshold(uint32_t Instance, floa
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
-#if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
-    case IKS01A3_LPS22HH_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
     case IKS01A3_STTS751_0:
       if (STTS751_TEMP_SetLowTemperatureThreshold(EnvCompObj[Instance], Value) != BSP_ERROR_NONE)
@@ -459,18 +629,6 @@ int32_t IKS01A3_ENV_SENSOR_Get_Temperature_Limit_Status(uint32_t Instance, uint8
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
-#if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
-    case IKS01A3_LPS22HH_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
     case IKS01A3_STTS751_0:
       if (STTS751_TEMP_GetTemperatureLimitStatus(EnvCompObj[Instance], HighLimit, LowLimit, ThermLimit) != BSP_ERROR_NONE)
@@ -504,18 +662,6 @@ int32_t IKS01A3_ENV_SENSOR_Set_Event_Pin(uint32_t Instance, uint8_t Enable)
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
-#if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
-    case IKS01A3_LPS22HH_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
     case IKS01A3_STTS751_0:
       if (STTS751_TEMP_SetEventPin(EnvCompObj[Instance], Enable) != BSP_ERROR_NONE)
@@ -538,7 +684,7 @@ int32_t IKS01A3_ENV_SENSOR_Set_Event_Pin(uint32_t Instance, uint8_t Enable)
 }
 
 /**
- * @brief  Get the data stored in FIFO (available only for LPS22HH, LPS33HW sensor)
+ * @brief  Get the data stored in FIFO (available only for LPS22HH, LPS22CH, LPS27HHTW  sensor)
  * @param  Instance the device instance
  * @param  Press the pressure data
  * @param  Temp the temperature data
@@ -550,12 +696,6 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Data(uint32_t Instance, float *Press, float 
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
     case IKS01A3_LPS22HH_0:
       if (LPS22HH_FIFO_Get_Data(EnvCompObj[Instance], Press, Temp) != BSP_ERROR_NONE)
@@ -569,9 +709,29 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Data(uint32_t Instance, float *Press, float 
       break;
 #endif
 
-#if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
-    case IKS01A3_STTS751_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_FIFO_Get_Data(EnvCompObj[Instance], Press, Temp) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_FIFO_Get_Data(EnvCompObj[Instance], Press, Temp) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
       break;
 #endif
 
@@ -584,7 +744,7 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Data(uint32_t Instance, float *Press, float 
 }
 
 /**
- * @brief  Get FIFO THR status (available only for LPS22HH, LPS33HW sensor)
+ * @brief  Get FIFO THR status (available only for LPS22HH, LPS22CH, LPS27HHTW sensor)
  * @param  Instance the device instance
  * @param  Status the pointer to the status
  * @retval BSP status
@@ -595,12 +755,6 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Fth_Status(uint32_t Instance, uint8_t *Statu
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
     case IKS01A3_LPS22HH_0:
       if (LPS22HH_FIFO_Get_FTh_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
@@ -614,9 +768,29 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Fth_Status(uint32_t Instance, uint8_t *Statu
       break;
 #endif
 
-#if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
-    case IKS01A3_STTS751_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_FIFO_Get_FTh_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_FIFO_Get_FTh_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
       break;
 #endif
 
@@ -629,7 +803,7 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Fth_Status(uint32_t Instance, uint8_t *Statu
 }
 
 /**
- * @brief  Get FIFO Full status (available only for LPS22HH, LPS33HW sensor)
+ * @brief  Get FIFO Full status (available only for LPS22HH, LPS22CH, LPS27HHTW sensor)
  * @param  Instance the device instance
  * @param  Status the pointer to the status
  * @retval BSP status
@@ -640,12 +814,6 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Full_Status(uint32_t Instance, uint8_t *Stat
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
     case IKS01A3_LPS22HH_0:
       if (LPS22HH_FIFO_Get_Full_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
@@ -659,9 +827,29 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Full_Status(uint32_t Instance, uint8_t *Stat
       break;
 #endif
 
-#if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
-    case IKS01A3_STTS751_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_FIFO_Get_Full_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_FIFO_Get_Full_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
       break;
 #endif
 
@@ -674,7 +862,7 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Full_Status(uint32_t Instance, uint8_t *Stat
 }
 
 /**
- * @brief  Get the number of unread samples in FIFO (available only for LPS22HH, LPS33HW sensor)
+ * @brief  Get the number of unread samples in FIFO (available only for LPS22HH, LPS22CH, LPS27HHTW sensor)
  * @param  Instance the device instance
  * @param  NumSamples the number of unread FIFO samples
  * @retval BSP status
@@ -685,12 +873,6 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Num_Samples(uint32_t Instance, uint8_t *NumS
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
     case IKS01A3_LPS22HH_0:
       if (LPS22HH_FIFO_Get_Level(EnvCompObj[Instance], NumSamples) != BSP_ERROR_NONE)
@@ -704,9 +886,29 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Num_Samples(uint32_t Instance, uint8_t *NumS
       break;
 #endif
 
-#if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
-    case IKS01A3_STTS751_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_FIFO_Get_Level(EnvCompObj[Instance], NumSamples) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_FIFO_Get_Level(EnvCompObj[Instance], NumSamples) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
       break;
 #endif
 
@@ -719,7 +921,7 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Num_Samples(uint32_t Instance, uint8_t *NumS
 }
 
 /**
- * @brief  Get FIFO OVR status (available only for LPS22HH, LPS33HW sensor)
+ * @brief  Get FIFO OVR status (available only for LPS22HH, LPS22CH, LPS27HHTW sensor)
  * @param  Instance the device instance
  * @param  Status the pointer to the status
  * @retval BSP status
@@ -730,12 +932,6 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Ovr_Status(uint32_t Instance, uint8_t *Statu
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
     case IKS01A3_LPS22HH_0:
       if (LPS22HH_FIFO_Get_Ovr_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
@@ -749,9 +945,29 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Ovr_Status(uint32_t Instance, uint8_t *Statu
       break;
 #endif
 
-#if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
-    case IKS01A3_STTS751_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_FIFO_Get_Ovr_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_FIFO_Get_Ovr_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
       break;
 #endif
 
@@ -764,7 +980,7 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Get_Ovr_Status(uint32_t Instance, uint8_t *Statu
 }
 
 /**
- * @brief  Reset FIFO Interrupt (available only for LPS22HH, LPS33HW sensor)
+ * @brief  Reset FIFO Interrupt (available only for LPS22HH, LPS22CH, LPS27HHTW sensor)
  * @param  Instance the device instance
  * @param  Interrupt FIFO interrupt. Could be: FTH, FULL or OVR
  * @retval BSP status
@@ -775,12 +991,6 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Reset_Interrupt(uint32_t Instance, uint8_t Inter
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
     case IKS01A3_LPS22HH_0:
       if (LPS22HH_FIFO_Reset_Interrupt(EnvCompObj[Instance], Interrupt) != BSP_ERROR_NONE)
@@ -794,9 +1004,29 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Reset_Interrupt(uint32_t Instance, uint8_t Inter
       break;
 #endif
 
-#if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
-    case IKS01A3_STTS751_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_FIFO_Reset_Interrupt(EnvCompObj[Instance], Interrupt) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_FIFO_Reset_Interrupt(EnvCompObj[Instance], Interrupt) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
       break;
 #endif
 
@@ -809,7 +1039,7 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Reset_Interrupt(uint32_t Instance, uint8_t Inter
 }
 
 /**
- * @brief  Set FIFO Interrupt (available only for LPS22HH, LPS33HW sensor)
+ * @brief  Set FIFO Interrupt (available only for LPS22HH, LPS22CH, LPS27HHTW sensor)
  * @param  Instance the device instance
  * @param  Interrupt FIFO interrupt. Could be: FTH, FULL or OVR
  * @retval BSP status
@@ -820,12 +1050,6 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Set_Interrupt(uint32_t Instance, uint8_t Interru
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
     case IKS01A3_LPS22HH_0:
       if (LPS22HH_FIFO_Set_Interrupt(EnvCompObj[Instance], Interrupt) != BSP_ERROR_NONE)
@@ -839,9 +1063,29 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Set_Interrupt(uint32_t Instance, uint8_t Interru
       break;
 #endif
 
-#if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
-    case IKS01A3_STTS751_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_FIFO_Set_Interrupt(EnvCompObj[Instance], Interrupt) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_FIFO_Set_Interrupt(EnvCompObj[Instance], Interrupt) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
       break;
 #endif
 
@@ -854,7 +1098,7 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Set_Interrupt(uint32_t Instance, uint8_t Interru
 }
 
 /**
- * @brief  Set FIFO mode  (available only for LPS22HH, LPS33HW sensor)
+ * @brief  Set FIFO mode  (available only for LPS22HH, LPS22CH, LPS27HHTW sensor)
  * @param  Instance the device instance
  * @param  Mode FIFO mode
  * @retval BSP status
@@ -865,12 +1109,6 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Set_Mode(uint32_t Instance, uint8_t Mode)
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
     case IKS01A3_LPS22HH_0:
       if (LPS22HH_FIFO_Set_Mode(EnvCompObj[Instance], Mode) != BSP_ERROR_NONE)
@@ -884,9 +1122,29 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Set_Mode(uint32_t Instance, uint8_t Mode)
       break;
 #endif
 
-#if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
-    case IKS01A3_STTS751_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_FIFO_Set_Mode(EnvCompObj[Instance], Mode) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_FIFO_Set_Mode(EnvCompObj[Instance], Mode) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
       break;
 #endif
 
@@ -899,7 +1157,7 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Set_Mode(uint32_t Instance, uint8_t Mode)
 }
 
 /**
- * @brief  Set FIFO watermark  (available only for LPS22HH, LPS33HW sensor)
+ * @brief  Set FIFO watermark  (available only for LPS22HH, LPS22CH, LPS27HHTW sensor)
  * @param  Instance the device instance
  * @param  Watermark FIFO data level threshold
  * @retval BSP status
@@ -910,12 +1168,6 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Set_Watermark_Level(uint32_t Instance, uint8_t W
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
     case IKS01A3_LPS22HH_0:
       if (LPS22HH_FIFO_Set_Watermark_Level(EnvCompObj[Instance], Watermark) != BSP_ERROR_NONE)
@@ -929,9 +1181,29 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Set_Watermark_Level(uint32_t Instance, uint8_t W
       break;
 #endif
 
-#if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
-    case IKS01A3_STTS751_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_FIFO_Set_Watermark_Level(EnvCompObj[Instance], Watermark) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_FIFO_Set_Watermark_Level(EnvCompObj[Instance], Watermark) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
       break;
 #endif
 
@@ -944,7 +1216,7 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Set_Watermark_Level(uint32_t Instance, uint8_t W
 }
 
 /**
- * @brief  Set the stop on watermark function (available only for LPS22HH sensor)
+ * @brief  Set the stop on watermark function (available only for LPS22HH, LPS22CH, LPS27HHTW sensor)
  * @param  Instance the device instance
  * @param  Stop the state of stop on watermark function
  * @retval BSP status
@@ -955,12 +1227,6 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Stop_On_Watermark(uint32_t Instance, uint8_t Sto
 
   switch (Instance)
   {
-#if (USE_IKS01A3_ENV_SENSOR_HTS221_0 == 1)
-    case IKS01A3_HTS221_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
-      break;
-#endif
-
 #if (USE_IKS01A3_ENV_SENSOR_LPS22HH_0 == 1)
     case IKS01A3_LPS22HH_0:
       if (LPS22HH_FIFO_Stop_On_Watermark(EnvCompObj[Instance], Stop) != BSP_ERROR_NONE)
@@ -974,9 +1240,29 @@ int32_t IKS01A3_ENV_SENSOR_FIFO_Stop_On_Watermark(uint32_t Instance, uint8_t Sto
       break;
 #endif
 
-#if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
-    case IKS01A3_STTS751_0:
-      ret = BSP_ERROR_COMPONENT_FAILURE;
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_FIFO_Stop_On_Watermark(EnvCompObj[Instance], Stop) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_FIFO_Stop_On_Watermark(EnvCompObj[Instance], Stop) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
       break;
 #endif
 
@@ -1038,6 +1324,45 @@ int32_t IKS01A3_ENV_SENSOR_Set_One_Shot(uint32_t Instance)
       break;
 #endif
 
+#if (USE_IKS01A3_ENV_SENSOR_STTS22H_0 == 1)
+    case IKS01A3_STTS22H_0:
+      if (STTS22H_Set_One_Shot(EnvCompObj[Instance]) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_Set_One_Shot(EnvCompObj[Instance]) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_Set_One_Shot(EnvCompObj[Instance]) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -1087,6 +1412,45 @@ int32_t IKS01A3_ENV_SENSOR_Get_One_Shot_Status(uint32_t Instance, uint8_t *Statu
 #if (USE_IKS01A3_ENV_SENSOR_STTS751_0 == 1)
     case IKS01A3_STTS751_0:
       if (STTS751_Get_One_Shot_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_STTS22H_0 == 1)
+    case IKS01A3_STTS22H_0:
+      if (STTS22H_Get_One_Shot_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS22CH_0 == 1)
+    case IKS01A3_LPS22CH_0:
+      if (LPS22CH_Get_One_Shot_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_IKS01A3_ENV_SENSOR_LPS27HHTW_0 == 1)
+    case IKS01A3_LPS27HHTW_0:
+      if (LPS27HHTW_Get_One_Shot_Status(EnvCompObj[Instance], Status) != BSP_ERROR_NONE)
       {
         ret = BSP_ERROR_COMPONENT_FAILURE;
       }

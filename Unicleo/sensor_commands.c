@@ -227,7 +227,7 @@ static int SC_Get_ODR_List(TMsg *Msg);
 static int SC_Set_ODR(TMsg *Msg);
 static int SC_Get_Sensor_List(TMsg *Msg);
 static int SC_Set_Sensor_Index(TMsg *Msg);
-static int SC_Get_Config_String(TMsg *Msg, uint8_t id);
+//static int SC_Get_Config_String(TMsg *Msg, uint8_t id);
 
 static void Send_Sensor_Name(TMsg *Msg, uint8_t *SensorName);
 static void Send_Sensor_FS_List(TMsg *Msg, uint32_t *FsList);

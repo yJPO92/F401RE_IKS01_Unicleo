@@ -6,9 +6,12 @@
 @TODO: reorganiser functions in files
 ++++
 
-le 12/03/2021   v4.8d: ==> Git local. Ne pas exclure les fichiers STMicro (drivers, Middleware...)
-                    puis sur Github.com
-
+le 12/03/2021   v5.0: update CubeMX v6.2.0, Firmware F4 v1.26.0 & MEMS v8.2.0
+                    many change ds les fichiers STM!
+                    interrupt, TIM1, LD2, B1 NE fonctionnent PAS!
+le 12/03/2021   v4.8c: ==> Git local. Ne pas exclure les fichiers STMicro (drivers, Middleware...)
+                    puis sur Github.com (noté v4.8d)
+-------------SVN------------------------------------------------------
 le 11/03/2021   v4.8c: apres essai infrutueux de passage sous git & upgrate CubeMX et F4 FW retour version SVN v4.8
                     rebuild ok
                     ==> !!Attention : en Git NE PAS IGNORER les repertoires générés par CubeMX meme s'ils sont gros!!

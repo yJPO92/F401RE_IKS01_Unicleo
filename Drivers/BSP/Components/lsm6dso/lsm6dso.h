@@ -6,29 +6,13 @@
  ******************************************************************************
  * @attention
  *
- * <h2><center>&copy; COPYRIGHT(c) 2018 STMicroelectronics</center></h2>
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+ * All rights reserved.</center></h2>
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *   1. Redistributions of source code must retain the above copyright notice,
- *      this list of conditions and the following disclaimer.
- *   2. Redistributions in binary form must reproduce the above copyright notice,
- *      this list of conditions and the following disclaimer in the documentation
- *      and/or other materials provided with the distribution.
- *   3. Neither the name of STMicroelectronics nor the names of its contributors
- *      may be used to endorse or promote products derived from this software
- *      without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
  *
  ******************************************************************************
  */
@@ -74,6 +58,19 @@ typedef enum
   LSM6DSO_INT2_PIN,
 } LSM6DSO_SensorIntPin_t;
 
+typedef enum
+{
+  LSM6DSO_ACC_HIGH_PERFORMANCE_MODE,
+  LSM6DSO_ACC_LOW_POWER_NORMAL_MODE,
+  LSM6DSO_ACC_ULTRA_LOW_POWER_MODE
+} LSM6DSO_ACC_Operating_Mode_t;
+
+typedef enum
+{
+  LSM6DSO_GYRO_HIGH_PERFORMANCE_MODE,
+  LSM6DSO_GYRO_LOW_POWER_NORMAL_MODE
+} LSM6DSO_GYRO_Operating_Mode_t;
+
 typedef struct
 {
   LSM6DSO_Init_Func          Init;
@@ -115,7 +112,7 @@ typedef struct
 typedef struct
 {
   LSM6DSO_IO_t        IO;
-  lsm6dso_ctx_t       Ctx;
+  stmdev_ctx_t        Ctx;
   uint8_t             is_initialized;
   uint8_t             acc_is_enabled;
   uint8_t             gyro_is_enabled;
@@ -132,9 +129,9 @@ typedef struct
   uint32_t  GyroMaxFS;
   uint32_t  AccMaxFS;
   uint32_t  MagMaxFS;
-  float     GyroMaxOdr;
-  float     AccMaxOdr;
-  float     MagMaxOdr;
+  float_t     GyroMaxOdr;
+  float_t     AccMaxOdr;
+  float_t     MagMaxOdr;
 } LSM6DSO_Capabilities_t;
 
 typedef struct
@@ -149,9 +146,9 @@ typedef struct
 {
   int32_t (*Enable)(LSM6DSO_Object_t *);
   int32_t (*Disable)(LSM6DSO_Object_t *);
-  int32_t (*GetSensitivity)(LSM6DSO_Object_t *, float *);
-  int32_t (*GetOutputDataRate)(LSM6DSO_Object_t *, float *);
-  int32_t (*SetOutputDataRate)(LSM6DSO_Object_t *, float);
+  int32_t (*GetSensitivity)(LSM6DSO_Object_t *, float_t *);
+  int32_t (*GetOutputDataRate)(LSM6DSO_Object_t *, float_t *);
+  int32_t (*SetOutputDataRate)(LSM6DSO_Object_t *, float_t);
   int32_t (*GetFullScale)(LSM6DSO_Object_t *, int32_t *);
   int32_t (*SetFullScale)(LSM6DSO_Object_t *, int32_t);
   int32_t (*GetAxes)(LSM6DSO_Object_t *, LSM6DSO_Axes_t *);
@@ -162,14 +159,34 @@ typedef struct
 {
   int32_t (*Enable)(LSM6DSO_Object_t *);
   int32_t (*Disable)(LSM6DSO_Object_t *);
-  int32_t (*GetSensitivity)(LSM6DSO_Object_t *, float *);
-  int32_t (*GetOutputDataRate)(LSM6DSO_Object_t *, float *);
-  int32_t (*SetOutputDataRate)(LSM6DSO_Object_t *, float);
+  int32_t (*GetSensitivity)(LSM6DSO_Object_t *, float_t *);
+  int32_t (*GetOutputDataRate)(LSM6DSO_Object_t *, float_t *);
+  int32_t (*SetOutputDataRate)(LSM6DSO_Object_t *, float_t);
   int32_t (*GetFullScale)(LSM6DSO_Object_t *, int32_t *);
   int32_t (*SetFullScale)(LSM6DSO_Object_t *, int32_t);
   int32_t (*GetAxes)(LSM6DSO_Object_t *, LSM6DSO_Axes_t *);
   int32_t (*GetAxesRaw)(LSM6DSO_Object_t *, LSM6DSO_AxesRaw_t *);
 } LSM6DSO_GYRO_Drv_t;
+
+typedef union{
+  int16_t i16bit[3];
+  uint8_t u8bit[6];
+} lsm6dso_axis3bit16_t;
+
+typedef union{
+  int16_t i16bit;
+  uint8_t u8bit[2];
+} lsm6dso_axis1bit16_t;
+
+typedef union{
+  int32_t i32bit[3];
+  uint8_t u8bit[12];
+} lsm6dso_axis3bit32_t;
+
+typedef union{
+  int32_t i32bit;
+  uint8_t u8bit[4];
+} lsm6dso_axis1bit32_t;
 
 /**
  * @}
@@ -213,9 +230,10 @@ int32_t LSM6DSO_GetCapabilities(LSM6DSO_Object_t *pObj, LSM6DSO_Capabilities_t *
 
 int32_t LSM6DSO_ACC_Enable(LSM6DSO_Object_t *pObj);
 int32_t LSM6DSO_ACC_Disable(LSM6DSO_Object_t *pObj);
-int32_t LSM6DSO_ACC_GetSensitivity(LSM6DSO_Object_t *pObj, float *Sensitivity);
-int32_t LSM6DSO_ACC_GetOutputDataRate(LSM6DSO_Object_t *pObj, float *Odr);
-int32_t LSM6DSO_ACC_SetOutputDataRate(LSM6DSO_Object_t *pObj, float Odr);
+int32_t LSM6DSO_ACC_GetSensitivity(LSM6DSO_Object_t *pObj, float_t *Sensitivity);
+int32_t LSM6DSO_ACC_GetOutputDataRate(LSM6DSO_Object_t *pObj, float_t *Odr);
+int32_t LSM6DSO_ACC_SetOutputDataRate(LSM6DSO_Object_t *pObj, float_t Odr);
+int32_t LSM6DSO_ACC_SetOutputDataRate_With_Mode(LSM6DSO_Object_t *pObj, float_t Odr, LSM6DSO_ACC_Operating_Mode_t Mode);
 int32_t LSM6DSO_ACC_GetFullScale(LSM6DSO_Object_t *pObj, int32_t *FullScale);
 int32_t LSM6DSO_ACC_SetFullScale(LSM6DSO_Object_t *pObj, int32_t FullScale);
 int32_t LSM6DSO_ACC_GetAxesRaw(LSM6DSO_Object_t *pObj, LSM6DSO_AxesRaw_t *Value);
@@ -223,9 +241,10 @@ int32_t LSM6DSO_ACC_GetAxes(LSM6DSO_Object_t *pObj, LSM6DSO_Axes_t *Acceleration
 
 int32_t LSM6DSO_GYRO_Enable(LSM6DSO_Object_t *pObj);
 int32_t LSM6DSO_GYRO_Disable(LSM6DSO_Object_t *pObj);
-int32_t LSM6DSO_GYRO_GetSensitivity(LSM6DSO_Object_t *pObj, float *Sensitivity);
-int32_t LSM6DSO_GYRO_GetOutputDataRate(LSM6DSO_Object_t *pObj, float *Odr);
-int32_t LSM6DSO_GYRO_SetOutputDataRate(LSM6DSO_Object_t *pObj, float Odr);
+int32_t LSM6DSO_GYRO_GetSensitivity(LSM6DSO_Object_t *pObj, float_t *Sensitivity);
+int32_t LSM6DSO_GYRO_GetOutputDataRate(LSM6DSO_Object_t *pObj, float_t *Odr);
+int32_t LSM6DSO_GYRO_SetOutputDataRate(LSM6DSO_Object_t *pObj, float_t Odr);
+int32_t LSM6DSO_GYRO_SetOutputDataRate_With_Mode(LSM6DSO_Object_t *pObj, float_t Odr, LSM6DSO_GYRO_Operating_Mode_t Mode);
 int32_t LSM6DSO_GYRO_GetFullScale(LSM6DSO_Object_t *pObj, int32_t *FullScale);
 int32_t LSM6DSO_GYRO_SetFullScale(LSM6DSO_Object_t *pObj, int32_t FullScale);
 int32_t LSM6DSO_GYRO_GetAxesRaw(LSM6DSO_Object_t *pObj, LSM6DSO_AxesRaw_t *Value);
@@ -290,9 +309,9 @@ int32_t LSM6DSO_FIFO_Get_Data(LSM6DSO_Object_t *pObj, uint8_t *Data);
 int32_t LSM6DSO_FIFO_Get_Empty_Status(LSM6DSO_Object_t *pObj, uint8_t *Status);
 int32_t LSM6DSO_FIFO_Get_Overrun_Status(LSM6DSO_Object_t *pObj, uint8_t *Status);
 int32_t LSM6DSO_FIFO_ACC_Get_Axes(LSM6DSO_Object_t *pObj, LSM6DSO_Axes_t *Acceleration);
-int32_t LSM6DSO_FIFO_ACC_Set_BDR(LSM6DSO_Object_t *pObj, float Bdr);
+int32_t LSM6DSO_FIFO_ACC_Set_BDR(LSM6DSO_Object_t *pObj, float_t Bdr);
 int32_t LSM6DSO_FIFO_GYRO_Get_Axes(LSM6DSO_Object_t *pObj, LSM6DSO_Axes_t *AngularVelocity);
-int32_t LSM6DSO_FIFO_GYRO_Set_BDR(LSM6DSO_Object_t *pObj, float Bdr);
+int32_t LSM6DSO_FIFO_GYRO_Set_BDR(LSM6DSO_Object_t *pObj, float_t Bdr);
 
 int32_t LSM6DSO_ACC_Enable_DRDY_On_INT1(LSM6DSO_Object_t *pObj);
 int32_t LSM6DSO_ACC_Disable_DRDY_On_INT1(LSM6DSO_Object_t *pObj);

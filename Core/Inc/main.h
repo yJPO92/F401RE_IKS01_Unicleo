@@ -29,6 +29,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
+
 #include "stm32f4xx_nucleo.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -58,6 +59,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define yCubeMX 5.1
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
 #define B1_EXTI_IRQn EXTI15_10_IRQn
@@ -93,9 +95,13 @@ void Error_Handler(void);
 #define LSM6DSO_INT1_Pin GPIO_PIN_5
 #define LSM6DSO_INT1_GPIO_Port GPIOB
 #define LSM6DSO_INT1_EXTI_IRQn EXTI9_5_IRQn
+#define I2C1scl_Pin GPIO_PIN_8
+#define I2C1scl_GPIO_Port GPIOB
+#define I2C1sda_Pin GPIO_PIN_9
+#define I2C1sda_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 #define yPROG "F401RE_IKS01_Unicleo"
-#define yVER  "v4.8c"
+#define yVER  "v5.0"
 #define yDATE "xx-mar-2021"
 
 #define yDBG 0		//many printf

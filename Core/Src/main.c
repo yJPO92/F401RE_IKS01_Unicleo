@@ -17,10 +17,8 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
-
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-//#include "dma.h"
 #include "rtc.h"
 #include "tim.h"
 //#include "usart.h"
@@ -29,6 +27,26 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+//Quelle est la cible?
+#define __STR2__(x) #x
+#define __STR1__(x) __STR2__(x)
+#pragma message("***************************")
+#if defined(STM32F401xE)
+#pragma message("Compiling for NUCLEO_F401RE")     //with '-fno-diagnostics-show-caret'
+//----- end F401RE -----
+#elif defined(STM32L476xx)
+#pragma message("Compiling for NUCLEO_L476RG")  //with '-fno-diagnostics-show-caret'
+//----- end L476RG ------
+#else
+#pragma message("warning: Unknown TARGET")
+#endif
+#pragma message("le " __STR1__(__DATE__)" "__STR1__(__TIME__))
+#pragma message("---------------------------")
+#pragma message("program " __STR1__(yPROG))
+#pragma message("version " __STR1__(yVER))
+#pragma message("CubeMX  " __STR1__(yCubeMX))
+#pragma message("***************************\n")
+
 #include "com.h"
 #include "DemoSerial.h"
 #include <stdio.h>
@@ -76,7 +94,7 @@
 char aTxBuffer[TMsg_MaxLen * 4];		    //buffer d'emission (UART & LCD)
 uint8_t aRxBuffer[UART_RxBufferSize];		//buffer de reception
 
-static volatile uint8_t BP1Detected = 0;	//flag detection interrupt BP bleu
+volatile uint8_t BP1Detected = 0;	//flag detection interrupt BP bleu
 volatile int comVTcomGUI;		//0=comm via VT, 1=comm via Unicleo-GUI
 volatile int yGPio;
 float j,k;
@@ -156,7 +174,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	/** PC1	GPIO_EXTI1	(STTS751_INT) */
 	if(GPIO_Pin == STTS751_INT_Pin) {
 		//snprintf(aTxBuffer, 1024, "\n\t--STTS751 Interrupt");
-		/* trop repetitif!! */HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+		/* trop repetitif!! */	//HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 		//yMEMS_Env_Sensors_Infos(IKS01A3_STTS751_0);
 	}
 
@@ -195,7 +213,6 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
-  
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -351,7 +368,7 @@ int main(void)
 	   }
 	   /* check GPIO pin for debug */
 	   yGPio = HAL_GPIO_ReadPin(STTS751_INT_GPIO_Port, STTS751_INT_Pin);
-	   //printf("\n--STTS751_int etat: %x", yGPio);
+	   printf("\n--STTS751_int etat: %x", yGPio);
 
 	   //dans tous les cas VT ou GUI
 	   /* pour Node-RED */
@@ -364,9 +381,10 @@ int main(void)
 	   IKS01A3_ENV_SENSOR_GetValue(IKS01A3_LPS22HH_0, ENV_TEMPERATURE, &nr_LPS22HH_Temp);
 
 
-	   /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-	   /* USER CODE BEGIN 3 */
+  MX_MEMS_Process();
+    /* USER CODE BEGIN 3 */
 
    }
   /* USER CODE END 3 */
@@ -382,11 +400,12 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
-  /** Configure the main internal regulator output voltage 
+  /** Configure the main internal regulator output voltage
   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
@@ -402,7 +421,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -461,7 +480,7 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */

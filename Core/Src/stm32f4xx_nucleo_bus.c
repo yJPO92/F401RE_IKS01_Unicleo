@@ -5,7 +5,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -19,7 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_nucleo_bus.h"
 
-__weak HAL_StatusTypeDef MX_I2C1_Init(I2C_HandleTypeDef* hi2c);								
+__weak HAL_StatusTypeDef MX_I2C1_Init(I2C_HandleTypeDef* hi2c);
 
 /** @addtogroup BSP
   * @{
@@ -32,13 +32,12 @@ __weak HAL_StatusTypeDef MX_I2C1_Init(I2C_HandleTypeDef* hi2c);
 /** @defgroup STM32F4XX_NUCLEO_BUS STM32F4XX_NUCLEO BUS
   * @{
   */
-  
 
 /** @defgroup STM32F4XX_NUCLEO_BUS_Exported_Variables BUS Exported Variables
   * @{
   */
 
-I2C_HandleTypeDef hi2c1;											
+I2C_HandleTypeDef hi2c1;
 /**
   * @}
   */
@@ -47,10 +46,10 @@ I2C_HandleTypeDef hi2c1;
   * @{
   */
 
-#if (USE_HAL_I2C_REGISTER_CALLBACKS == 1)
-static uint32_t IsI2C1MspCbValid = 0;										
+#if (USE_HAL_I2C_REGISTER_CALLBACKS == 1U)
+static uint32_t IsI2C1MspCbValid = 0;
 #endif /* USE_HAL_I2C_REGISTER_CALLBACKS */
-static uint32_t I2C1InitCounter = 0;	
+static uint32_t I2C1InitCounter = 0;
 
 /**
   * @}
@@ -58,9 +57,9 @@ static uint32_t I2C1InitCounter = 0;
 
 /** @defgroup STM32F4XX_NUCLEO_BUS_Private_FunctionPrototypes  BUS Private Function
   * @{
-  */  
+  */
 
-static void I2C1_MspInit(I2C_HandleTypeDef* hI2c); 
+static void I2C1_MspInit(I2C_HandleTypeDef* hI2c);
 static void I2C1_MspDeInit(I2C_HandleTypeDef* hI2c);
 #if (USE_CUBEMX_BSP_V2 == 1)
 static uint32_t I2C_GetTiming(uint32_t clock_src_hz, uint32_t i2cfreq_hz);
@@ -74,11 +73,11 @@ static uint32_t Compute_SCLL_SCLH (uint32_t clock_src_freq, uint32_t I2C_speed);
 
 /** @defgroup STM32F4XX_NUCLEO_LOW_LEVEL_Private_Functions STM32F4XX_NUCLEO LOW LEVEL Private Functions
   * @{
-  */ 
-  
+  */
+
 /** @defgroup STM32F4XX_NUCLEO_BUS_Exported_Functions STM32F4XX_NUCLEO_BUS Exported Functions
   * @{
-  */   
+  */
 
 /* BUS IO driver over I2C Peripheral */
 /*******************************************************************************
@@ -88,18 +87,18 @@ static uint32_t Compute_SCLL_SCLH (uint32_t clock_src_freq, uint32_t I2C_speed);
   * @brief  Initialize I2C HAL
   * @retval BSP status
   */
-int32_t BSP_I2C1_Init(void) 
+int32_t BSP_I2C1_Init(void)
 {
 
   int32_t ret = BSP_ERROR_NONE;
-  
+
   hi2c1.Instance  = I2C1;
 
   if(I2C1InitCounter++ == 0)
-  {     
+  {
     if (HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_RESET)
-    {  
-    #if (USE_HAL_I2C_REGISTER_CALLBACKS == 0)
+    {
+    #if (USE_HAL_I2C_REGISTER_CALLBACKS == 0U)
       /* Init the I2C Msp */
       I2C1_MspInit(&hi2c1);
     #else
@@ -136,23 +135,23 @@ int32_t BSP_I2C1_Init(void)
   * @brief  DeInitialize I2C HAL.
   * @retval BSP status
   */
-int32_t BSP_I2C1_DeInit(void) 
+int32_t BSP_I2C1_DeInit(void)
 {
   int32_t ret = BSP_ERROR_NONE;
-  
+
   if (I2C1InitCounter > 0)
-  {       
+  {
     if (--I2C1InitCounter == 0)
-    {    
-  #if (USE_HAL_I2C_REGISTER_CALLBACKS == 0)
-    	/* DeInit the I2C */ 
-    	I2C1_MspDeInit(&hi2c1);
-  #endif  
-  		/* DeInit the I2C */ 
-  		if (HAL_I2C_DeInit(&hi2c1) != HAL_OK) 
-  		{
-    		ret = BSP_ERROR_BUS_FAILURE;
-  		}
+    {
+  #if (USE_HAL_I2C_REGISTER_CALLBACKS == 0U)
+      /* DeInit the I2C */
+      I2C1_MspDeInit(&hi2c1);
+  #endif
+      /* DeInit the I2C */
+      if (HAL_I2C_DeInit(&hi2c1) != HAL_OK)
+      {
+        ret = BSP_ERROR_BUS_FAILURE;
+      }
     }
   }
   return ret;
@@ -164,15 +163,15 @@ int32_t BSP_I2C1_DeInit(void)
   * @param Trials : Check trials number
   *	@retval BSP status
   */
-int32_t BSP_I2C1_IsReady(uint16_t DevAddr, uint32_t Trials) 
+int32_t BSP_I2C1_IsReady(uint16_t DevAddr, uint32_t Trials)
 {
   int32_t ret = BSP_ERROR_NONE;
-  
+
   if (HAL_I2C_IsDeviceReady(&hi2c1, DevAddr, Trials, BUS_I2C1_POLL_TIMEOUT) != HAL_OK)
   {
     ret = BSP_ERROR_BUSY;
-  } 
-  
+  }
+
   return ret;
 }
 
@@ -187,10 +186,10 @@ int32_t BSP_I2C1_IsReady(uint16_t DevAddr, uint32_t Trials)
 
 int32_t BSP_I2C1_WriteReg(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint16_t Length)
 {
-  int32_t ret = BSP_ERROR_NONE;  
-  
+  int32_t ret = BSP_ERROR_NONE;
+
   if (HAL_I2C_Mem_Write(&hi2c1, DevAddr,Reg, I2C_MEMADD_SIZE_8BIT,pData, Length, BUS_I2C1_POLL_TIMEOUT) != HAL_OK)
-  {    
+  {
     if (HAL_I2C_GetError(&hi2c1) == HAL_I2C_ERROR_AF)
     {
       ret = BSP_ERROR_BUS_ACKNOWLEDGE_FAILURE;
@@ -211,12 +210,12 @@ int32_t BSP_I2C1_WriteReg(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint16
   * @param  Length Data Length
   * @retval BSP status
   */
-int32_t  BSP_I2C1_ReadReg(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint16_t Length) 
+int32_t  BSP_I2C1_ReadReg(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint16_t Length)
 {
   int32_t ret = BSP_ERROR_NONE;
-  
+
   if (HAL_I2C_Mem_Read(&hi2c1, DevAddr, Reg, I2C_MEMADD_SIZE_8BIT, pData, Length, BUS_I2C1_POLL_TIMEOUT) != HAL_OK)
-  { 
+  {
     if (HAL_I2C_GetError(&hi2c1) == HAL_I2C_ERROR_AF)
     {
       ret = BSP_ERROR_BUS_ACKNOWLEDGE_FAILURE;
@@ -239,14 +238,13 @@ int32_t  BSP_I2C1_ReadReg(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint16
   * @param  Length Data Length
   * @retval BSP statu
   */
-int32_t BSP_I2C1_WriteReg16(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint16_t Length) 
+int32_t BSP_I2C1_WriteReg16(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint16_t Length)
 {
   int32_t ret = BSP_ERROR_NONE;
-  
-  
+
   if (HAL_I2C_Mem_Write(&hi2c1, DevAddr, Reg, I2C_MEMADD_SIZE_16BIT, pData, Length, BUS_I2C1_POLL_TIMEOUT) != HAL_OK)
   {
-    if (HAL_I2C_GetError(&hi2c1) == HAL_I2C_ERROR_AF)    
+    if (HAL_I2C_GetError(&hi2c1) == HAL_I2C_ERROR_AF)
     {
       ret = BSP_ERROR_BUS_ACKNOWLEDGE_FAILURE;
     }
@@ -265,10 +263,10 @@ int32_t BSP_I2C1_WriteReg16(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint
   * @param  Length Data Length
   * @retval BSP status
   */
-int32_t  BSP_I2C1_ReadReg16(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint16_t Length) 
+int32_t  BSP_I2C1_ReadReg16(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint16_t Length)
 {
-  int32_t ret = BSP_ERROR_NONE;  
- 
+  int32_t ret = BSP_ERROR_NONE;
+
   if (HAL_I2C_Mem_Read(&hi2c1, DevAddr, Reg, I2C_MEMADD_SIZE_16BIT, pData, Length, BUS_I2C1_POLL_TIMEOUT) != HAL_OK)
   {
     if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
@@ -291,8 +289,8 @@ int32_t  BSP_I2C1_ReadReg16(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint
   * @retval BSP status
   */
 int32_t BSP_I2C1_Send(uint16_t DevAddr, uint8_t *pData, uint16_t Length) {
-  int32_t ret = BSP_ERROR_NONE;	  
-  
+  int32_t ret = BSP_ERROR_NONE;
+
   if (HAL_I2C_Master_Transmit(&hi2c1, DevAddr, pData, Length, BUS_I2C1_POLL_TIMEOUT) != HAL_OK)
   {
     if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
@@ -315,9 +313,9 @@ int32_t BSP_I2C1_Send(uint16_t DevAddr, uint8_t *pData, uint16_t Length) {
   * @param  Length: Data length
   * @retval BSP status
   */
-int32_t BSP_I2C1_Recv(uint16_t DevAddr, uint8_t *pData, uint16_t Length) {	
+int32_t BSP_I2C1_Recv(uint16_t DevAddr, uint8_t *pData, uint16_t Length) {
   int32_t ret = BSP_ERROR_NONE;
-  
+
   if (HAL_I2C_Master_Receive(&hi2c1, DevAddr, pData, Length, BUS_I2C1_POLL_TIMEOUT) != HAL_OK)
   {
     if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
@@ -332,7 +330,7 @@ int32_t BSP_I2C1_Recv(uint16_t DevAddr, uint8_t *pData, uint16_t Length) {
   return ret;
 }
 
-#if (USE_HAL_I2C_REGISTER_CALLBACKS == 1)  
+#if (USE_HAL_I2C_REGISTER_CALLBACKS == 1U)
 /**
   * @brief Register Default BSP I2C1 Bus Msp Callbacks
   * @retval BSP status
@@ -341,21 +339,21 @@ int32_t BSP_I2C1_RegisterDefaultMspCallbacks (void)
 {
 
   __HAL_I2C_RESET_HANDLE_STATE(&hi2c1);
-  
+
   /* Register MspInit Callback */
   if (HAL_I2C_RegisterCallback(&hi2c1, HAL_I2C_MSPINIT_CB_ID, I2C1_MspInit)  != HAL_OK)
   {
     return BSP_ERROR_PERIPH_FAILURE;
   }
-  
+
   /* Register MspDeInit Callback */
   if (HAL_I2C_RegisterCallback(&hi2c1, HAL_I2C_MSPDEINIT_CB_ID, I2C1_MspDeInit) != HAL_OK)
   {
     return BSP_ERROR_PERIPH_FAILURE;
   }
   IsI2C1MspCbValid = 1;
-  
-  return BSP_ERROR_NONE;  
+
+  return BSP_ERROR_NONE;
 }
 
 /**
@@ -366,23 +364,23 @@ int32_t BSP_I2C1_RegisterDefaultMspCallbacks (void)
 int32_t BSP_I2C1_RegisterMspCallbacks (BSP_I2C_Cb_t *Callbacks)
 {
   /* Prevent unused argument(s) compilation warning */
-  __HAL_I2C_RESET_HANDLE_STATE(&hi2c1);  
- 
+  __HAL_I2C_RESET_HANDLE_STATE(&hi2c1);
+
    /* Register MspInit Callback */
   if (HAL_I2C_RegisterCallback(&hi2c1, HAL_I2C_MSPINIT_CB_ID, Callbacks->pMspInitCb)  != HAL_OK)
   {
     return BSP_ERROR_PERIPH_FAILURE;
   }
-  
+
   /* Register MspDeInit Callback */
   if (HAL_I2C_RegisterCallback(&hi2c1, HAL_I2C_MSPDEINIT_CB_ID, Callbacks->pMspDeInitCb) != HAL_OK)
   {
     return BSP_ERROR_PERIPH_FAILURE;
   }
-  
+
   IsI2C1MspCbValid = 1;
-  
-  return BSP_ERROR_NONE;  
+
+  return BSP_ERROR_NONE;
 }
 #endif /* USE_HAL_I2C_REGISTER_CALLBACKS */
 
@@ -394,7 +392,7 @@ int32_t BSP_GetTick(void) {
   return HAL_GetTick();
 }
 
-/* I2C1 init function */ 
+/* I2C1 init function */
 
 __weak HAL_StatusTypeDef MX_I2C1_Init(I2C_HandleTypeDef* hi2c)
 {
@@ -422,18 +420,25 @@ static void I2C1_MspInit(I2C_HandleTypeDef* i2cHandle)
   /* USER CODE BEGIN I2C1_MspInit 0 */
 
   /* USER CODE END I2C1_MspInit 0 */
-  
+
     __HAL_RCC_GPIOB_CLK_ENABLE();
-    /**I2C1 GPIO Configuration    
+    /**I2C1 GPIO Configuration
     PB8     ------> I2C1_SCL
-    PB9     ------> I2C1_SDA 
+    PB9     ------> I2C1_SDA
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
+    GPIO_InitStruct.Pin = BUS_I2C1_SCL_GPIO_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    GPIO_InitStruct.Alternate = BUS_I2C1_SCL_GPIO_AF;
+    HAL_GPIO_Init(BUS_I2C1_SCL_GPIO_PORT, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = BUS_I2C1_SDA_GPIO_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = BUS_I2C1_SDA_GPIO_AF;
+    HAL_GPIO_Init(BUS_I2C1_SDA_GPIO_PORT, &GPIO_InitStruct);
 
     /* Peripheral clock enable */
     __HAL_RCC_I2C1_CLK_ENABLE();
@@ -449,12 +454,14 @@ static void I2C1_MspDeInit(I2C_HandleTypeDef* i2cHandle)
   /* USER CODE END I2C1_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_I2C1_CLK_DISABLE();
-  
-    /**I2C1 GPIO Configuration    
+
+    /**I2C1 GPIO Configuration
     PB8     ------> I2C1_SCL
-    PB9     ------> I2C1_SDA 
+    PB9     ------> I2C1_SDA
     */
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_8|GPIO_PIN_9);
+    HAL_GPIO_DeInit(BUS_I2C1_SCL_GPIO_PORT, BUS_I2C1_SCL_GPIO_PIN);
+
+    HAL_GPIO_DeInit(BUS_I2C1_SDA_GPIO_PORT, BUS_I2C1_SDA_GPIO_PIN);
 
   /* USER CODE BEGIN I2C1_MspDeInit 1 */
 

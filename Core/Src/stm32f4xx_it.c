@@ -65,7 +65,7 @@ extern UART_HandleTypeDef UartHandle;
 /* USER CODE END EV */
 
 /******************************************************************************/
-/*           Cortex-M4 Processor Interruption and Exception Handlers          */ 
+/*           Cortex-M4 Processor Interruption and Exception Handlers          */
 /******************************************************************************/
 /**
   * @brief This function handles Non maskable interrupt.
@@ -243,20 +243,6 @@ void EXTI4_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles DMA1 stream5 global interrupt.
-  */
-void DMA1_Stream5_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA1_Stream5_IRQn 0 */
-	//@TODO: a revoir avec Uart_Handle
-  /* USER CODE END DMA1_Stream5_IRQn 0 */
-  //HAL_DMA_IRQHandler(&hdma_usart2_rx);
-  /* USER CODE BEGIN DMA1_Stream5_IRQn 1 */
-
-  /* USER CODE END DMA1_Stream5_IRQn 1 */
-}
-
-/**
   * @brief This function handles EXTI line[9:5] interrupts.
   */
 void EXTI9_5_IRQHandler(void)
@@ -306,11 +292,13 @@ void EXTI15_10_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
   /*note: l'IRQHandler appelle le callback avec ma gestion du BP */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
   //les lignes en dehors des zones user cleare l'interrupt
   /* USER CODE END EXTI15_10_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_10);
-  HAL_EXTI_IRQHandler(&H_EXTI_13);		//gestion interrupt par BSP
+
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);	//B1
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_10);	//LPS22HH_int
+  //HAL_EXTI_IRQHandler(&H_EXTI_13);		//gestion interrupt par BSP
+
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
   //ma gestion du BP
   //HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
