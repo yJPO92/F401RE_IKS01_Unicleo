@@ -80,6 +80,7 @@
 /** @defgroup STM32F4XX_NUCLEO_LOW_LEVEL_LED STM32F4XX_NUCLEO LOW LEVEL LED
  * @{
  */
+ //yFLAG ==> ici definition des BSP components (led,bp,com...)
 /** Define number of LED            **/
 #define LEDn                              1U
 /**  Definition for BSP USER LED 2   **/
@@ -106,7 +107,7 @@
  */
   /**  Definition for BSP USER BUTTON   **/
 
-#define USER_BUTTON_PIN	                  GPIO_PIN_13
+#define USER_BUTTON_PIN	                   GPIO_PIN_13
 #define USER_BUTTON_GPIO_PORT              GPIOC
 #define USER_BUTTON_EXTI_IRQn              EXTI15_10_IRQn
 #define USER_BUTTON_EXTI_LINE              EXTI_LINE_13

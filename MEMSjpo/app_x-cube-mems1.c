@@ -129,16 +129,16 @@ void MX_IKS01A3_DataLogTerminal_Init(void)
   int i;
 
   /* Initialize LED */
-//  BSP_LED_Init(LED2);
+  BSP_LED_Init(LED2);
 
   /* Initialize button */
-//  BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
+  BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
 
   /* Check what is the Push Button State when the button is not pressed. It can change across families */
-//  PushButtonState = (BSP_PB_GetState(BUTTON_KEY)) ?  0 : 1;
+  PushButtonState = (BSP_PB_GetState(BUTTON_KEY)) ?  0 : 1;
 
   /* Initialize Virtual COM Port */
-//  BSP_COM_Init(COM1);
+  BSP_COM_Init(COM1);
 
   IKS01A3_MOTION_SENSOR_Init(IKS01A3_LSM6DSO_0, MOTION_ACCELERO | MOTION_GYRO);
 

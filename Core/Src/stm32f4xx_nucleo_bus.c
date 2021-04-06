@@ -115,17 +115,13 @@ int32_t BSP_I2C1_Init(void)
     	/* Init the I2C */
     	if(MX_I2C1_Init(&hi2c1) != HAL_OK)
     	{
-      		ret = BSP_ERROR_BUS_FAILURE;
+      	  ret = BSP_ERROR_BUS_FAILURE;
     	}
-    	else if(HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK) 
-    	{
-      	  ret = BSP_ERROR_BUS_FAILURE;    		
-    	}
-    	else
-    	{
-      		ret = BSP_ERROR_NONE;
-    	}
-	  }	
+        else
+        {
+      	  ret = BSP_ERROR_NONE;
+        }
+      }
     }
   }
   return ret;

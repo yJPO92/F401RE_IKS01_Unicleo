@@ -21,12 +21,12 @@
 #include "main.h"
 #include "rtc.h"
 #include "tim.h"
-//#include "usart.h"
 #include "gpio.h"
-#include "app_x-cube-mems1.h"
+//#include "app_mems.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "app_x-cube-mems1.h"
 //Quelle est la cible?
 #define __STR2__(x) #x
 #define __STR1__(x) __STR2__(x)
@@ -95,7 +95,7 @@ char aTxBuffer[TMsg_MaxLen * 4];		    //buffer d'emission (UART & LCD)
 uint8_t aRxBuffer[UART_RxBufferSize];		//buffer de reception
 
 volatile uint8_t BP1Detected = 0;	//flag detection interrupt BP bleu
-volatile int comVTcomGUI;		//0=comm via VT, 1=comm via Unicleo-GUI
+volatile int comVTcomGUI;			//0=comm via VT, 1=comm via Unicleo-GUI
 volatile int yGPio;
 float j,k;
 
@@ -166,7 +166,9 @@ void yDisplayMEMs() {
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	/** PC13 (B1 blue button) */
-	if(GPIO_Pin == B1_Pin) {
+	//if(GPIO_Pin == B1_Pin) {
+	//if(GPIO_Pin == GPIO_PIN_13) {
+	if(GPIO_Pin == USER_BUTTON_PIN) {
 		//MU flag detection interrupt, traitement ds le while du main
 		BP1Detected = 1;
 	}
@@ -188,7 +190,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 	/** TIM1 - clignotement LD2 */
 	if(htim->Instance == TIM1) {
-		HAL_GPIO_TogglePin(LD2_GPIO_Port,LD2_Pin);
+		//HAL_GPIO_TogglePin(LD2_GPIO_Port,LD2_Pin);
+		BSP_LED_Toggle(LED2);
 	} //TIM1
 
 	/** TIM11 - affichage heure sur LCD */
@@ -232,10 +235,8 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  //MX_DMA_Init();
-  MX_TIM1_Init();
   MX_RTC_Init();
-  //MX_USART2_UART_Init();
+  MX_TIM1_Init();
   MX_MEMS_Init();
 
   /* Initialize interrupts */
@@ -264,9 +265,11 @@ int main(void)
    HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
    //test led Led on Nucleo
    for (int ii = 0; ii < 20; ++ii) {
-     HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+     //HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+     BSP_LED_On(LED_GREEN);
      HAL_Delay(30);
-     HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+     //HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+     BSP_LED_Off(LED_GREEN);
      HAL_Delay(30);
    }
 
@@ -282,6 +285,8 @@ int main(void)
    HAL_TIM_Base_Start_IT(&htim1);
 
    /* other inits */
+   BP1Detected = 1;
+   comVTcomGUI = 1;
    //detailler les sensors MEMs
    snprintf(aTxBuffer, 1024, " Sensor\t\tId\tSts\r\n");
    HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
@@ -319,14 +324,14 @@ int main(void)
 		   HAL_Delay(50);
 		   /* Wait until the button is released */
 		   //while ((BSP_PB_GetState( BUTTON_KEY ) == PushButtonState));
-		   //while ((BSP_PB_GetState( BUTTON_KEY ) == 1));
-		   while ( HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) != GPIO_PIN_SET );
+		   while ((BSP_PB_GetState( BUTTON_KEY ) == 1));
+		   //while ( HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) != GPIO_PIN_SET );
 		   /* Debouncing */
 		   HAL_Delay(50);
 		   /* Reset Interrupt flag */
 		   BP1Detected = 0;
 		   /* define VT ou GUI */
-		   if (comVTcomGUI == 0U) {	//comVT active
+		   if (comVTcomGUI == 0U) {	//comVT active?
 			   //passer en comGUI
 			   comVTcomGUI = 1U;
 			   snprintf(aTxBuffer, 512, CUP(10,50) "Mode Unicleo-GUI actif %d" ERASELINE DECRC, comVTcomGUI);
@@ -353,8 +358,8 @@ int main(void)
 		   }
 	   }	//BP1detected
 
-	   if (comVTcomGUI == 0) {		//comVT active
-		   MX_MEMS_Process();
+	   if (comVTcomGUI == 0) {		//comVT active?
+		   //MX_MEMS_Process();
 		   //write from STM32CubeMon
 		   snprintf(aTxBuffer, 1024, CUP(15,50) "nr_Prog  : %s" ERASELINE DECRC, nr_Prog);
 		   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);

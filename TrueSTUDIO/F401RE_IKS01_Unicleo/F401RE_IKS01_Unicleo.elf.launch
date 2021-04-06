@@ -41,7 +41,7 @@
 <stringAttribute key="org.eclipse.cdt.dsf.gdb.DEBUG_NAME" value="${TOOLCHAIN_PATH}/arm-atollic-eabi-gdb"/>
 <intAttribute key="org.eclipse.cdt.launch.ATTR_BUILD_BEFORE_LAUNCH_ATTR" value="2"/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_REGISTER_GROUPS" value=""/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Debug/F401RE_IKS01_Unicleo.elf"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="DebugF401RE\F401RE_IKS01_Unicleo.elf"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="F401RE_IKS01_Unicleo"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="false"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value=""/>

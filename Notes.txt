@@ -2,10 +2,13 @@
 
 ++++ a retester
 ++++ verif interrupt
-@TODO: affiner gui
-@TODO: reorganiser functions in files
+//TODO: affiner gui
+//TODO: reorganiser functions in files
+//TODO: cubeMX toolchain at root
+//TODO: add option F401/L476
 ++++
 
+le 06/04/2021   v5.1: commit avant chgt rev et option
 le 12/03/2021   v5.0: update CubeMX v6.2.0, Firmware F4 v1.26.0 & MEMS v8.2.0
                     many change ds les fichiers STM!
                     interrupt, TIM1, LD2, B1 NE fonctionnent PAS!

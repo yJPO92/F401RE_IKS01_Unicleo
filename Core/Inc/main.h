@@ -17,6 +17,7 @@
   *
   ******************************************************************************
   */
+  /* yFLAG ==>stm32f4xx_nucleo.h header file for the BSP Common driver (led, bp, com ...)*/
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -59,10 +60,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define yCubeMX 5.1
-#define B1_Pin GPIO_PIN_13
-#define B1_GPIO_Port GPIOC
-#define B1_EXTI_IRQn EXTI15_10_IRQn
+#define yCubeMX 5.2
+#define BSP_BUTTON_EXTI_IRQn EXTI15_10_IRQn
 #define STTS751_INT_Pin GPIO_PIN_1
 #define STTS751_INT_GPIO_Port GPIOC
 #define STTS751_INT_EXTI_IRQn EXTI1_IRQn
@@ -70,8 +69,6 @@ void Error_Handler(void);
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin GPIO_PIN_3
 #define USART_RX_GPIO_Port GPIOA
-#define LD2_Pin GPIO_PIN_5
-#define LD2_GPIO_Port GPIOA
 #define LIS2DW12_INT1_Pin GPIO_PIN_0
 #define LIS2DW12_INT1_GPIO_Port GPIOB
 #define LIS2DW12_INT1_EXTI_IRQn EXTI0_IRQn
@@ -101,10 +98,10 @@ void Error_Handler(void);
 #define I2C1sda_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 #define yPROG "F401RE_IKS01_Unicleo"
-#define yVER  "v5.0"
-#define yDATE "xx-mar-2021"
+#define yVER  "v5.1"
+#define yDATE "xx-avr-2021"
 
-#define yDBG 0		//many printf
+#define yDBG 1		//many printf
 #define yTRC 1		//printf coup par coup
 
 /* USER CODE END Private defines */
