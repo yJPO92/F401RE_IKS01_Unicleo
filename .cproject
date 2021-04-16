@@ -175,8 +175,8 @@
 						<entry excluding="Inc/usart.h|Inc/dma.h|Src/dma.c|Src/usart.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry excluding="BSP/IKS01A3/iks01a3_conf_template.h|CMSIS/RTOS2|CMSIS/NN|CMSIS/DSP|CMSIS/Core|CMSIS/Lib|CMSIS/Core_A|CMSIS/RTOS" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="MEMSjpo"/>
+						<entry excluding="Inc/usart.h|Inc/dma.h|Src/dma.c|Src/usart.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="NUCLEO-F401RE"/>
 						<entry excluding="CubeMon.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="NodeRED"/>
-						<entry excluding="F401RE_IKS01_Unicleo|F401RE_IKS01_/F401RE_IKS01_.elf.launch|startup_stm32f401xe.s" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="TrueSTUDIO"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Unicleo"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="yI2C_LCD"/>
@@ -194,7 +194,7 @@
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="DebugF401RE">
-			<resource resourceType="PROJECT" workspacePath="/F401RE_IKS01_Unicleo"/>
+			<resource resourceType="PROJECT" workspacePath="F401RE_IKS01_Unicleo"/>
 		</configuration>
 		<configuration configurationName="Debug"/>
 		<configuration configurationName="Release">

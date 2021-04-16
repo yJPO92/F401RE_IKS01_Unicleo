@@ -95,6 +95,7 @@ char aTxBuffer[TMsg_MaxLen * 4];		    //buffer d'emission (UART & LCD)
 uint8_t aRxBuffer[UART_RxBufferSize];		//buffer de reception
 
 volatile uint8_t BP1Detected = 0;	//flag detection interrupt BP bleu
+extern uint8_t PushButtonDetected;
 volatile int comVTcomGUI;			//0=comm via VT, 1=comm via Unicleo-GUI
 volatile int yGPio;
 float j,k;
@@ -167,10 +168,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	/** PC13 (B1 blue button) */
 	//if(GPIO_Pin == B1_Pin) {
-	//if(GPIO_Pin == GPIO_PIN_13) {
 	if(GPIO_Pin == USER_BUTTON_PIN) {
 		//MU flag detection interrupt, traitement ds le while du main
 		BP1Detected = 1;
+		PushButtonDetected = 1;
+	}
+	//if(GPIO_Pin == GPIO_PIN_13) {
+	if(GPIO_Pin == GPIO_PIN_13) {
+		//MU flag detection interrupt, traitement ds le while du main
+		BP1Detected = 1;
+		PushButtonDetected = 1;
 	}
 
 	/** PC1	GPIO_EXTI1	(STTS751_INT) */
@@ -191,7 +198,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	/** TIM1 - clignotement LD2 */
 	if(htim->Instance == TIM1) {
 		//HAL_GPIO_TogglePin(LD2_GPIO_Port,LD2_Pin);
-		BSP_LED_Toggle(LED2);
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+		//BSP_LED_Toggle(LED2);
 	} //TIM1
 
 	/** TIM11 - affichage heure sur LCD */
@@ -285,8 +293,8 @@ int main(void)
    HAL_TIM_Base_Start_IT(&htim1);
 
    /* other inits */
-   BP1Detected = 1;
-   comVTcomGUI = 1;
+   BP1Detected = 0;
+   comVTcomGUI = 0;
    //detailler les sensors MEMs
    snprintf(aTxBuffer, 1024, " Sensor\t\tId\tSts\r\n");
    HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);

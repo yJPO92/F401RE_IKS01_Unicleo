@@ -51,7 +51,8 @@ typedef struct displayFloatToInt_s {
 #define MAX_BUF_SIZE 256  
 
 /* Private variables ---------------------------------------------------------*/
-static volatile uint8_t PushButtonDetected = 0;
+volatile uint8_t PushButtonDetected = 0;
+//extern volatile uint8_t PushButtonDetected;
 static uint8_t verbose = 1;  /* Verbose output to UART terminal ON/OFF. */
 static IKS01A3_MOTION_SENSOR_Capabilities_t MotionCapabilities[IKS01A3_MOTION_INSTANCES_NBR];
 static IKS01A3_ENV_SENSOR_Capabilities_t EnvCapabilities[IKS01A3_ENV_INSTANCES_NBR];
