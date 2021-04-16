@@ -106,11 +106,11 @@
  */
   /**  Definition for BSP USER BUTTON   **/
 
-#define USER_BUTTON_PIN	                  GPIO_PIN_13
-#define USER_BUTTON_GPIO_PORT              GPIOC
-#define USER_BUTTON_EXTI_IRQn              EXTI15_10_IRQn
-#define USER_BUTTON_EXTI_LINE              EXTI_LINE_13
-#define H_EXTI_13			  hpb_exti[BUTTON_USER]
+#define USER_BUTTON_PIN	                  GPIO_PIN_8
+#define USER_BUTTON_GPIO_PORT              GPIOA
+#define USER_BUTTON_EXTI_IRQn              EXTI9_5_IRQn
+#define USER_BUTTON_EXTI_LINE              EXTI_LINE_8
+#define H_EXTI_8			  hpb_exti[BUTTON_USER]
 /**
  * @}
  */

@@ -61,7 +61,9 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define yCubeMX 5.2
-#define BSP_BUTTON_EXTI_IRQn EXTI15_10_IRQn
+#define B1_Pin GPIO_PIN_13
+#define B1_GPIO_Port GPIOC
+#define B1_EXTI_IRQn EXTI15_10_IRQn
 #define STTS751_INT_Pin GPIO_PIN_1
 #define STTS751_INT_GPIO_Port GPIOC
 #define STTS751_INT_EXTI_IRQn EXTI1_IRQn
@@ -78,8 +80,7 @@ void Error_Handler(void);
 #define LIS2DW12_INT2_Pin GPIO_PIN_7
 #define LIS2DW12_INT2_GPIO_Port GPIOC
 #define LIS2DW12_INT2_EXTI_IRQn EXTI9_5_IRQn
-#define BP2_Pin GPIO_PIN_8
-#define BP2_GPIO_Port GPIOA
+#define BSP_BUTTON_EXTI_IRQn EXTI9_5_IRQn
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
@@ -98,7 +99,7 @@ void Error_Handler(void);
 #define I2C1sda_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 #define yPROG "F401RE_IKS01_Unicleo"
-#define yVER  "v5.2"
+#define yVER  "v5.2a"
 #define yDATE "xx-avr-2021"
 
 #define yDBG 1		//many printf

@@ -63,7 +63,7 @@ static void LED_USER_GPIO_Init(void);
 static GPIO_TypeDef*   BUTTON_PORT[BUTTONn] = {USER_BUTTON_GPIO_PORT};
 static const uint16_t  BUTTON_PIN[BUTTONn]  = {USER_BUTTON_PIN};
 static const IRQn_Type BUTTON_IRQn[BUTTONn] = {USER_BUTTON_EXTI_IRQn};
-EXTI_HandleTypeDef hpb_exti[BUTTONn] = {{.Line = EXTI_LINE_13}};
+EXTI_HandleTypeDef hpb_exti[BUTTONn] = {{.Line = EXTI_LINE_8}};
 USART_TypeDef* COM_USART[COMn] = {COM1_UART};
 UART_HandleTypeDef hcom_uart[COMn];
 #if (USE_COM_LOG > 0)

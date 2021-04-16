@@ -250,6 +250,7 @@ void EXTI9_5_IRQHandler(void)
   /* USER CODE END EXTI9_5_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
+  HAL_EXTI_IRQHandler(&H_EXTI_8);
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
 
   /* USER CODE END EXTI9_5_IRQn 1 */
@@ -293,7 +294,7 @@ void EXTI15_10_IRQHandler(void)
   //les lignes en dehors des zones user cleare l'interrupt
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_10);
-  //HAL_EXTI_IRQHandler(&H_EXTI_13);
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
   //ma gestion du BP
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
