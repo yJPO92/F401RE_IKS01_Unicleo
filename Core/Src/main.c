@@ -95,7 +95,7 @@ char aTxBuffer[TMsg_MaxLen * 4];		    //buffer d'emission (UART & LCD)
 uint8_t aRxBuffer[UART_RxBufferSize];		//buffer de reception
 
 volatile uint8_t BP1Detected = 0;	//flag detection interrupt BP bleu
-extern uint8_t PushButtonDetected;
+extern volatile uint8_t PushButtonDetected;
 volatile int comVTcomGUI;			//0=comm via VT, 1=comm via Unicleo-GUI
 volatile int yGPio;
 float j,k;
@@ -168,7 +168,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	/** PC13 (B1 blue button) */
 	//if(GPIO_Pin == B1_Pin) {
-	if(GPIO_Pin == USER_BUTTON_PIN) {
+	if((GPIO_Pin == USER_BUTTON_PIN) | (GPIO_Pin == B1_Pin)) {
 		//MU flag detection interrupt, traitement ds le while du main
 		BP1Detected = 1;
 		PushButtonDetected = 1;
@@ -197,8 +197,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 	/** TIM1 - clignotement LD2 */
 	if(htim->Instance == TIM1) {
-		//HAL_GPIO_TogglePin(LD2_GPIO_Port,LD2_Pin);
-		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+		HAL_GPIO_TogglePin(LD2_GPIO_Port,LD2_Pin);
+		//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 		//BSP_LED_Toggle(LED2);
 	} //TIM1
 
@@ -273,11 +273,11 @@ int main(void)
    HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
    //test led Led on Nucleo
    for (int ii = 0; ii < 20; ++ii) {
-     //HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-     BSP_LED_On(LED_GREEN);
+     HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+     //BSP_LED_On(LED_GREEN);
      HAL_Delay(30);
-     //HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-     BSP_LED_Off(LED_GREEN);
+     HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+     //BSP_LED_Off(LED_GREEN);
      HAL_Delay(30);
    }
 
@@ -332,7 +332,7 @@ int main(void)
 		   HAL_Delay(50);
 		   /* Wait until the button is released */
 		   //while ((BSP_PB_GetState( BUTTON_KEY ) == PushButtonState));
-		   while ((BSP_PB_GetState( BUTTON_KEY ) == 1));
+		   //while ((BSP_PB_GetState( BUTTON_KEY ) == 1));
 		   //while ( HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) != GPIO_PIN_SET );
 		   /* Debouncing */
 		   HAL_Delay(50);
@@ -367,21 +367,21 @@ int main(void)
 	   }	//BP1detected
 
 	   if (comVTcomGUI == 0) {		//comVT active?
-		   //MX_MEMS_Process();
+		   MX_MEMS_Process();
 		   //write from STM32CubeMon
 		   snprintf(aTxBuffer, 1024, CUP(15,50) "nr_Prog  : %s" ERASELINE DECRC, nr_Prog);
 		   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 		   snprintf(aTxBuffer, 1024, CUP(17,50) "nr_w_Cpt : %d" ERASELINE DECRC, nr_w_Compteur);
 		   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 
+		   /* check GPIO pin for debug */
+		   yGPio = HAL_GPIO_ReadPin(STTS751_INT_GPIO_Port, STTS751_INT_Pin);
+		   printf("\n--STTS751_int etat: %x", yGPio);
 		   HAL_Delay(500);
 	   }
 	   else {						//comGUI Unicleo-GUI active
 		   (void) GUI_DataLog_Manage();
 	   }
-	   /* check GPIO pin for debug */
-	   yGPio = HAL_GPIO_ReadPin(STTS751_INT_GPIO_Port, STTS751_INT_Pin);
-	   printf("\n--STTS751_int etat: %x", yGPio);
 
 	   //dans tous les cas VT ou GUI
 	   /* pour Node-RED */
@@ -396,7 +396,6 @@ int main(void)
 
     /* USER CODE END WHILE */
 
-  MX_MEMS_Process();
     /* USER CODE BEGIN 3 */
 
    }

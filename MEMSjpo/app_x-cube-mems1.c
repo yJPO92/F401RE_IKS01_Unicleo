@@ -106,8 +106,8 @@ void MX_MEMS_Init(void)
 void MX_MEMS_Process(void)
 {
   /* USER CODE BEGIN MEMS_Process_PreTreatment */
-	snprintf(dataOut, MAX_BUF_SIZE, DECRC "\n-------------------\n");		//remet le curseur a la position ssauvegardee
-	HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+//	snprintf(dataOut, MAX_BUF_SIZE, DECRC "\n-------------------\n");		//remet le curseur a la position ssauvegardee
+//	HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
   /* USER CODE END MEMS_Process_PreTreatment */
 
   MX_IKS01A3_DataLogTerminal_Process();
@@ -133,13 +133,13 @@ void MX_IKS01A3_DataLogTerminal_Init(void)
   BSP_LED_Init(LED2);
 
   /* Initialize button */
-  BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
+//  BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
 
   /* Check what is the Push Button State when the button is not pressed. It can change across families */
   PushButtonState = (BSP_PB_GetState(BUTTON_KEY)) ?  0 : 1;
 
   /* Initialize Virtual COM Port */
-  BSP_COM_Init(COM1);
+//  BSP_COM_Init(COM1);	//no init in v4.8!!!
 
   IKS01A3_MOTION_SENSOR_Init(IKS01A3_LSM6DSO_0, MOTION_ACCELERO | MOTION_GYRO);
 
