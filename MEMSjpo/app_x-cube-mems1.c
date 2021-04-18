@@ -57,7 +57,6 @@ static uint8_t verbose = 1;  /* Verbose output to UART terminal ON/OFF. */
 static IKS01A3_MOTION_SENSOR_Capabilities_t MotionCapabilities[IKS01A3_MOTION_INSTANCES_NBR];
 static IKS01A3_ENV_SENSOR_Capabilities_t EnvCapabilities[IKS01A3_ENV_INSTANCES_NBR];
 static char dataOut[MAX_BUF_SIZE];
-static int32_t PushButtonState = GPIO_PIN_RESET;
 
 float nr_STTS751_Temp;
 float nr_HTS221_Temp;
@@ -129,18 +128,11 @@ void MX_IKS01A3_DataLogTerminal_Init(void)
   displayFloatToInt_t out_value_odr;
   int i;
 
-  /* Initialize LED */
-  BSP_LED_Init(LED2);
+  /* yunicleo: suppression des init BSP_LED/BUTTON/COM/PushButtonState/... */
 
-  /* Initialize button */
-//  BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
-
-  /* Check what is the Push Button State when the button is not pressed. It can change across families */
-  PushButtonState = (BSP_PB_GetState(BUTTON_KEY)) ?  0 : 1;
-
-  /* Initialize Virtual COM Port */
-//  BSP_COM_Init(COM1);	//no init in v4.8!!!
-
+//  /* Check what is the Push Button State when the button is not pressed. It can change across families */
+//  PushButtonState = (BSP_PB_GetState(BUTTON_KEY)) ?  0 : 1;
+//
   IKS01A3_MOTION_SENSOR_Init(IKS01A3_LSM6DSO_0, MOTION_ACCELERO | MOTION_GYRO);
 
   IKS01A3_MOTION_SENSOR_Init(IKS01A3_LIS2DW12_0, MOTION_ACCELERO);
@@ -195,15 +187,15 @@ void MX_IKS01A3_DataLogTerminal_Init(void)
   }
 }
 
-/**
-  * @brief  BSP Push Button callback
-  * @param  Button Specifies the pin connected EXTI line
-  * @retval None.
-  */
-void BSP_PB_Callback(Button_TypeDef Button)
-{
-  PushButtonDetected = 1;
-}
+///**
+//  * @brief  BSP Push Button callback
+//  * @param  Button Specifies the pin connected EXTI line
+//  * @retval None.
+//  */
+//void BSP_PB_Callback(Button_TypeDef Button)
+//{
+//  PushButtonDetected = 1;
+//}
 
 /**
   * @brief  Process of the DataLogTerminal application
@@ -215,12 +207,7 @@ void MX_IKS01A3_DataLogTerminal_Process(void)
 
   if (PushButtonDetected != 0U)
   {
-    /* Debouncing */
-    HAL_Delay(50);
-
-    /* Wait until the button is released */
-    while ((BSP_PB_GetState( BUTTON_KEY ) == PushButtonState));
-
+	//yF4unicleo a checker
     /* Debouncing */
     HAL_Delay(50);
 

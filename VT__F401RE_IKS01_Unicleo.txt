@@ -1,0 +1,45 @@
+
+Bonjour maître!
+(c)Jean92, xx-avr-2021
+* F401RE_IKS01_Unicleo * v5.2c
+Compil: 12:19:51 on Apr 18 2021
+STmicro NUCLEO_F401RE
+==> IKS01A3_TestDataLogTerminal(vt/gui)
+ Sensor         Id      Sts                      Mode VT actif 0
+HTS221          BCh     03h
+LPS22HH         B3h     33h                      nr_Prog  :
+STTS751         53h     00h                      nr_w_Cpt : 0
+LSM6DSO         6Ch     07h                      LPS22HH_int etat: 0
+LIS2DW12        44h     01h                      LSM6DSO_int1 etat: 1
+LIS2MDL         40h     FFh                      LSM6DSO_int2 etat: 0
+        --- fin (re)inits ---
+
+ACC_X[0]: 33            ACC_Y[0]: -2            ACC_Z[0]: 1013
+GYR_X[0]: 00            GYR_Y[0]: 140           GYR_Z[0]: 0
+ACC_X[1]: 13            ACC_Y[1]: 40            ACC_Z[1]: 993
+MAG_X[2]: -622          MAG_Y[2]: 1386          MAG_Z[2]: -151
+Hum[0]: 56.73 %
+Temp[0]: +28.76 degC
+Temp[1]: +26.20 degC
+Press[1]: 1011.64 hPa
+Temp[2]: +29.69 degC
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

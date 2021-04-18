@@ -82,8 +82,8 @@ __weak HAL_StatusTypeDef MX_USART2_UART_Init(UART_HandleTypeDef* huart);
 /** @defgroup STM32F4XX_NUCLEO_LOW_LEVEL_Private_Functions STM32F4XX_NUCLEO LOW LEVEL Private Functions
  * @{
  */
-static void BUTTON_USER_EXTI_Callback(void);
-static void BUTTON_USER_GPIO_Init(void);
+//static void BUTTON_USER_EXTI_Callback(void);
+//static void BUTTON_USER_GPIO_Init(void);
 #if (USE_BSP_COM_FEATURE > 0)
 static void USART2_MspInit(UART_HandleTypeDef *huart);
 static void USART2_MspDeInit(UART_HandleTypeDef *huart);
@@ -104,13 +104,7 @@ int32_t BSP_GetVersion(void)
  *              @arg  LED2, LED4, ...
  * @retval HAL status
  */
-int32_t BSP_LED_Init(Led_TypeDef Led)
-{
-  static const BSP_LED_GPIO_Init LedGpioInit[LEDn] = {LED_USER_GPIO_Init};
-  LedGpioInit[Led]();
-  return BSP_ERROR_NONE;
-}
-
+//yF4unicleo: a modifier ds le prog
 /**
  * @brief  DeInit LEDs.
  * @param  Led: LED to be configured.
@@ -142,6 +136,7 @@ int32_t BSP_LED_DeInit(Led_TypeDef Led)
  *              @arg  LED4
  * @retval HAL status
  */
+//yF4unicleo: not use BSP_LED_On/off/toggle
 int32_t BSP_LED_On(Led_TypeDef Led)
 {
   HAL_GPIO_WritePin(LED_PORT [Led], LED_PIN [Led], GPIO_PIN_SET);
@@ -201,52 +196,61 @@ int32_t BSP_LED_GetState(Led_TypeDef Led)
   * @brief
   * @retval None
   */
+//yF4unicleo: not use BSP_LED_Init
+int32_t BSP_LED_Init(Led_TypeDef Led)
+{
+  static const BSP_LED_GPIO_Init LedGpioInit[LEDn] = {LED_USER_GPIO_Init};
+  LedGpioInit[Led]();
+  return BSP_ERROR_NONE;
+}
+
 static void LED_USER_GPIO_Init(void) {
 }
 
-/**
-  * @brief  Configures button GPIO and EXTI Line.
-  * @param  Button: Button to be configured
-  *                 This parameter can be one of the following values:
-  *                 @arg  BUTTON_USER: User Push Button
-  * @param  ButtonMode Button mode
-  *                    This parameter can be one of the following values:
-  *                    @arg  BUTTON_MODE_GPIO: Button will be used as simple IO
-  *                    @arg  BUTTON_MODE_EXTI: Button will be connected to EXTI line
-  *                                            with interrupt generation capability
-  * @retval BSP status
-  */
-int32_t BSP_PB_Init(Button_TypeDef Button, ButtonMode_TypeDef ButtonMode)
-{
-  int32_t ret = BSP_ERROR_NONE;
-
-  static const BSP_EXTI_LineCallback ButtonCallback[BUTTONn] ={BUTTON_USER_EXTI_Callback};
-  static const uint32_t  BSP_BUTTON_PRIO [BUTTONn] ={BSP_BUTTON_USER_IT_PRIORITY};
-  static const uint32_t BUTTON_EXTI_LINE[BUTTONn] ={USER_BUTTON_EXTI_LINE};
-  static const BSP_BUTTON_GPIO_Init ButtonGpioInit[BUTTONn] = {BUTTON_USER_GPIO_Init};
-
-  ButtonGpioInit[Button]();
-
-  if (ButtonMode == BUTTON_MODE_EXTI)
-  {
-    if(HAL_EXTI_GetHandle(&hpb_exti[Button], BUTTON_EXTI_LINE[Button]) != HAL_OK)
-    {
-      ret = BSP_ERROR_PERIPH_FAILURE;
-    }
-    else if (HAL_EXTI_RegisterCallback(&hpb_exti[Button],  HAL_EXTI_COMMON_CB_ID, ButtonCallback[Button]) != HAL_OK)
-    {
-      ret = BSP_ERROR_PERIPH_FAILURE;
-    }
-	else
-    {
-      /* Enable and set Button EXTI Interrupt to the lowest priority */
-      HAL_NVIC_SetPriority((BUTTON_IRQn[Button]), BSP_BUTTON_PRIO[Button], 0x00);
-      HAL_NVIC_EnableIRQ((BUTTON_IRQn[Button]));
-    }
-  }
-
-  return ret;
-}
+///**
+//  * @brief  Configures button GPIO and EXTI Line.
+//  * @param  Button: Button to be configured
+//  *                 This parameter can be one of the following values:
+//  *                 @arg  BUTTON_USER: User Push Button
+//  * @param  ButtonMode Button mode
+//  *                    This parameter can be one of the following values:
+//  *                    @arg  BUTTON_MODE_GPIO: Button will be used as simple IO
+//  *                    @arg  BUTTON_MODE_EXTI: Button will be connected to EXTI line
+//  *                                            with interrupt generation capability
+//  * @retval BSP status
+//  */
+////yF4unicleo: not use BSP_PB_Init
+//int32_t BSP_PB_Init(Button_TypeDef Button, ButtonMode_TypeDef ButtonMode)
+//{
+//  int32_t ret = BSP_ERROR_NONE;
+//
+//  static const BSP_EXTI_LineCallback ButtonCallback[BUTTONn] ={BUTTON_USER_EXTI_Callback};
+//  static const uint32_t  BSP_BUTTON_PRIO [BUTTONn] ={BSP_BUTTON_USER_IT_PRIORITY};
+//  static const uint32_t BUTTON_EXTI_LINE[BUTTONn] ={USER_BUTTON_EXTI_LINE};
+//  static const BSP_BUTTON_GPIO_Init ButtonGpioInit[BUTTONn] = {BUTTON_USER_GPIO_Init};
+//
+//  ButtonGpioInit[Button]();
+//
+//  if (ButtonMode == BUTTON_MODE_EXTI)
+//  {
+//    if(HAL_EXTI_GetHandle(&hpb_exti[Button], BUTTON_EXTI_LINE[Button]) != HAL_OK)
+//    {
+//      ret = BSP_ERROR_PERIPH_FAILURE;
+//    }
+//    else if (HAL_EXTI_RegisterCallback(&hpb_exti[Button],  HAL_EXTI_COMMON_CB_ID, ButtonCallback[Button]) != HAL_OK)
+//    {
+//      ret = BSP_ERROR_PERIPH_FAILURE;
+//    }
+//	else
+//    {
+//      /* Enable and set Button EXTI Interrupt to the lowest priority */
+//      HAL_NVIC_SetPriority((BUTTON_IRQn[Button]), BSP_BUTTON_PRIO[Button], 0x00);
+//      HAL_NVIC_EnableIRQ((BUTTON_IRQn[Button]));
+//    }
+//  }
+//
+//  return ret;
+//}
 
 /**
  * @brief  Push Button DeInit.
@@ -274,6 +278,7 @@ int32_t BSP_PB_DeInit(Button_TypeDef Button)
  *                @arg  BUTTON_USER
  * @retval The Button GPIO pin value (GPIO_PIN_RESET = button pressed)
  */
+//yF4unicleo: a modifier ds le prog
 int32_t BSP_PB_GetState(Button_TypeDef Button)
 {
   return (int32_t)(HAL_GPIO_ReadPin(BUTTON_PORT[Button], BUTTON_PIN[Button]) == GPIO_PIN_RESET);
@@ -283,6 +288,7 @@ int32_t BSP_PB_GetState(Button_TypeDef Button)
  * @brief  User EXTI line detection callbacks.
  * @retval None
  */
+//yF4unicleo: not use BSP_PB_IRQHandler
 void BSP_PB_IRQHandler (Button_TypeDef Button)
 {
   HAL_EXTI_IRQHandler( &hpb_exti[Button] );
@@ -293,6 +299,7 @@ void BSP_PB_IRQHandler (Button_TypeDef Button)
  * @param  Button Specifies the pin connected EXTI line
  * @retval None.
  */
+//yF4unicleo: a modifier ds le prog
 __weak void BSP_PB_Callback(Button_TypeDef Button)
 {
   /* Prevent unused argument(s) compilation warning */
@@ -302,21 +309,21 @@ __weak void BSP_PB_Callback(Button_TypeDef Button)
      It is called into this driver when an event on Button is triggered. */
 }
 
-/**
-  * @brief  User EXTI line detection callbacks.
-  * @retval None
-  */
-static void BUTTON_USER_EXTI_Callback(void)
-{
-  BSP_PB_Callback(BUTTON_USER);
-}
+///**
+//  * @brief  User EXTI line detection callbacks.
+//  * @retval None
+//  */
+//static void BUTTON_USER_EXTI_Callback(void)
+//{
+//  BSP_PB_Callback(BUTTON_USER);
+//}
 
-/**
-  * @brief
-  * @retval None
-  */
-static void BUTTON_USER_GPIO_Init(void) {
-}
+///**
+//  * @brief
+//  * @retval None
+//  */
+//static void BUTTON_USER_GPIO_Init(void) {
+//}
 
 #if (USE_BSP_COM_FEATURE > 0)
 /**
@@ -327,6 +334,7 @@ static void BUTTON_USER_GPIO_Init(void) {
  *                    configuration information for the specified USART peripheral.
  * @retval BSP error code
  */
+//yF4unicleo: not use BSP_COM_Init
 int32_t BSP_COM_Init(COM_TypeDef COM)
 {
   int32_t ret = BSP_ERROR_NONE;
@@ -366,6 +374,7 @@ int32_t BSP_COM_Init(COM_TypeDef COM)
  *             This parameter can be COM1
  * @retval BSP status
  */
+//yF4unicleo: not use BSP_COM_DeInit
 int32_t BSP_COM_DeInit(COM_TypeDef COM)
 {
   int32_t ret = BSP_ERROR_NONE;
@@ -402,7 +411,7 @@ int32_t BSP_COM_DeInit(COM_TypeDef COM)
  */
 
 /* USART2 init function */
-
+//yF4unicleo: not use MX_USART2_UART_Init
 __weak HAL_StatusTypeDef MX_USART2_UART_Init(UART_HandleTypeDef* huart)
 {
   HAL_StatusTypeDef ret = HAL_OK;
@@ -504,6 +513,7 @@ int32_t BSP_COM_RegisterMspCallbacks (COM_TypeDef COM , BSP_COM_Cb_t *Callback)
  *             This parameter can be COM1
  * @retval BSP status
  */
+//yF4unicleo: not use BSP_COM_SelectLogPort
 int32_t BSP_COM_SelectLogPort(COM_TypeDef COM)
 {
   if(COM_ActiveLogPort != COM)
@@ -523,71 +533,71 @@ int32_t BSP_COM_SelectLogPort(COM_TypeDef COM)
   return ch;
 }
 #endif /* USE_COM_LOG */
-/**
- * @brief  Initializes USART2 MSP.
- * @param  huart USART2 handle
- * @retval None
- */
-
-static void USART2_MspInit(UART_HandleTypeDef* uartHandle)
-{
-  GPIO_InitTypeDef GPIO_InitStruct;
-  /* USER CODE BEGIN USART2_MspInit 0 */
-
-  /* USER CODE END USART2_MspInit 0 */
-    /* Enable Peripheral clock */
-    __HAL_RCC_USART2_CLK_ENABLE();
-
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    /**USART2 GPIO Configuration
-    PA2     ------> USART2_TX
-    PA3     ------> USART2_RX
-    */
-    GPIO_InitStruct.Pin = BUS_USART2_TX_GPIO_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = BUS_USART2_TX_GPIO_AF;
-    HAL_GPIO_Init(BUS_USART2_TX_GPIO_PORT, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = BUS_USART2_RX_GPIO_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = BUS_USART2_RX_GPIO_AF;
-    HAL_GPIO_Init(BUS_USART2_RX_GPIO_PORT, &GPIO_InitStruct);
-
-    /* Peripheral interrupt init */
-    HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(USART2_IRQn);
-  /* USER CODE BEGIN USART2_MspInit 1 */
-
-  /* USER CODE END USART2_MspInit 1 */
-}
-
-static void USART2_MspDeInit(UART_HandleTypeDef* uartHandle)
-{
-  /* USER CODE BEGIN USART2_MspDeInit 0 */
-
-  /* USER CODE END USART2_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_USART2_CLK_DISABLE();
-
-    /**USART2 GPIO Configuration
-    PA2     ------> USART2_TX
-    PA3     ------> USART2_RX
-    */
-    HAL_GPIO_DeInit(BUS_USART2_TX_GPIO_PORT, BUS_USART2_TX_GPIO_PIN);
-
-    HAL_GPIO_DeInit(BUS_USART2_RX_GPIO_PORT, BUS_USART2_RX_GPIO_PIN);
-
-    /* Peripheral interrupt Deinit*/
-    HAL_NVIC_DisableIRQ(USART2_IRQn);
-
-  /* USER CODE BEGIN USART2_MspDeInit 1 */
-
-  /* USER CODE END USART2_MspDeInit 1 */
-}
+///**
+// * @brief  Initializes USART2 MSP.
+// * @param  huart USART2 handle
+// * @retval None
+// */
+//yF4unicleo: not use USART2_MspInit
+//static void USART2_MspInit(UART_HandleTypeDef* uartHandle)
+//{
+//  GPIO_InitTypeDef GPIO_InitStruct;
+//  /* USER CODE BEGIN USART2_MspInit 0 */
+//
+//  /* USER CODE END USART2_MspInit 0 */
+//    /* Enable Peripheral clock */
+//    __HAL_RCC_USART2_CLK_ENABLE();
+//
+//    __HAL_RCC_GPIOA_CLK_ENABLE();
+//    /**USART2 GPIO Configuration
+//    PA2     ------> USART2_TX
+//    PA3     ------> USART2_RX
+//    */
+//    GPIO_InitStruct.Pin = BUS_USART2_TX_GPIO_PIN;
+//    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+//    GPIO_InitStruct.Pull = GPIO_NOPULL;
+//    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+//    GPIO_InitStruct.Alternate = BUS_USART2_TX_GPIO_AF;
+//    HAL_GPIO_Init(BUS_USART2_TX_GPIO_PORT, &GPIO_InitStruct);
+//
+//    GPIO_InitStruct.Pin = BUS_USART2_RX_GPIO_PIN;
+//    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+//    GPIO_InitStruct.Pull = GPIO_NOPULL;
+//    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+//    GPIO_InitStruct.Alternate = BUS_USART2_RX_GPIO_AF;
+//    HAL_GPIO_Init(BUS_USART2_RX_GPIO_PORT, &GPIO_InitStruct);
+//
+//    /* Peripheral interrupt init */
+//    HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+//    HAL_NVIC_EnableIRQ(USART2_IRQn);
+//  /* USER CODE BEGIN USART2_MspInit 1 */
+//
+//  /* USER CODE END USART2_MspInit 1 */
+//}
+//yF4unicleo: not use USART2_DeMspInit
+//static void USART2_MspDeInit(UART_HandleTypeDef* uartHandle)
+//{
+//  /* USER CODE BEGIN USART2_MspDeInit 0 */
+//
+//  /* USER CODE END USART2_MspDeInit 0 */
+//    /* Peripheral clock disable */
+//    __HAL_RCC_USART2_CLK_DISABLE();
+//
+//    /**USART2 GPIO Configuration
+//    PA2     ------> USART2_TX
+//    PA3     ------> USART2_RX
+//    */
+//    HAL_GPIO_DeInit(BUS_USART2_TX_GPIO_PORT, BUS_USART2_TX_GPIO_PIN);
+//
+//    HAL_GPIO_DeInit(BUS_USART2_RX_GPIO_PORT, BUS_USART2_RX_GPIO_PIN);
+//
+//    /* Peripheral interrupt Deinit*/
+//    HAL_NVIC_DisableIRQ(USART2_IRQn);
+//
+//  /* USER CODE BEGIN USART2_MspDeInit 1 */
+//
+//  /* USER CODE END USART2_MspDeInit 1 */
+//}
 
 /**
  * @}

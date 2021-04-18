@@ -95,6 +95,10 @@ char aTxBuffer[TMsg_MaxLen * 4];		    //buffer d'emission (UART & LCD)
 uint8_t aRxBuffer[UART_RxBufferSize];		//buffer de reception
 
 volatile uint8_t BP1Detected = 0;	//flag detection interrupt BP bleu
+volatile uint8_t LIS2DW12int1Detected = 0;
+volatile uint8_t LIS2DW12int2Detected = 0;
+volatile uint8_t LPS22HHintDetected = 0;
+volatile uint8_t VMA202swDetected = 0;
 extern volatile uint8_t PushButtonDetected;
 volatile int comVTcomGUI;			//0=comm via VT, 1=comm via Unicleo-GUI
 volatile int yGPio;
@@ -167,17 +171,25 @@ void yDisplayMEMs() {
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	/** PC13 (B1 blue button) */
-	//if(GPIO_Pin == B1_Pin) {
-	if((GPIO_Pin == USER_BUTTON_PIN) | (GPIO_Pin == B1_Pin)) {
+	if(GPIO_Pin == B1_Pin) {
 		//MU flag detection interrupt, traitement ds le while du main
 		BP1Detected = 1;
-		PushButtonDetected = 1;
+		//PushButtonDetected = 1;
 	}
-	//if(GPIO_Pin == GPIO_PIN_13) {
-	if(GPIO_Pin == GPIO_PIN_13) {
+	/** PB0/PC7 (LIS2DW12 int1/int2) */
+	if(GPIO_Pin == LIS2DW12_INT1_Pin) {
 		//MU flag detection interrupt, traitement ds le while du main
-		BP1Detected = 1;
-		PushButtonDetected = 1;
+		LIS2DW12int1Detected = 1;
+	}
+	if(GPIO_Pin == LIS2DW12_INT2_Pin) {
+		//MU flag detection interrupt, traitement ds le while du main
+		LIS2DW12int2Detected = 1;
+	}
+
+	/** PB10 (LPS22HH) */
+	if(GPIO_Pin == LPS22HH_INT_Pin) {
+		//MU flag detection interrupt, traitement ds le while du main
+		LPS22HHintDetected = 1;
 	}
 
 	/** PC1	GPIO_EXTI1	(STTS751_INT) */
@@ -185,6 +197,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		//snprintf(aTxBuffer, 1024, "\n\t--STTS751 Interrupt");
 		/* trop repetitif!! */	//HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 		//yMEMS_Env_Sensors_Infos(IKS01A3_STTS751_0);
+	}
+
+	/** PA8 (VAM202_sw) */
+	if(GPIO_Pin == BP2_Pin) {
+		//MU flag detection interrupt, traitement ds le while du main
+		VMA202swDetected = 1;
 	}
 
 	/** autre entree interrupt */
@@ -198,8 +216,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	/** TIM1 - clignotement LD2 */
 	if(htim->Instance == TIM1) {
 		HAL_GPIO_TogglePin(LD2_GPIO_Port,LD2_Pin);
-		//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-		//BSP_LED_Toggle(LED2);
 	} //TIM1
 
 	/** TIM11 - affichage heure sur LCD */
@@ -212,7 +228,37 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	/* manage an other TIM if any! */
 }	//TIMs callback
 
+/*
+ * (re)Afficher infos de build, welcome, infos sensors
+ */
+void yDisplayMenu(void) {
+	  //message de bienvenue
+	   snprintf(aTxBuffer, 1024, clrscr homescr
+	 		  	  	  	  	     "\nBonjour maître!"
+	 		  	  	  	  	  	 "\n(c)Jean92, " yDATE
+	 							 "\n* " yPROG " * " yVER
+	 						     "\nCompil: " __TIME__" on "__DATE__
+	 						     "\nSTmicro NUCLEO_F401RE"
+	 							 "\r\n" DECSC);
+	   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+	   HAL_Delay(50);
+	   //complement de titre du programme
+	   snprintf(aTxBuffer, 1024, "==> IKS01A3_TestDataLogTerminal(vt/gui)\r\n" DECSC);
+	   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 
+	   snprintf(aTxBuffer, 1024, " Sensor\t\tId\tSts\r\n" DECSC);
+	   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+	   yMEMS_Env_Sensors_Infos(IKS01A3_HTS221_0);
+	   yMEMS_Env_Sensors_Infos(IKS01A3_LPS22HH_0);
+	   yMEMS_Env_Sensors_Infos(IKS01A3_STTS751_0);
+	   yMEMS_Motion_Sensors_Infos(IKS01A3_LSM6DSO_0);
+	   yMEMS_Motion_Sensors_Infos(IKS01A3_LIS2DW12_0);
+	   yMEMS_Motion_Sensors_Infos(IKS01A3_LIS2MDL_0);
+
+	   //afficher fin des (re)inits
+	   snprintf(aTxBuffer, 1024, "\t--- fin (re)inits ---\n" DECSC);
+	   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+}
 /* USER CODE END 0 */
 
 /**
@@ -258,26 +304,24 @@ int main(void)
 //  RTC_Config();
 //  RTC_TimeStampConfig();
 
-  //message de bienvenue
-   snprintf(aTxBuffer, 1024, clrscr homescr
- 		  	  	  	  	   "\n\nBonjour maître!"
- 		  	  	  	  	  	 "\n(c)Jean92, " yDATE
- 							 "\n* " yPROG " * " yVER
- 						     "\nCompil: " __TIME__" on "__DATE__
- 						     "\nSTmicro NUCLEO_F401RE"
- 							 "\r\n");
-   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
-
-   //complement de titre du programme
-   snprintf(aTxBuffer, 1024, "==> IKS01A3_TestDataLogTerminal(vt/gui)\r\n");
-   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+//  //message de bienvenue
+//   snprintf(aTxBuffer, 1024, clrscr homescr
+// 		  	  	  	  	     "\nBonjour maître!"
+// 		  	  	  	  	  	 "\n(c)Jean92, " yDATE
+// 							 "\n* " yPROG " * " yVER
+// 						     "\nCompil: " __TIME__" on "__DATE__
+// 						     "\nSTmicro NUCLEO_F401RE"
+// 							 "\r\n");
+//   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+//
+//   //complement de titre du programme
+//   snprintf(aTxBuffer, 1024, "==> IKS01A3_TestDataLogTerminal(vt/gui)\r\n");
+//   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
    //test led Led on Nucleo
-   for (int ii = 0; ii < 20; ++ii) {
+   for (int ii = 0; ii < 10; ++ii) {
      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-     //BSP_LED_On(LED_GREEN);
      HAL_Delay(30);
      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-     //BSP_LED_Off(LED_GREEN);
      HAL_Delay(30);
    }
 
@@ -295,26 +339,28 @@ int main(void)
    /* other inits */
    BP1Detected = 0;
    comVTcomGUI = 0;
-   //detailler les sensors MEMs
-   snprintf(aTxBuffer, 1024, " Sensor\t\tId\tSts\r\n");
-   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
-   yMEMS_Env_Sensors_Infos(IKS01A3_HTS221_0);
-   yMEMS_Env_Sensors_Infos(IKS01A3_LPS22HH_0);
-   yMEMS_Env_Sensors_Infos(IKS01A3_STTS751_0);
-   yMEMS_Motion_Sensors_Infos(IKS01A3_LSM6DSO_0);
-   yMEMS_Motion_Sensors_Infos(IKS01A3_LIS2DW12_0);
-   yMEMS_Motion_Sensors_Infos(IKS01A3_LIS2MDL_0);
+//   //detailler les sensors MEMs
+//   snprintf(aTxBuffer, 1024, " Sensor\t\tId\tSts\r\n");
+//   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+//   yMEMS_Env_Sensors_Infos(IKS01A3_HTS221_0);
+//   yMEMS_Env_Sensors_Infos(IKS01A3_LPS22HH_0);
+//   yMEMS_Env_Sensors_Infos(IKS01A3_STTS751_0);
+//   yMEMS_Motion_Sensors_Infos(IKS01A3_LSM6DSO_0);
+//   yMEMS_Motion_Sensors_Infos(IKS01A3_LIS2DW12_0);
+//   yMEMS_Motion_Sensors_Infos(IKS01A3_LIS2MDL_0);
 
-   //signature pour Node-RED
-   snprintf(nr_Prog, 40, yPROG " * " yVER);		//yPROG " * " yVER);
+     //signature pour Node-RED
+     snprintf(nr_Prog, 40, yPROG " * " yVER);		//yPROG " * " yVER);
 
-   //afficher fin des inits
-   snprintf(aTxBuffer, 1024, "\t--- fin inits ---\n" DECSC);
-   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
-   if (yTRC)    printf("\n\n*********  fin inits  ***********");
+//   //afficher fin des inits
+//   snprintf(aTxBuffer, 1024, "\t--- fin inits ---\n\n" DECSC);
+//   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+//   if (yTRC)    printf("\n\n*********  fin inits  ***********");
+
+   yDisplayMenu();
 
    comVTcomGUI = 0;
-   snprintf(aTxBuffer, 512, CUP(10,50) "Mode VT actif %d" ERASELINE DECRC, comVTcomGUI);
+   snprintf(aTxBuffer, 512, CUP(4,50) "Mode VT actif %d" ERASELINE DECRC, comVTcomGUI);
    HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 
    HAL_Delay(500);
@@ -330,24 +376,18 @@ int main(void)
 	   {
 		   /* Debouncing */
 		   HAL_Delay(50);
-		   /* Wait until the button is released */
-		   //while ((BSP_PB_GetState( BUTTON_KEY ) == PushButtonState));
-		   //while ((BSP_PB_GetState( BUTTON_KEY ) == 1));
-		   //while ( HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) != GPIO_PIN_SET );
-		   /* Debouncing */
-		   HAL_Delay(50);
 		   /* Reset Interrupt flag */
 		   BP1Detected = 0;
 		   /* define VT ou GUI */
 		   if (comVTcomGUI == 0U) {	//comVT active?
-			   //passer en comGUI
+			   //--- passer en comGUI
 			   comVTcomGUI = 1U;
-			   snprintf(aTxBuffer, 512, CUP(10,50) "Mode Unicleo-GUI actif %d" ERASELINE DECRC, comVTcomGUI);
+			   snprintf(aTxBuffer, 512, CUP(4,50) "Mode Unicleo-GUI actif %d" ERASELINE DECRC, comVTcomGUI);
 			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 			   // erase sensors display
-			   snprintf(aTxBuffer, 512, CUP(18,50) "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE
+			   snprintf(aTxBuffer, 512, CUP(17,50) "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE
 					   "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE
-					   "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE DECRC);
+					   "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE DECRC);
 			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 			   //			yI2C_LCD_clear(); HAL_Delay(45);
 			   //			snprintf(aTxBuffer, 16, "-> GUI %d %d      ", comVTcomGUI, DataLoggerActive);
@@ -355,9 +395,10 @@ int main(void)
 			   //			I2C_LCD_locate(0,0); yI2C_LCD_Affich_Txt("-> com via GUI  ");
 		   }
 		   else {						//comGUI active
-			   //passer en comVT
+			   //--- passer en comVT
 			   comVTcomGUI = 0U;
-			   snprintf(aTxBuffer, 512, CUP(10,50) "Mode VT actif %d" ERASELINE DECRC, comVTcomGUI);
+			   yDisplayMenu();
+			   snprintf(aTxBuffer, 512, CUP(4,50) "Mode VT actif %d" ERASELINE DECRC, comVTcomGUI);
 			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 			   //			snprintf(aTxBuffer, 16, "<- VT  %d %d      ", comVTcomGUI, DataLoggerActive);
 			   //			yI2C_LCD_locate(0,1); yI2C_LCD_Affich_Txt(aTxBuffer);
@@ -366,25 +407,51 @@ int main(void)
 		   }
 	   }	//BP1detected
 
+	   /* Gestion affichage sur VT ou dialogue avec GUI */
 	   if (comVTcomGUI == 0) {		//comVT active?
 		   MX_MEMS_Process();
 		   //write from STM32CubeMon
-		   snprintf(aTxBuffer, 1024, CUP(15,50) "nr_Prog  : %s" ERASELINE DECRC, nr_Prog);
+		   snprintf(aTxBuffer, 1024, CUP(6,50) "nr_Prog  : %s" ERASELINE DECRC, nr_Prog);
 		   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
-		   snprintf(aTxBuffer, 1024, CUP(17,50) "nr_w_Cpt : %d" ERASELINE DECRC, nr_w_Compteur);
+		   snprintf(aTxBuffer, 1024, CUP(7,50) "nr_w_Cpt : %d" ERASELINE DECRC, nr_w_Compteur);
 		   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+		   /* check GPIO pin for debug it will be better to check interrupt!!*/
+			   //yGPio = HAL_GPIO_ReadPin(LPS22HH_INT_GPIO_Port, LPS22HH_INT_Pin);
+			   snprintf(aTxBuffer,1024, CUP(8,50) "LPS22HH_int etat: %x" ERASELINE DECRC, LPS22HHintDetected);
+			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   LPS22HHintDetected = 0;
 
-		   /* check GPIO pin for debug */
-		   yGPio = HAL_GPIO_ReadPin(STTS751_INT_GPIO_Port, STTS751_INT_Pin);
-		   printf("\n--STTS751_int etat: %x", yGPio);
-		   HAL_Delay(500);
+			   //yGPio =HAL_GPIO_ReadPin(LSM6DSO_INT1_GPIO_Port, LSM6DSO_INT1_Pin);
+			   snprintf(aTxBuffer,1024, CUP(9,50) "LSM6DSO_int1 etat: %x" ERASELINE DECRC, yGPio);
+			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   yGPio =HAL_GPIO_ReadPin(LSM6DSO_INT2_GPIO_Port, LSM6DSO_INT2_Pin);
+			   snprintf(aTxBuffer,1024, CUP(10,50) "LSM6DSO_int2 etat: %x" ERASELINE DECRC, yGPio);
+			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+
+			   //yGPio =HAL_GPIO_ReadPin(LIS2DW12_INT1_GPIO_Port, LIS2DW12_INT1_Pin);
+			   snprintf(aTxBuffer,1024, CUP(11,50) "LIS2DW12_int1 etat: %x" ERASELINE DECRC, LIS2DW12int1Detected);
+			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   LIS2DW12int1Detected = 0;
+
+			   //yGPio =HAL_GPIO_ReadPin(LIS2DW12_INT2_GPIO_Port, LIS2DW12_INT2_Pin);
+			   snprintf(aTxBuffer,1024, CUP(12,50) "LIS2DW12_int2 etat: %x" ERASELINE DECRC, LIS2DW12int2Detected);
+			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   LIS2DW12int2Detected = 0;
+
+			   //yGPio =HAL_GPIO_ReadPin(VMA202_sw_GPIO_Port, VMA202_sw_Pin);
+			   snprintf(aTxBuffer,1024, CUP(13,50) "VMA202_sw etat: %x" ERASELINE DECRC, VMA202swDetected);
+			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   VMA202swDetected = 0;
+			/*
+		    * little delai
+		    */
+		   HAL_Delay(1000);
 	   }
 	   else {						//comGUI Unicleo-GUI active
 		   (void) GUI_DataLog_Manage();
 	   }
 
-	   //dans tous les cas VT ou GUI
-	   /* pour Node-RED */
+	   /* dans tous les cas VT ou GUI pour Node-RED */
 	   // lire l'horloge
 	   HAL_RTC_GetTime(&hrtc, &myTime, RTC_FORMAT_BIN);
 	   HAL_RTC_GetDate(&hrtc, &myDate, RTC_FORMAT_BIN);	//need to read also the date!!!
@@ -392,7 +459,6 @@ int main(void)
 	   IKS01A3_ENV_SENSOR_GetValue(IKS01A3_STTS751_0, ENV_TEMPERATURE, &nr_STTS751_Temp);
 	   IKS01A3_ENV_SENSOR_GetValue(IKS01A3_HTS221_0, ENV_TEMPERATURE, &nr_HTS221_Temp);
 	   IKS01A3_ENV_SENSOR_GetValue(IKS01A3_LPS22HH_0, ENV_TEMPERATURE, &nr_LPS22HH_Temp);
-
 
     /* USER CODE END WHILE */
 
