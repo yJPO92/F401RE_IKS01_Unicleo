@@ -9,6 +9,7 @@
 //TODO: com.t/.h ==> ycom !! pour eviter ecrasement
 ++++
 
+le 21/04/2021   v5.2d (na) [brF4]: modif of this file to test GitHub token
 le 21/04/2021   v5.2d (na) [brF4]: suppression BSP_xxx (stm32f4xx_nucleo_xx.c/.h cleared)
                     init usart & dma rx (buffer circulaire) via a dummy cubeMX fnc (suppress init de com.c/.h)
                     mode VT OK, mode GUI OK (y compris download ucf)
