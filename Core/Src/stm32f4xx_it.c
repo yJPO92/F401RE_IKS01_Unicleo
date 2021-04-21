@@ -59,8 +59,8 @@
 /* External variables --------------------------------------------------------*/
 extern TIM_HandleTypeDef htim1;
 extern DMA_HandleTypeDef hdma_usart2_rx;
-//extern UART_HandleTypeDef huart2;
-extern UART_HandleTypeDef UartHandle;
+extern UART_HandleTypeDef huart2;
+//extern UART_HandleTypeDef UartHandle;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -249,9 +249,9 @@ void EXTI4_IRQHandler(void)
 void DMA1_Stream5_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Stream5_IRQn 0 */
-	//@TODO: a revoir avec Uart_Handle
+
   /* USER CODE END DMA1_Stream5_IRQn 0 */
-  //HAL_DMA_IRQHandler(&hdma_usart2_rx);
+  HAL_DMA_IRQHandler(&hdma_usart2_rx);
   /* USER CODE BEGIN DMA1_Stream5_IRQn 1 */
 
   /* USER CODE END DMA1_Stream5_IRQn 1 */
@@ -267,7 +267,8 @@ void EXTI9_5_IRQHandler(void)
   /* USER CODE END EXTI9_5_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
-  HAL_EXTI_IRQHandler(&H_EXTI_8);
+  //HAL_EXTI_IRQHandler(&H_EXTI_8);
+  HAL_GPIO_EXTI_IRQHandler(B1_Pin);
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
 
   /* USER CODE END EXTI9_5_IRQn 1 */
@@ -295,8 +296,8 @@ void USART2_IRQHandler(void)
   /* USER CODE BEGIN USART2_IRQn 0 */
 
   /* USER CODE END USART2_IRQn 0 */
-  //HAL_UART_IRQHandler(&huart2);
-  HAL_UART_IRQHandler(&UartHandle);
+  HAL_UART_IRQHandler(&huart2);
+  //HAL_UART_IRQHandler(&UartHandle);
   /* USER CODE BEGIN USART2_IRQn 1 */
 
   /* USER CODE END USART2_IRQn 1 */
@@ -312,7 +313,6 @@ void EXTI15_10_IRQHandler(void)
   //les lignes en dehors des zones user cleare l'interrupt
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_10);
-  //HAL_EXTI_IRQHandler(&H_EXTI_13);		//gestion interrupt par BSP
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
   //ma gestion du BP
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);

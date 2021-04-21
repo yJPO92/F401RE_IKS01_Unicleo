@@ -40,7 +40,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "serial_protocol.h"
-#include <stdio.h>		//pour printf
 
 /* Exported types ------------------------------------------------------------*/
 /**
@@ -55,34 +54,14 @@ typedef struct
 /* Exported defines ----------------------------------------------------------*/
 #define UART_RxBufferSize (2*TMsg_MaxLen)
 
-/* User can use this section to tailor USARTx/UARTx instance used and associated resources */
-/* Definition for USARTx clock resources */
-#define USARTx                           USART2
-#define USARTx_CLK_ENABLE()              __USART2_CLK_ENABLE();
-#define DMAx_CLK_ENABLE()                __DMA1_CLK_ENABLE()
-#define USARTx_RX_GPIO_CLK_ENABLE()      __GPIOA_CLK_ENABLE()
-#define USARTx_TX_GPIO_CLK_ENABLE()      __GPIOA_CLK_ENABLE()
-
-#define USARTx_FORCE_RESET()             __USART2_FORCE_RESET()
-#define USARTx_RELEASE_RESET()           __USART2_RELEASE_RESET()
-
-/* Definition for USARTx Pins */
-#define USARTx_TX_PIN                    GPIO_PIN_2
-#define USARTx_TX_GPIO_PORT              GPIOA
-#define USARTx_RX_PIN                    GPIO_PIN_3
-#define USARTx_RX_GPIO_PORT              GPIOA
-
 /* Exported variables --------------------------------------------------------*/
 extern volatile uint8_t UartRxBuffer[UART_RxBufferSize];
 extern TUart_Engine UartEngine;
-extern volatile uint32_t UsartBaudRate;
 
 /* Exported macro ------------------------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
-void USARTConfig(void);
 int UART_ReceivedMSG(TMsg *Msg);
 void UART_SendMsg(TMsg *Msg);
-void USART_DMA_Configuration(void);
 
 #endif /* COM_H */

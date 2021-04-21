@@ -21,11 +21,8 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-	/* generé par STMCubeMX
-	 * remplace fonction incluse ds cube_hal_f4, com,
-	 */
-//extern char aTxBuffer[1024];		    //buffer d'emission (UART & LCD)
-//extern uint8_t aRxBuffer[1024];		//buffer de reception
+
+#include "com.h"
 
 /* USER CODE END 0 */
 
@@ -37,6 +34,13 @@ DMA_HandleTypeDef hdma_usart2_rx;
 void MX_USART2_UART_Init(void)
 {
 
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+	// note: HAL_UART_Init appele HAL_UART_MspInit
+  /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
   huart2.Init.BaudRate = 921600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
@@ -49,6 +53,16 @@ void MX_USART2_UART_Init(void)
   {
     Error_Handler();
   }
+  /* USER CODE BEGIN USART2_Init 2 */
+   // added following com.c apres 'HAL_UART_MspInit'
+   huart2.pRxBuffPtr = (uint8_t *)UartRxBuffer;
+   huart2.RxXferSize = UART_RxBufferSize;
+   huart2.ErrorCode = (uint32_t)HAL_UART_ERROR_NONE;
+
+   /* Enable the DMA transfer for the receiver request by setting the DMAR bit in the UART CR3 register */
+   (void)HAL_UART_Receive_DMA(&huart2, (uint8_t *)UartRxBuffer, UART_RxBufferSize);
+
+  /* USER CODE END USART2_Init 2 */
 
 }
 
@@ -85,9 +99,12 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     hdma_usart2_rx.Init.MemInc = DMA_MINC_ENABLE;
     hdma_usart2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_usart2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    hdma_usart2_rx.Init.Mode = DMA_NORMAL;
-    hdma_usart2_rx.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_usart2_rx.Init.Mode = DMA_CIRCULAR;			// vu ds com.c
+    hdma_usart2_rx.Init.Priority = DMA_PRIORITY_MEDIUM;
     hdma_usart2_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    hdma_usart2_rx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+    hdma_usart2_rx.Init.MemBurst = DMA_MBURST_INC4;
+    hdma_usart2_rx.Init.PeriphBurst = DMA_MBURST_INC4;
     if (HAL_DMA_Init(&hdma_usart2_rx) != HAL_OK)
     {
       Error_Handler();
@@ -99,16 +116,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(USART2_IRQn);
   /* USER CODE BEGIN USART2_MspInit 1 */
-    /* added following com.c */
-    huart2.pRxBuffPtr = (uint8_t *)UART_RxBufferSize; /* MISRA C-2012 rule 11.8 violation for purpose */
-    huart2.RxXferSize = 1024;
-    huart2.ErrorCode = (uint32_t)HAL_UART_ERROR_NONE;
-
-    /* Enable the DMA transfer for the receiver request by setting the DMAR bit
-    in the UART CR3 register */
-    /* MISRA C-2012 rule 11.8 violation for purpose */
-    (void)HAL_UART_Receive_DMA(&huart2, (uint8_t *)UART_RxBufferSize, UART_RxBufferSize);
-
+    // retour en 'MX_USART2_UART_Init'
   /* USER CODE END USART2_MspInit 1 */
   }
 }

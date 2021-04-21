@@ -38,30 +38,19 @@
 #include "com.h"
 #include <stdio.h>
 
-/** @addtogroup X_NUCLEO_IKS01A3_Examples X_NUCLEO_IKS01A3 Examples
- * @{
- */
-
-/** @addtogroup DATALOG_EXTENDED DATALOG EXTENDED
- * @{
- */
-
 /* Private types -------------------------------------------------------------*/
 /* Private defines -----------------------------------------------------------*/
 #define Uart_Msg_Max_Size TMsg_MaxLen
 
 /* Private macro -------------------------------------------------------------*/
 /* Exported variables --------------------------------------------------------*/
-extern UART_HandleTypeDef UartHandle; /* This "redundant" line is here to fulfil MISRA C-2012 rule 8.4 */
-UART_HandleTypeDef UartHandle;
-//extern UART_HandleTypeDef huart2; /* This "redundant" line is here to fulfil MISRA C-2012 rule 8.4 */
-//UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart2; /* This "redundant" line is here to fulfil MISRA C-2012 rule 8.4 */
+UART_HandleTypeDef huart2;
 volatile uint8_t UartRxBuffer[UART_RxBufferSize];
 TUart_Engine UartEngine;
-volatile uint32_t UsartBaudRate = 921600;
 
 /* Private variables ---------------------------------------------------------*/
-static DMA_HandleTypeDef HdmaRx;
+extern DMA_HandleTypeDef hdma_usart2_rx;
 static volatile uint8_t UartTxBuffer[TMsg_MaxLen * 2];
 
 /* Private function prototypes -----------------------------------------------*/
@@ -79,10 +68,10 @@ int UART_ReceivedMSG(TMsg *Msg)
   uint16_t source = 0;
   uint8_t inc;
 
-  if (Get_DMA_Flag_Status(&HdmaRx) == (uint32_t)RESET)
+  if (Get_DMA_Flag_Status(&hdma_usart2_rx) == (uint32_t)RESET)
   {
 	  if (yDBG) printf("\n---- receiveMsg: %u %u %u %u %u %u", Msg->Data[0],Msg->Data[1],Msg->Data[2],Msg->Data[3],Msg->Data[4],Msg->Data[5]);
-	  dma_counter = (uint16_t)UART_RxBufferSize - (uint16_t)Get_DMA_Counter(&HdmaRx);
+	  dma_counter = (uint16_t)UART_RxBufferSize - (uint16_t)Get_DMA_Counter(&hdma_usart2_rx);
 
     if (dma_counter >= UartEngine.StartOfMsg)
     {
@@ -161,91 +150,7 @@ void UART_SendMsg(TMsg *Msg)
   count_out = (uint16_t)ByteStuffCopy((uint8_t *)UartTxBuffer, Msg);
 
   /* MISRA C-2012 rule 11.8 violation for purpose */
-  (void)HAL_UART_Transmit(&UartHandle, (uint8_t *)UartTxBuffer, count_out, 5000);
+  (void)HAL_UART_Transmit(&huart2, (uint8_t *)UartTxBuffer, count_out, 5000);
 }
 
-/* voir usart.c de cubeMX */
-/**
- * @brief  Configure DMA for the reception via USART
- * @param  HdmaRx DMA handle
- * @retval None
- */
-void USART_DMA_Configuration(void)
-{
-  Config_DMA_Handler(&HdmaRx);
-
-  (void)HAL_DMA_Init(&HdmaRx);
-
-  /* Associate the initialized DMA handle to the the UART handle */
-  __HAL_LINKDMA(&UartHandle, hdmarx, HdmaRx);
-}
-
-/**
- * @brief  Configure the USART
- * @param  None
- * @retval None
- */
-void USARTConfig(void)
-{
-  GPIO_InitTypeDef gpio_init_struct;
-
-  /*##-1- Enable peripherals and GPIO Clocks #################################*/
-  /* Enable GPIO TX/RX clock */
-  USARTx_TX_GPIO_CLK_ENABLE();
-  USARTx_RX_GPIO_CLK_ENABLE();
-  /* Enable USART2 clock */
-  USARTx_CLK_ENABLE();
-  /* Enable DMA1 clock */
-  DMAx_CLK_ENABLE();
-
-  /*##-2- Configure peripheral GPIO ##########################################*/
-  /* UART TX GPIO pin configuration  */
-  gpio_init_struct.Pin       = USARTx_TX_PIN;
-  gpio_init_struct.Mode      = GPIO_MODE_AF_PP;
-  gpio_init_struct.Pull      = GPIO_NOPULL;
-  gpio_init_struct.Speed     = GPIO_SPEED_FREQ_HIGH;
-  gpio_init_struct.Alternate = USARTx_TX_AF;
-
-  HAL_GPIO_Init(USARTx_TX_GPIO_PORT, &gpio_init_struct);
-
-  /* UART RX GPIO pin configuration  */
-  gpio_init_struct.Pin = USARTx_RX_PIN;
-  gpio_init_struct.Alternate = USARTx_RX_AF;
-
-  HAL_GPIO_Init(USARTx_RX_GPIO_PORT, &gpio_init_struct);
-
-  /*##-3- Configure the UART peripheral ######################################*/
-  /* Put the USART peripheral in the Asynchronous mode (UART Mode) */
-  UartHandle.Instance        = USARTx;
-  UartHandle.Init.BaudRate   = UsartBaudRate;
-  UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
-  UartHandle.Init.StopBits   = UART_STOPBITS_1;
-  UartHandle.Init.Parity     = UART_PARITY_NONE;
-  UartHandle.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
-  UartHandle.Init.Mode       = UART_MODE_TX_RX;
-
-  if (HAL_UART_Init(&UartHandle) != HAL_OK)
-  {
-    for (;;)
-    {}
-  }
-
-  USART_DMA_Configuration();
-
-  UartHandle.pRxBuffPtr = (uint8_t *)UartRxBuffer; /* MISRA C-2012 rule 11.8 violation for purpose */
-  UartHandle.RxXferSize = UART_RxBufferSize;
-  UartHandle.ErrorCode = (uint32_t)HAL_UART_ERROR_NONE;
-
-  /* Enable the DMA transfer for the receiver request by setting the DMAR bit
-  in the UART CR3 register */
-  /* MISRA C-2012 rule 11.8 violation for purpose */
-  (void)HAL_UART_Receive_DMA(&UartHandle, (uint8_t *)UartRxBuffer, UART_RxBufferSize);
-}
-
-/**
- * @}
- */
-
-/**
- * @}
- */
+/* end of file */

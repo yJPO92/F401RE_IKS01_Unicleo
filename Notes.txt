@@ -6,8 +6,13 @@
 [[[[[* STM32CubeL4 Firmware Package V1.17.0]]]]]
 
 //TODO: reorganiser functions in files
+//TODO: com.t/.h ==> ycom !! pour eviter ecrasement
 ++++
 
+le 21/04/2021   v5.2d (na) [brF4]: suppression BSP_xxx (stm32f4xx_nucleo_xx.c/.h cleared)
+                    init usart & dma rx (buffer circulaire) via a dummy cubeMX fnc (suppress init de com.c/.h)
+                    mode VT OK, mode GUI OK (y compris download ucf)
+                    flows updated
 le 17/04/2021   v5.2c (na) [brF4]: suppression fnc BSP_xx_Init et associées à LED/BUTTON/COM/USART/...
                     file com.c.h initialise UART2 (no CubeMX).
                     ajout interrupt callback pour sensor_int.

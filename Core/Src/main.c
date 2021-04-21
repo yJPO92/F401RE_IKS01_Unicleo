@@ -21,6 +21,7 @@
 #include "main.h"
 #include "rtc.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 //#include "app_mems.h"
 
@@ -47,6 +48,7 @@
 #pragma message("CubeMX  " __STR1__(yCubeMX))
 #pragma message("***************************\n")
 
+#include "dma.h"
 #include "com.h"
 #include "DemoSerial.h"
 #include <stdio.h>
@@ -92,7 +94,7 @@
 /* Private variables ---------------------------------------------------------*/
 #define MAX_BUF_SIZE 256
 char aTxBuffer[TMsg_MaxLen * 4];		    //buffer d'emission (UART & LCD)
-uint8_t aRxBuffer[UART_RxBufferSize];		//buffer de reception
+uint8_t aRxBuffer[UART_RxBufferSize];		//buffer de reception (VT)
 
 volatile uint8_t BP1Detected = 0;	//flag detection interrupt BP bleu
 volatile uint8_t LIS2DW12int1Detected = 0;
@@ -124,7 +126,8 @@ static void MX_NVIC_Init(void);
 uint8_t sensorId1,sensorId2,sensorId3;
 RTC_TimeTypeDef myTime;
 RTC_DateTypeDef myDate;
-extern UART_HandleTypeDef UartHandle;
+//extern UART_HandleTypeDef UartHandle;
+extern UART_HandleTypeDef huart2;
 
 /*
  * Allume/eteint la LED au rythme du TIM6
@@ -149,7 +152,7 @@ void yPrintTime(void) {
 	  snprintf(aTxBuffer, 1024, "\t==> %02d-%02d-%02d %02d:%02d:%02d\r\n",
 			  	  	  	  	  	  	  myDate.Date, myDate.Month, myDate.Year,
 									  myTime.Hours, myTime.Minutes, myTime.Seconds);
-	  HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+	  HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 }
 
 /*
@@ -195,7 +198,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	/** PC1	GPIO_EXTI1	(STTS751_INT) */
 	if(GPIO_Pin == STTS751_INT_Pin) {
 		//snprintf(aTxBuffer, 1024, "\n\t--STTS751 Interrupt");
-		/* trop repetitif!! */	//HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+		/* trop repetitif!! */	//HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 		//yMEMS_Env_Sensors_Infos(IKS01A3_STTS751_0);
 	}
 
@@ -240,14 +243,14 @@ void yDisplayMenu(void) {
 	 						     "\nCompil: " __TIME__" on "__DATE__
 	 						     "\nSTmicro NUCLEO_F401RE"
 	 							 "\r\n" DECSC);
-	   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+	   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 	   HAL_Delay(50);
 	   //complement de titre du programme
 	   snprintf(aTxBuffer, 1024, "==> IKS01A3_TestDataLogTerminal(vt/gui)\r\n" DECSC);
-	   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+	   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 
 	   snprintf(aTxBuffer, 1024, " Sensor\t\tId\tSts\r\n" DECSC);
-	   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+	   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 	   yMEMS_Env_Sensors_Infos(IKS01A3_HTS221_0);
 	   yMEMS_Env_Sensors_Infos(IKS01A3_LPS22HH_0);
 	   yMEMS_Env_Sensors_Infos(IKS01A3_STTS751_0);
@@ -257,7 +260,7 @@ void yDisplayMenu(void) {
 
 	   //afficher fin des (re)inits
 	   snprintf(aTxBuffer, 1024, "\t--- fin (re)inits ---\n" DECSC);
-	   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+	   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 }
 /* USER CODE END 0 */
 
@@ -289,34 +292,23 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_RTC_Init();
   MX_TIM1_Init();
+  MX_USART2_UART_Init();
   MX_MEMS_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 
-  /* Initialize UART via com.c a la mode STM, pas via CubeMX*/
-  USARTConfig();
+//  /* Initialize UART via com.c a la mode STM, pas via CubeMX*/
+//  USARTConfig();
 
   /* Initialize RTC */
 //  RTC_Config();
 //  RTC_TimeStampConfig();
 
-//  //message de bienvenue
-//   snprintf(aTxBuffer, 1024, clrscr homescr
-// 		  	  	  	  	     "\nBonjour maître!"
-// 		  	  	  	  	  	 "\n(c)Jean92, " yDATE
-// 							 "\n* " yPROG " * " yVER
-// 						     "\nCompil: " __TIME__" on "__DATE__
-// 						     "\nSTmicro NUCLEO_F401RE"
-// 							 "\r\n");
-//   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
-//
-//   //complement de titre du programme
-//   snprintf(aTxBuffer, 1024, "==> IKS01A3_TestDataLogTerminal(vt/gui)\r\n");
-//   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
    //test led Led on Nucleo
    for (int ii = 0; ii < 10; ++ii) {
      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
@@ -339,29 +331,16 @@ int main(void)
    /* other inits */
    BP1Detected = 0;
    comVTcomGUI = 0;
-//   //detailler les sensors MEMs
-//   snprintf(aTxBuffer, 1024, " Sensor\t\tId\tSts\r\n");
-//   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
-//   yMEMS_Env_Sensors_Infos(IKS01A3_HTS221_0);
-//   yMEMS_Env_Sensors_Infos(IKS01A3_LPS22HH_0);
-//   yMEMS_Env_Sensors_Infos(IKS01A3_STTS751_0);
-//   yMEMS_Motion_Sensors_Infos(IKS01A3_LSM6DSO_0);
-//   yMEMS_Motion_Sensors_Infos(IKS01A3_LIS2DW12_0);
-//   yMEMS_Motion_Sensors_Infos(IKS01A3_LIS2MDL_0);
 
-     //signature pour Node-RED
-     snprintf(nr_Prog, 40, yPROG " * " yVER);		//yPROG " * " yVER);
+   //signature pour Node-RED
+   snprintf(nr_Prog, 40, yPROG " * " yVER);		//yPROG " * " yVER);
 
-//   //afficher fin des inits
-//   snprintf(aTxBuffer, 1024, "\t--- fin inits ---\n\n" DECSC);
-//   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
-//   if (yTRC)    printf("\n\n*********  fin inits  ***********");
-
+   //display: Welcome, sensors detail
    yDisplayMenu();
 
    comVTcomGUI = 0;
    snprintf(aTxBuffer, 512, CUP(4,50) "Mode VT actif %d" ERASELINE DECRC, comVTcomGUI);
-   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 
    HAL_Delay(500);
 
@@ -383,12 +362,12 @@ int main(void)
 			   //--- passer en comGUI
 			   comVTcomGUI = 1U;
 			   snprintf(aTxBuffer, 512, CUP(4,50) "Mode Unicleo-GUI actif %d" ERASELINE DECRC, comVTcomGUI);
-			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 			   // erase sensors display
-			   snprintf(aTxBuffer, 512, CUP(17,50) "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE
+			   snprintf(aTxBuffer, 512, CUP(17,50) ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE
 					   "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE
 					   "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE "\n" ERASELINE DECRC);
-			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 			   //			yI2C_LCD_clear(); HAL_Delay(45);
 			   //			snprintf(aTxBuffer, 16, "-> GUI %d %d      ", comVTcomGUI, DataLoggerActive);
 			   //			yI2C_LCD_locate(0,0); yI2C_LCD_Affich_Txt(aTxBuffer);
@@ -397,9 +376,9 @@ int main(void)
 		   else {						//comGUI active
 			   //--- passer en comVT
 			   comVTcomGUI = 0U;
-			   yDisplayMenu();
+			   yDisplayMenu();	//reafficher menu
 			   snprintf(aTxBuffer, 512, CUP(4,50) "Mode VT actif %d" ERASELINE DECRC, comVTcomGUI);
-			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 			   //			snprintf(aTxBuffer, 16, "<- VT  %d %d      ", comVTcomGUI, DataLoggerActive);
 			   //			yI2C_LCD_locate(0,1); yI2C_LCD_Affich_Txt(aTxBuffer);
 			   //			yI2C_LCD_clear(); HAL_Delay(45);
@@ -412,35 +391,30 @@ int main(void)
 		   MX_MEMS_Process();
 		   //write from STM32CubeMon
 		   snprintf(aTxBuffer, 1024, CUP(6,50) "nr_Prog  : %s" ERASELINE DECRC, nr_Prog);
-		   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+		   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 		   snprintf(aTxBuffer, 1024, CUP(7,50) "nr_w_Cpt : %d" ERASELINE DECRC, nr_w_Compteur);
-		   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+		   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 		   /* check GPIO pin for debug it will be better to check interrupt!!*/
-			   //yGPio = HAL_GPIO_ReadPin(LPS22HH_INT_GPIO_Port, LPS22HH_INT_Pin);
 			   snprintf(aTxBuffer,1024, CUP(8,50) "LPS22HH_int etat: %x" ERASELINE DECRC, LPS22HHintDetected);
-			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 			   LPS22HHintDetected = 0;
 
-			   //yGPio =HAL_GPIO_ReadPin(LSM6DSO_INT1_GPIO_Port, LSM6DSO_INT1_Pin);
 			   snprintf(aTxBuffer,1024, CUP(9,50) "LSM6DSO_int1 etat: %x" ERASELINE DECRC, yGPio);
-			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 			   yGPio =HAL_GPIO_ReadPin(LSM6DSO_INT2_GPIO_Port, LSM6DSO_INT2_Pin);
 			   snprintf(aTxBuffer,1024, CUP(10,50) "LSM6DSO_int2 etat: %x" ERASELINE DECRC, yGPio);
-			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 
-			   //yGPio =HAL_GPIO_ReadPin(LIS2DW12_INT1_GPIO_Port, LIS2DW12_INT1_Pin);
 			   snprintf(aTxBuffer,1024, CUP(11,50) "LIS2DW12_int1 etat: %x" ERASELINE DECRC, LIS2DW12int1Detected);
-			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 			   LIS2DW12int1Detected = 0;
 
-			   //yGPio =HAL_GPIO_ReadPin(LIS2DW12_INT2_GPIO_Port, LIS2DW12_INT2_Pin);
 			   snprintf(aTxBuffer,1024, CUP(12,50) "LIS2DW12_int2 etat: %x" ERASELINE DECRC, LIS2DW12int2Detected);
-			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 			   LIS2DW12int2Detected = 0;
 
-			   //yGPio =HAL_GPIO_ReadPin(VMA202_sw_GPIO_Port, VMA202_sw_Pin);
 			   snprintf(aTxBuffer,1024, CUP(13,50) "VMA202_sw etat: %x" ERASELINE DECRC, VMA202swDetected);
-			   HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+			   HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 			   VMA202swDetected = 0;
 			/*
 		    * little delai

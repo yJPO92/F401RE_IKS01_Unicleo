@@ -30,7 +30,7 @@ typedef struct displayFloatToInt_s {
 /* Public variables ----------------------------------------------------------*/
 extern char aTxBuffer[1024];		    //buffer d'emission (UART & LCD)
 uint8_t sensorId1,sensorId2,sensorId3;
-UART_HandleTypeDef UartHandle;
+UART_HandleTypeDef huart2;
 
 /* Private function prototypes -----------------------------------------------*/
 static void floatToInt(float in, displayFloatToInt_t *out_value, int32_t dec_prec);
@@ -63,7 +63,7 @@ void yMEMS_Env_Sensors_Infos(uint32_t Instance) {
 		default:
 			break;
 	}
-	HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+	HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 }
 
 /*
@@ -93,7 +93,7 @@ void yMEMS_Motion_Sensors_Infos(uint32_t Instance) {
 		default:
 			break;
 	}
-	HAL_UART_Transmit(&UartHandle,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+	HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 }
 
 /*

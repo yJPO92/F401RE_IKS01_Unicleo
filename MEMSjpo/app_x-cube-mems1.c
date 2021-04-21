@@ -74,7 +74,7 @@ static void MX_IKS01A3_DataLogTerminal_Init(void);
 static void MX_IKS01A3_DataLogTerminal_Process(void);
 
   /* USER CODE 0 */ 
-extern UART_HandleTypeDef UartHandle;
+extern UART_HandleTypeDef huart2;
 
   /* USER CODE END 0 */
 
@@ -106,7 +106,7 @@ void MX_MEMS_Process(void)
 {
   /* USER CODE BEGIN MEMS_Process_PreTreatment */
 //	snprintf(dataOut, MAX_BUF_SIZE, DECRC "\n-------------------\n");		//remet le curseur a la position ssauvegardee
-//	HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+//	HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
   /* USER CODE END MEMS_Process_PreTreatment */
 
   MX_IKS01A3_DataLogTerminal_Process();
@@ -145,19 +145,19 @@ void MX_IKS01A3_DataLogTerminal_Init(void)
     snprintf(dataOut, MAX_BUF_SIZE,
              "\r\nMotion Sensor Instance %d capabilities: \r\n ACCELEROMETER: %d\r\n GYROSCOPE: %d\r\n MAGNETOMETER: %d\r\n LOW POWER: %d\r\n",
              i, MotionCapabilities[i].Acc, MotionCapabilities[i].Gyro, MotionCapabilities[i].Magneto, MotionCapabilities[i].LowPower);
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
     floatToInt(MotionCapabilities[i].AccMaxOdr, &out_value_odr, 3);
     snprintf(dataOut, MAX_BUF_SIZE, " MAX ACC ODR: %d.%03d Hz, MAX ACC FS: %d\r\n", (int)out_value_odr.out_int,
              (int)out_value_odr.out_dec, (int)MotionCapabilities[i].AccMaxFS);
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
     floatToInt(MotionCapabilities[i].GyroMaxOdr, &out_value_odr, 3);
     snprintf(dataOut, MAX_BUF_SIZE, " MAX GYRO ODR: %d.%03d Hz, MAX GYRO FS: %d\r\n", (int)out_value_odr.out_int,
              (int)out_value_odr.out_dec, (int)MotionCapabilities[i].GyroMaxFS);
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
     floatToInt(MotionCapabilities[i].MagMaxOdr, &out_value_odr, 3);
     snprintf(dataOut, MAX_BUF_SIZE, " MAX MAG ODR: %d.%03d Hz, MAX MAG FS: %d\r\n", (int)out_value_odr.out_int,
              (int)out_value_odr.out_dec, (int)MotionCapabilities[i].MagMaxFS);
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
   }
 
   IKS01A3_ENV_SENSOR_Init(IKS01A3_HTS221_0, ENV_TEMPERATURE | ENV_HUMIDITY);
@@ -172,18 +172,18 @@ void MX_IKS01A3_DataLogTerminal_Init(void)
     snprintf(dataOut, MAX_BUF_SIZE,
              "\r\nEnvironmental Sensor Instance %d capabilities: \r\n TEMPERATURE: %d\r\n PRESSURE: %d\r\n HUMIDITY: %d\r\n LOW POWER: %d\r\n",
              i, EnvCapabilities[i].Temperature, EnvCapabilities[i].Pressure, EnvCapabilities[i].Humidity, EnvCapabilities[i].LowPower);
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
     floatToInt(EnvCapabilities[i].TempMaxOdr, &out_value_odr, 3);
     snprintf(dataOut, MAX_BUF_SIZE, " MAX TEMP ODR: %d.%03d Hz\r\n", (int)out_value_odr.out_int,
              (int)out_value_odr.out_dec);
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
     floatToInt(EnvCapabilities[i].PressMaxOdr, &out_value_odr, 3);
     snprintf(dataOut, MAX_BUF_SIZE, " MAX PRESS ODR: %d.%03d Hz\r\n", (int)out_value_odr.out_int,
              (int)out_value_odr.out_dec);
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
     floatToInt(EnvCapabilities[i].HumMaxOdr, &out_value_odr, 3);
     snprintf(dataOut, MAX_BUF_SIZE, " MAX HUM ODR: %d.%03d Hz\r\n", (int)out_value_odr.out_int, (int)out_value_odr.out_dec);
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
   }
 }
 
@@ -299,7 +299,7 @@ static void Accelero_Sensor_Handler(uint32_t Instance)
              (int)acceleration.x, (int)Instance, (int)acceleration.y, (int)Instance, (int)acceleration.z);
   }
 
-  HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+  HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
   //printf("%s", dataOut);
 
 
@@ -314,7 +314,7 @@ static void Accelero_Sensor_Handler(uint32_t Instance)
       snprintf(dataOut, MAX_BUF_SIZE, "WHOAMI[%d]: 0x%x\r\n", (int)Instance, (int)whoami);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
 
     if (IKS01A3_MOTION_SENSOR_GetOutputDataRate(Instance, MOTION_ACCELERO, &odr))
@@ -328,7 +328,7 @@ static void Accelero_Sensor_Handler(uint32_t Instance)
                (int)out_value.out_dec);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
 
     if (IKS01A3_MOTION_SENSOR_GetFullScale(Instance, MOTION_ACCELERO, &fullScale))
@@ -340,7 +340,7 @@ static void Accelero_Sensor_Handler(uint32_t Instance)
       snprintf(dataOut, MAX_BUF_SIZE, "FS[%d]: %d g\r\n", (int)Instance, (int)fullScale);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
   }
 }
@@ -368,7 +368,7 @@ static void Gyro_Sensor_Handler(uint32_t Instance)
              (int)angular_velocity.x, (int)Instance, (int)angular_velocity.y, (int)Instance, (int)angular_velocity.z);
   }
 
-  HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+  HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
   //printf("%s", dataOut);
 
   if (verbose == 1)
@@ -382,7 +382,7 @@ static void Gyro_Sensor_Handler(uint32_t Instance)
       snprintf(dataOut, MAX_BUF_SIZE, "WHOAMI[%d]: 0x%x\r\n", (int)Instance, (int)whoami);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
 
     if (IKS01A3_MOTION_SENSOR_GetOutputDataRate(Instance, MOTION_GYRO, &odr))
@@ -396,7 +396,7 @@ static void Gyro_Sensor_Handler(uint32_t Instance)
                (int)out_value.out_dec);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
 
     if (IKS01A3_MOTION_SENSOR_GetFullScale(Instance, MOTION_GYRO, &fullScale))
@@ -408,7 +408,7 @@ static void Gyro_Sensor_Handler(uint32_t Instance)
       snprintf(dataOut, MAX_BUF_SIZE, "FS[%d]: %d dps\r\n", (int)Instance, (int)fullScale);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
   }
 }
@@ -436,7 +436,7 @@ static void Magneto_Sensor_Handler(uint32_t Instance)
              (int)magnetic_field.x, (int)Instance, (int)magnetic_field.y, (int)Instance, (int)magnetic_field.z);
   }
 
-  HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+  HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
   //printf("%s", dataOut);
 
   if (verbose == 1)
@@ -450,7 +450,7 @@ static void Magneto_Sensor_Handler(uint32_t Instance)
       snprintf(dataOut, MAX_BUF_SIZE, "WHOAMI[%d]: 0x%x\r\n", (int)Instance, (int)whoami);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
 
     if (IKS01A3_MOTION_SENSOR_GetOutputDataRate(Instance, MOTION_MAGNETO, &odr))
@@ -464,7 +464,7 @@ static void Magneto_Sensor_Handler(uint32_t Instance)
                (int)out_value.out_dec);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
 
     if (IKS01A3_MOTION_SENSOR_GetFullScale(Instance, MOTION_MAGNETO, &fullScale))
@@ -476,7 +476,7 @@ static void Magneto_Sensor_Handler(uint32_t Instance)
       snprintf(dataOut, MAX_BUF_SIZE, "FS[%d]: %d gauss\r\n", (int)Instance, (int)fullScale);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
   }
 }
@@ -504,7 +504,7 @@ static void Temp_Sensor_Handler(uint32_t Instance)
              (int)out_value.out_dec);
   }
 
-  HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+  HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
   //printf("%s", dataOut);
 
   if (verbose == 1)
@@ -518,7 +518,7 @@ static void Temp_Sensor_Handler(uint32_t Instance)
       snprintf(dataOut, MAX_BUF_SIZE, "WHOAMI[%d]: 0x%x\r\n", (int)Instance, (int)whoami);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
 
     if (IKS01A3_ENV_SENSOR_GetOutputDataRate(Instance, ENV_TEMPERATURE, &odr))
@@ -532,7 +532,7 @@ static void Temp_Sensor_Handler(uint32_t Instance)
                (int)out_value.out_dec);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
   }
 }
@@ -560,7 +560,7 @@ static void Press_Sensor_Handler(uint32_t Instance)
              (int)out_value.out_dec);
   }
 
-  HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+  HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
   //printf("%s", dataOut);
 
   if (verbose == 1)
@@ -574,7 +574,7 @@ static void Press_Sensor_Handler(uint32_t Instance)
       snprintf(dataOut, MAX_BUF_SIZE, "WHOAMI[%d]: 0x%x\r\n", (int)Instance, (int)whoami);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
 
     if (IKS01A3_ENV_SENSOR_GetOutputDataRate(Instance, ENV_PRESSURE, &odr))
@@ -588,7 +588,7 @@ static void Press_Sensor_Handler(uint32_t Instance)
                (int)out_value.out_dec);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
   }
 }
@@ -616,7 +616,7 @@ static void Hum_Sensor_Handler(uint32_t Instance)
              (int)out_value.out_dec);
   }
 
-  HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+  HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
   //printf("%s", dataOut);
 
   if (verbose == 1)
@@ -630,7 +630,7 @@ static void Hum_Sensor_Handler(uint32_t Instance)
       snprintf(dataOut, MAX_BUF_SIZE, "WHOAMI[%d]: 0x%x\r\n", (int)Instance, (int)whoami);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
 
     if (IKS01A3_ENV_SENSOR_GetOutputDataRate(Instance, ENV_HUMIDITY, &odr))
@@ -644,7 +644,7 @@ static void Hum_Sensor_Handler(uint32_t Instance)
                (int)out_value.out_dec);
     }
 
-    HAL_UART_Transmit(&UartHandle,(uint8_t *) dataOut, strlen(dataOut), 5000);
+    HAL_UART_Transmit(&huart2,(uint8_t *) dataOut, strlen(dataOut), 5000);
 	//printf("%s", dataOut);
   }
 }
