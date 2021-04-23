@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
-  * File Name          :  stmicroelectronics_x-cube-mems1_6_2_0.h
-  * Description        : This file provides code for the configuration
+  * @file    app_x-cube-mems1.h
+  * @brief   This file provides code for the configuration
   *                      of the STMicroelectronics.X-CUBE-MEMS1.6.2.0 instances.
   ******************************************************************************
   *
@@ -20,6 +20,7 @@
   * limitations under the License.
   ******************************************************************************
   */
+/* a ma facon */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __YAPP_X_CUBE_MEMS1_H

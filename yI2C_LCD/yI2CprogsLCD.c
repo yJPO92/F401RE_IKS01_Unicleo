@@ -1,12 +1,11 @@
-/*
- * yI2CprogLCDs.c
- *
+/**
+ *  @file yI2CprogLCDs.c
  *  @brief Ensemble de fonction driver pour Grove LCD rgb backlight
  *  see datasheet : JHD1214 Y/YG 1.0
  *
-  *  Modified on: 31 may 2019	(pour F401RE)
-  *  *  Created on: 22 mars 2019
- *      Author: Jean
+ *  Modified on: 31 may 2019	(pour F401RE)
+ *  Created on: 22 mars 2019
+ *  @author: Jean
  */
 
 #include "yI2CprogsLCD.h"

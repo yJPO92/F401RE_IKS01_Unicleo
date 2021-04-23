@@ -36,7 +36,6 @@
 //@TODO: completer cmd pour AlgoBuilder
 /* Includes ------------------------------------------------------------------*/
 
-#include <com.h>
 #include <DemoSerial.h>
 #include <iks01a3_env_sensors.h>
 #include <iks01a3_env_sensors_ex.h>
@@ -44,6 +43,7 @@
 #include <iks01a3_motion_sensors_ex.h>
 #include <stm32f4xx_nucleo_errno.h>
 #include <sensor_commands.h>
+#include "ycom.h"
 #include <string.h>
 
 /** @addtogroup X_NUCLEO_IKS01A3_Examples X_NUCLEO_IKS01A3 Examples

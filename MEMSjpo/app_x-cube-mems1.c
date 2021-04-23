@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
-  * File Name          :  stmicroelectronics_x-cube-mems1_6_2_0.c
-  * Description        : This file provides code for the configuration
+  * @file    app_x-cube-mems1.c
+  * @brief   This file provides code for the configuration
   *                      of the STMicroelectronics.X-CUBE-MEMS1.6.2.0 instances.
   ******************************************************************************
-  *²²²
+  *
   * COPYRIGHT 2019 STMicroelectronics
   *
   * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
@@ -20,6 +20,7 @@
   * limitations under the License.
   ******************************************************************************
   */
+/* a ma facon */
 
 #ifdef __cplusplus
  extern "C" {

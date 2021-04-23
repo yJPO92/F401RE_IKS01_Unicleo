@@ -1,4 +1,4 @@
-/*
+/**
  * @file	gui.h
  * @author  Jean
  * @brief   Handle for gui.c

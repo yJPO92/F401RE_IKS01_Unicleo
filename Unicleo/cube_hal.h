@@ -41,6 +41,7 @@
 #include <stdint.h>
 #include "stm32f4xx_nucleo.h"
 
+//yF4unicleo option include
 #ifdef USE_STM32F4XX_NUCLEO
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_nucleo.h"
@@ -113,10 +114,10 @@
 #define RTC_SYNCH_PREDIV_LSE   0x00FF
 #endif
 
-void SystemClock_Config(void);
+//void SystemClock_Config(void);
 uint32_t Get_DMA_Flag_Status(DMA_HandleTypeDef *handle_dma);
 uint32_t Get_DMA_Counter(DMA_HandleTypeDef *handle_dma);
-void Config_DMA_Handler(DMA_HandleTypeDef *handle_dma);
+//void Config_DMA_Handler(DMA_HandleTypeDef *handle_dma);
 
 #endif /* CUBE_HAL_H */
 

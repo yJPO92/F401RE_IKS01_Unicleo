@@ -38,10 +38,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "DemoSerial.h"
 #include "main.h"
-#include "com.h"
 #include "sensor_commands.h"
 #include "serial_protocol.h"
 #include "gui.h"
+#include "ycom.h"
 #include <stdio.h>
 
 /** @addtogroup X_NUCLEO_IKS01A3_Examples X_NUCLEO_IKS01A3 Examples

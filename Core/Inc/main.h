@@ -17,7 +17,9 @@
   *
   ******************************************************************************
   */
-  /* yFLAG ==>stm32f4xx_nucleo.h header file for the BSP Common driver (led, bp, com ...)*/
+
+ // yF4unicleo ==>stm32f4xx_nucleo.h Not Used. header file for the BSP Common driver (led, bp, com ...), not used
+
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -31,7 +33,7 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
-#include "stm32f4xx_nucleo.h"
+#include "stm32f4xx_nucleo.h"	//not used
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -60,7 +62,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define yCubeMX 5.2
+#define yCubeMX "na"
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
 #define B1_EXTI_IRQn EXTI15_10_IRQn
@@ -102,7 +104,7 @@ void Error_Handler(void);
 #define I2C1sda_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 #define yPROG "F401RE_IKS01_Unicleo"
-#define yVER  "v5.2d"
+#define yVER  "v5.3"
 #define yDATE "xx-avr-2021"
 
 #define yDBG 1		//many printf

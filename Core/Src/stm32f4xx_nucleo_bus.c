@@ -16,7 +16,7 @@
   ******************************************************************************
 */
 
-//yF4unicleo I2C1 a voir
+//yF4unicleo à garder car gere I2C1 des sensors
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_nucleo_bus.h"

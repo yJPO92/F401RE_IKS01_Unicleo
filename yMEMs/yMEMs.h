@@ -1,10 +1,12 @@
-/*
- * yMEMs.h
- *
- * @brief Mes fonction d'accès aux MEMs de  IKS01A3
+/**
+ ******************************************************************************
+ * @file    yMEMs.c
+ * @author  Jean
+ * @brief   Mes fonction d'accès aux MEMs de  IKS01A3
+ ******************************************************************************
  *
  *  Created on: 30 juin 2019
- *      Author: Jean
+ *  @author: Jean
  */
 
 #ifndef YMEMS_H_

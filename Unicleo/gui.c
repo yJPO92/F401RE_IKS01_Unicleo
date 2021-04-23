@@ -1,4 +1,4 @@
-/*
+/**
  * @file	gui.c
  * @author  Jean
  * @brief   Handle the Unicleo-GUI interface
@@ -9,9 +9,9 @@
 #include <string.h>
 #include <math.h>
 #include <stdio.h>
+#include "ycom.h"
 #include "main.h"
 #include "rtc.h"
-#include "com.h"
 #include "DemoSerial.h"
 #include "gui.h"
 

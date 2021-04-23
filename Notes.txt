@@ -7,9 +7,13 @@
 
 //TODO: reorganiser functions in files
 //TODO: com.t/.h ==> ycom !! pour eviter ecrasement
+//todo: I2C1 via CubeMX & not by BSP
 ++++
 
-le 21/04/2021   v5.2d (na) [brF4]: modif of this file to test GitHub token
+le 23/04/2021   v5.3  (na) [brF4]: rename com.c/h ==> ycom.c/h. folder 'MEMS' exclude from build.
+                    !!! il faut garder 'stm32f4xx_nucleo_*.c/.h' car gestion de l'I2C1 pour les sensors. !!!
+                    lister CubeMonitor data dans 'CubeMon.h'. maj 'flows.json'
+le 21/04/2021   v5.2d (na) [brF4]: modif of this file to test GitHub token (build 8.98/247.87)
 le 21/04/2021   v5.2d (na) [brF4]: suppression BSP_xxx (stm32f4xx_nucleo_xx.c/.h cleared)
                     init usart & dma rx (buffer circulaire) via a dummy cubeMX fnc (suppress init de com.c/.h)
                     mode VT OK, mode GUI OK (y compris download ucf)

@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * @file    y_iks01a3_conf.h
+ * @file    iks01a3_conf.h
  * @author  MEMS Application Team
  * @version V0.0.1
  * @date    29-January-2018

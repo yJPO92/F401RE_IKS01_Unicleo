@@ -6,6 +6,8 @@
   ******************************************************************************
 */
 
+//yF4unicleo à garder car gere I2C1 des sensors
+
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef STM32F4XX_NUCLEO_ERRNO_H
 #define STM32F4XX_NUCLEO_ERRNO_H

@@ -49,7 +49,7 @@
 #pragma message("***************************\n")
 
 #include "dma.h"
-#include "com.h"
+#include "ycom.h"
 #include "DemoSerial.h"
 #include <stdio.h>
 #include <string.h>
@@ -124,9 +124,6 @@ static void MX_NVIC_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 uint8_t sensorId1,sensorId2,sensorId3;
-RTC_TimeTypeDef myTime;
-RTC_DateTypeDef myDate;
-//extern UART_HandleTypeDef UartHandle;
 extern UART_HandleTypeDef huart2;
 
 /*
@@ -147,11 +144,11 @@ void yLedStartStop(int StartStop, int optTime) {
  * Display date & time from real Time Clock (inside RTC)
  */
 void yPrintTime(void) {
-	  HAL_RTC_GetTime(&hrtc, &myTime, RTC_FORMAT_BIN);
-	  HAL_RTC_GetDate(&hrtc, &myDate, RTC_FORMAT_BIN);	//need to read also the date!!!
+	  HAL_RTC_GetTime(&hrtc, &nr_Time, RTC_FORMAT_BIN);
+	  HAL_RTC_GetDate(&hrtc, &nr_Date, RTC_FORMAT_BIN);	//need to read also the date!!!
 	  snprintf(aTxBuffer, 1024, "\t==> %02d-%02d-%02d %02d:%02d:%02d\r\n",
-			  	  	  	  	  	  	  myDate.Date, myDate.Month, myDate.Year,
-									  myTime.Hours, myTime.Minutes, myTime.Seconds);
+			  	  	  	  	  	  	  nr_Date.Date, nr_Date.Month, nr_Date.Year,
+									  nr_Time.Hours, nr_Time.Minutes, nr_Time.Seconds);
 	  HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
 }
 
@@ -302,20 +299,13 @@ int main(void)
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 
-//  /* Initialize UART via com.c a la mode STM, pas via CubeMX*/
-//  USARTConfig();
-
-  /* Initialize RTC */
-//  RTC_Config();
-//  RTC_TimeStampConfig();
-
-   //test led Led on Nucleo
-   for (int ii = 0; ii < 10; ++ii) {
-     HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-     HAL_Delay(30);
-     HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-     HAL_Delay(30);
-   }
+  //test led Led on Nucleo
+  for (int ii = 0; ii < 10; ++ii) {
+	  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+	  HAL_Delay(30);
+	  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+	  HAL_Delay(30);
+  }
 
    //init LCD, msg de bienvenue
    yI2C_LCD_init();
@@ -427,8 +417,8 @@ int main(void)
 
 	   /* dans tous les cas VT ou GUI pour Node-RED */
 	   // lire l'horloge
-	   HAL_RTC_GetTime(&hrtc, &myTime, RTC_FORMAT_BIN);
-	   HAL_RTC_GetDate(&hrtc, &myDate, RTC_FORMAT_BIN);	//need to read also the date!!!
+	   HAL_RTC_GetTime(&hrtc, &nr_Time, RTC_FORMAT_BIN);
+	   HAL_RTC_GetDate(&hrtc, &nr_Date, RTC_FORMAT_BIN);	//need to read also the date!!!
 	   // MEMS sensors
 	   IKS01A3_ENV_SENSOR_GetValue(IKS01A3_STTS751_0, ENV_TEMPERATURE, &nr_STTS751_Temp);
 	   IKS01A3_ENV_SENSOR_GetValue(IKS01A3_HTS221_0, ENV_TEMPERATURE, &nr_HTS221_Temp);

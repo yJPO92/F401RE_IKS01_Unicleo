@@ -18,10 +18,4 @@
 
 //yF4unicleo NOT USED (cleared)
 
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F4XX_NUCLEO_H
-#define __STM32F4XX_NUCLEO_H
-
-#endif /* __STM32F4XX_NUCLEO__H */
-
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
