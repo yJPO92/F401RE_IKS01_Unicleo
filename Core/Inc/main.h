@@ -33,9 +33,9 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
-#include "stm32f4xx_nucleo.h"	//not used
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+//#include "stm32f4xx_nucleo.h"	//not used
 
 /* USER CODE END Includes */
 
@@ -62,7 +62,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define yCubeMX "na"
+#define yCubeMX "5.4"
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
 #define B1_EXTI_IRQn EXTI15_10_IRQn
@@ -84,8 +84,9 @@ void Error_Handler(void);
 #define LIS2DW12_INT2_Pin GPIO_PIN_7
 #define LIS2DW12_INT2_GPIO_Port GPIOC
 #define LIS2DW12_INT2_EXTI_IRQn EXTI9_5_IRQn
-#define BP2_Pin GPIO_PIN_8
-#define BP2_GPIO_Port GPIOA
+#define vmaBP_Pin GPIO_PIN_8
+#define vmaBP_GPIO_Port GPIOA
+#define vmaBP_EXTI_IRQn EXTI9_5_IRQn
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
@@ -104,7 +105,7 @@ void Error_Handler(void);
 #define I2C1sda_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 #define yPROG "F401RE_IKS01_Unicleo"
-#define yVER  "v5.3"
+#define yVER  "v5.4"
 #define yDATE "xx-avr-2021"
 
 #define yDBG 1		//many printf

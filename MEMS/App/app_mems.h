@@ -22,20 +22,20 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-//#ifndef __APP_MEMS_H
-//#define __APP_MEMS_H
-//
-//#ifdef __cplusplus
-// extern "C" {
-//#endif
+#ifndef __APP_MEMS_H
+#define __APP_MEMS_H
 
-///* Includes ------------------------------------------------------------------*/
-//
-///* Exported defines ----------------------------------------------------------*/
-//
-///* Exported functions --------------------------------------------------------*/
-//void MX_MEMS_Init(void);
-//void MX_MEMS_Process(void);
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
+/* Includes ------------------------------------------------------------------*/
+
+/* Exported defines ----------------------------------------------------------*/
+
+/* Exported functions --------------------------------------------------------*/
+void MX_MEMS_Init(void);
+void MX_MEMS_Process(void);
 
 #ifdef __cplusplus
 }

@@ -61,10 +61,10 @@
 #ifndef BUS_I2C1_POLL_TIMEOUT
    #define BUS_I2C1_POLL_TIMEOUT                0x1000U
 #endif
-///* I2C1 Frequeny in Hz  */
-//#ifndef BUS_I2C1_FREQUENCY
-//   #define BUS_I2C1_FREQUENCY  1000000U /* Frequency of I2Cn = 100 KHz*/
-//#endif
+/* I2C1 Frequeny in Hz  */
+#ifndef BUS_I2C1_FREQUENCY
+   #define BUS_I2C1_FREQUENCY  1000000U /* Frequency of I2Cn = 100 KHz*/
+#endif
 
 /**
   * @}

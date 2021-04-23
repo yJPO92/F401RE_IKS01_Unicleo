@@ -6,10 +6,10 @@
 [[[[[* STM32CubeL4 Firmware Package V1.17.0]]]]]
 
 //TODO: reorganiser functions in files
-//TODO: com.t/.h ==> ycom !! pour eviter ecrasement
-//todo: I2C1 via CubeMX & not by BSP
 ++++
 
+le 23/04/2021   v5.4 (5.4) [brF4]: maj CubeMX (only IKS01A3 bus I2C1 declared)
+                    recompil ok (build 8.98/248.05).
 le 23/04/2021   v5.3  (na) [brF4]: rename com.c/h ==> ycom.c/h. folder 'MEMS' exclude from build.
                     !!! il faut garder 'stm32f4xx_nucleo_*.c/.h' car gestion de l'I2C1 pour les sensors. !!!
                     lister CubeMonitor data dans 'CubeMon.h'. maj 'flows.json'

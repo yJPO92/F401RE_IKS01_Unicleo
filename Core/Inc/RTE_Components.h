@@ -39,13 +39,5 @@
 /* STMicroelectronics.X-CUBE-MEMS1.8.2.0 */
 #define IKS01A3
 #define IKS01A3_DATALOGTERMINAL_DEMO
-/*
-#define LSM6DSO_ACCGYR_I2C
-#define LIS2DW12_ACC_I2C
-#define LIS2MDL_MAG_I2C
-#define HTS221_HUMTEMP_I2C
-#define LPS22HH_PRESSTEMP_I2C
-#define STTS751_TEMP_I2C
-#define IKS01A3 
-*/ 
+
 #endif /* __RTE_COMPONENTS_H__ */

@@ -87,6 +87,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/NodeRED}&quot;"/>
 									<listOptionValue builtIn="false" value="../MEMS/App"/>
 									<listOptionValue builtIn="false" value="../MEMS/Target"/>
+									<listOptionValue builtIn="false" value="../Drivers/BSP/Components/lsm6dso"/>
 								</option>
 								<option id="com.atollic.truestudio.gcc.symbols.defined.1670122205" name="Defined symbols" superClass="com.atollic.truestudio.gcc.symbols.defined" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__weak=__attribute__((weak))"/>
