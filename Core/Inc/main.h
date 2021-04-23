@@ -105,7 +105,7 @@ void Error_Handler(void);
 #define I2C1sda_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 #define yPROG "F401RE_IKS01_Unicleo"
-#define yVER  "v5.4"
+#define yVER  "v6.0"
 #define yDATE "xx-avr-2021"
 
 #define yDBG 1		//many printf

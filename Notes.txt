@@ -8,6 +8,9 @@
 //TODO: reorganiser functions in files
 ++++
 
+le 23/04/2021   v6.0 (5.4) [brL4]: new branche 'brL4'
+
+[le 23/04/2021  v5.5 (5.4) [brF4]: the same before branch! F401RE]
 le 23/04/2021   v5.4 (5.4) [brF4]: maj CubeMX (only IKS01A3 bus I2C1 declared)
                     recompil ok (build 8.98/248.05).
 le 23/04/2021   v5.3  (na) [brF4]: rename com.c/h ==> ycom.c/h. folder 'MEMS' exclude from build.
