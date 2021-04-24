@@ -2,15 +2,15 @@
 *
 * X-CUBE-MEMS1 v8.2.0
 * STM32CubeF4 Firmware Package V1.26.0
+* STM32CubeL4 Firmware Package V1.17.0
 **************************************
-[[[[[* STM32CubeL4 Firmware Package V1.17.0]]]]]
 
 //TODO: reorganiser functions in files
 ++++
 
+le 24/04/2021   v6.2 (5.4) [brL4]: debut branch 'brL4' (build 8.98/243.93).
 le 23/04/2021   v6.0 (5.4) [brL4]: new branche 'brL4'
-
-[le 23/04/2021  v5.5 (5.4) [brF4]: the same before branch! F401RE]
+++++ new branch ++++
 le 23/04/2021   v5.4 (5.4) [brF4]: maj CubeMX (only IKS01A3 bus I2C1 declared)
                     recompil ok (build 8.98/248.05).
 le 23/04/2021   v5.3  (na) [brF4]: rename com.c/h ==> ycom.c/h. folder 'MEMS' exclude from build.

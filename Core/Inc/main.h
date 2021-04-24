@@ -104,12 +104,12 @@ void Error_Handler(void);
 #define I2C1sda_Pin GPIO_PIN_9
 #define I2C1sda_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
-#define yPROG "F401RE_IKS01_Unicleo"
-#define yVER  "v6.1"
+#define yPROG "F4L4_IKS01_Unicleo"
+#define yVER  "v6.2"
 #define yDATE "xx-avr-2021"
 
-#define yDBG 1		//many printf
-#define yTRC 1		//printf coup par coup
+#define yDBG 0		//many printf
+#define yTRC 0		//printf coup par coup
 
 /* USER CODE END Private defines */
 

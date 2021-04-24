@@ -6,15 +6,15 @@
 
 # executables
 [Rr]elease/*
-[Dd]ebug/*
+DebugF401RE/*
+DebugL476RG/*
 
 # mais garder les exec bin & hex
-!/Release/*.hex
 !/Release/*.bin
-!/Release/*.binary
-!/Debug/*.hex
-!/Debug/*.bin
-!/Debug/*.binary
+!/DebugF401RE/*.bin
+!/DebugF401RE/*.binary
+!/DebugL476RG/*.bin
+!/DebugL476RG/*.binary
 
 # Atollic setting
 !.settings/
@@ -30,10 +30,8 @@
 !/startup/*
 
 # STMicroelectronic drivers
-# a chacun d'utilser les siens
-# ajout momentanement au versionning
-!/Middlewares/
-!/Drivers/
+#/Middlewares/
+#/Drivers/
 
 # project specifics files (personnal notes & debug helper & node-RED)
 #*.txt
