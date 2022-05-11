@@ -5,9 +5,16 @@
 * STM32CubeL4 Firmware Package V1.17.0
 **************************************
 
+// revenir en brach brF4
+
 //TODO: reorganiser functions in files
 ++++
 
+le 25/04/2021   v6.3 (5.4) [brL4]: on ne peut pas basculer en L476rg facilement!!
+                    on garde la version F401RE pour test.
+                    on va exporter vers 'F401_L476_DatalogFSM' les fonctions de dialogue Gui.
+                    (build 8.98/243.93).
+                    revenir sur brF4 v5.5
 le 24/04/2021   v6.2 (5.4) [brL4]: debut branch 'brL4' (build 8.98/243.93).
 le 23/04/2021   v6.0 (5.4) [brL4]: new branche 'brL4'
 ++++ new branch ++++
