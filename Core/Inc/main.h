@@ -62,7 +62,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define yCubeMX "5.4"
+#define yCubeMX "5-4"
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
 #define B1_EXTI_IRQn EXTI15_10_IRQn
@@ -103,10 +103,11 @@ void Error_Handler(void);
 #define I2C1scl_GPIO_Port GPIOB
 #define I2C1sda_Pin GPIO_PIN_9
 #define I2C1sda_GPIO_Port GPIOB
+
 /* USER CODE BEGIN Private defines */
-#define yPROG "F4L4_IKS01_Unicleo"
-#define yVER  "v6.2"
-#define yDATE "xx-avr-2021"
+#define yPROG "F4_IKS01_Unicleo"
+#define yVER  "v6.9"
+#define yDATE "xx-sep-2023"
 
 #define yDBG 0		//many printf
 #define yTRC 0		//printf coup par coup
@@ -118,5 +119,3 @@ void Error_Handler(void);
 #endif
 
 #endif /* __MAIN_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -1,12 +1,21 @@
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : stm32f4xx_nucleo_conf.h
   * @brief          : Configuration file
   ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2023 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
   ******************************************************************************
 */
-
-//yF4unicleo NOT USED (cleared)
+/* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef STM32F4XX_NUCLEO_CONF_H
@@ -37,12 +46,12 @@
 #define USE_BSP_COM_FEATURE                 0U
 
 /* COM define */
-#define USE_COM_LOG                         0U
+#define USE_COM_LOG                         1U
 
 /* IRQ priorities */
 #define BSP_BUTTON_USER_IT_PRIORITY         15U
 
-/* I2C1 Frequeny in Hz  */
+/* I2C1 Frequency in Hz  */
 #define BUS_I2C1_FREQUENCY                  100000U /* Frequency of I2C1 = 100 KHz*/
 
 /* SPI1 Baud rate in bps  */
@@ -72,4 +81,3 @@
 #endif
 #endif  /* STM32F4XX_NUCLEO_CONF_H */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

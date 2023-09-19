@@ -1,5 +1,7 @@
 *** F401RE_IKS01_Unicleo ***
 *
+* STM32CubeIDE v1.13.1
+* CubeMX V6.9.1
 * X-CUBE-MEMS1 v8.2.0
 * STM32CubeF4 Firmware Package V1.26.0
 * STM32CubeL4 Firmware Package V1.17.0
@@ -10,6 +12,9 @@
 //TODO: reorganiser functions in files
 ++++
 
+le 19/09/2023	v6.9 (5-5) TrueStudio ==> STM32CubeIDE
+                    on garde la version F401RE pour test.
+                    revenir sur brF4 v5.5
 le 25/04/2021   v6.3 (5.4) [brL4]: on ne peut pas basculer en L476rg facilement!!
                     on garde la version F401RE pour test.
                     on va exporter vers 'F401_L476_DatalogFSM' les fonctions de dialogue Gui.

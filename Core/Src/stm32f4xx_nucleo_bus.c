@@ -1,3 +1,4 @@
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : stm32f4xx_nucleo_bus.c
@@ -5,18 +6,16 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2023 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
 */
-
-//yF4unicleo à garder car gere I2C1 des sensors
+/* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_nucleo_bus.h"
@@ -113,15 +112,15 @@ int32_t BSP_I2C1_Init(void)
       }
     #endif
       if(ret == BSP_ERROR_NONE)
-	  {
-    	/* Init the I2C */
-    	if(MX_I2C1_Init(&hi2c1) != HAL_OK)
-    	{
-      	  ret = BSP_ERROR_BUS_FAILURE;
-    	}
+      {
+        /* Init the I2C */
+        if(MX_I2C1_Init(&hi2c1) != HAL_OK)
+        {
+          ret = BSP_ERROR_BUS_FAILURE;
+        }
         else
         {
-      	  ret = BSP_ERROR_NONE;
+          ret = BSP_ERROR_NONE;
         }
       }
     }
@@ -159,7 +158,7 @@ int32_t BSP_I2C1_DeInit(void)
   * @brief  Check whether the I2C bus is ready.
   * @param DevAddr : I2C device address
   * @param Trials : Check trials number
-  *	@retval BSP status
+  * @retval BSP status
   */
 int32_t BSP_I2C1_IsReady(uint16_t DevAddr, uint32_t Trials)
 {
@@ -395,6 +394,7 @@ int32_t BSP_GetTick(void) {
 __weak HAL_StatusTypeDef MX_I2C1_Init(I2C_HandleTypeDef* hi2c)
 {
   HAL_StatusTypeDef ret = HAL_OK;
+
   hi2c->Instance = I2C1;
   hi2c->Init.ClockSpeed = 400000;
   hi2c->Init.DutyCycle = I2C_DUTYCYCLE_2;
@@ -481,4 +481,4 @@ static void I2C1_MspDeInit(I2C_HandleTypeDef* i2cHandle)
 /**
   * @}
   */
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+

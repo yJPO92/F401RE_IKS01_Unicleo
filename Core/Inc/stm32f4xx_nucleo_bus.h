@@ -1,3 +1,4 @@
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : stm32f4xx_nucleo_bus.h
@@ -5,18 +6,16 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2023 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
 */
-
-//yF4unicleo à garder car gere I2C1 des sensors
+/* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef STM32F4XX_NUCLEO_BUS_H
@@ -61,7 +60,7 @@
 #ifndef BUS_I2C1_POLL_TIMEOUT
    #define BUS_I2C1_POLL_TIMEOUT                0x1000U
 #endif
-/* I2C1 Frequeny in Hz  */
+/* I2C1 Frequency in Hz  */
 #ifndef BUS_I2C1_FREQUENCY
    #define BUS_I2C1_FREQUENCY  1000000U /* Frequency of I2Cn = 100 KHz*/
 #endif
@@ -138,4 +137,3 @@ int32_t BSP_GetTick(void);
 
 #endif /* STM32F4XX_NUCLEO_BUS_H */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
